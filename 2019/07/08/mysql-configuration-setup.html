@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>MySQL Configuration &amp; Setup | VR Exploring</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="MySQL Configuration &amp; Setup" />
+<meta name="author" content="Rajesh Nair" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="This blog will cover the various configuration and setups that can be performed over a mysql server for its operations. Server command line options *We can control the way server launches *specify how the server access resources *We can set connection defaults *some options are specified at launch and some can be specified later The various option specification techniques are: *On command line for manual launch *In shell script for auto launch, not used generally *Compile version with custom default values, also not used *Use of configuration file(s) is the preferred technique Global Server Variable *Variables for server operation *Apply only to server not to a connection - so only global scope Config File Location *Platform specific locations according to OS we use *We can use more than one config files *Accessed in order they are encountered in the config file i.e top to bottom Config File Structure Sections -section heading enclosed in square bracket [mysqld] -heading names or program group -all specification lines following heading Eg: [mysqld] option = value option2 [client] otheroption [mysql] otheroption = some values Config File Structure * One specification per line * Full option name used *No leading -- char *value if needed,assigned using = with spaces *char values enclosed in quotes Special char - leading and trailing spaces deleted, escape sequence for special char \s,\t,\n,\r,\b comment begins with # or ; Important server settings * Server identity and resource locations &nbsp; server-id (numeric value) port or bind-address (numeric value) socket and pid-file (path value) basedir,datadir,tmpdir,slave-load-tmpdir (path value) log-bin,slow_query_log ,general_log (path value) log-error (path value) ft_stopword_file ( path value)-full text indexing *Operational Options lower_case_table_names - push all table nd db names as lower case for operation sql-mode (value) concurrent_insert [MyISAM engine] max_connections (value) wait_timeout or interactive timeout (value) connect_timeout (value) event-scheduler Server Startup Initialization init-file option *used to designate path to a script to be executed at launch of server *performs operations that config varaibles cant do -populate memory tables -Maintain custom startup log -Other setup as needed Syntax of script file *Seperate line for each statement and no statement terminators *Should not include comments *Any error will abort launch Eg: use world insert into memcity select * from city insert into memcodes select * from codes Connection Initialization init_connect Option *used to contain a script to be executed at launch of any connection *Statements in scripts are deliminated by semicolon *no delimiter at end of script *should not include comments *script not executed for super user Eg: [mysqld] init_connect=&quot;use world;set autocommit=1&quot; Replication Initialization init_slave option *used to contain a script to be executed each time the SQL thread starts for slave *same syntax rule as init_connect *No guaranteed to have executed when the START SLAVE command returns its response because SQL thread may not have begun" />
+<meta property="og:description" content="This blog will cover the various configuration and setups that can be performed over a mysql server for its operations. Server command line options *We can control the way server launches *specify how the server access resources *We can set connection defaults *some options are specified at launch and some can be specified later The various option specification techniques are: *On command line for manual launch *In shell script for auto launch, not used generally *Compile version with custom default values, also not used *Use of configuration file(s) is the preferred technique Global Server Variable *Variables for server operation *Apply only to server not to a connection - so only global scope Config File Location *Platform specific locations according to OS we use *We can use more than one config files *Accessed in order they are encountered in the config file i.e top to bottom Config File Structure Sections -section heading enclosed in square bracket [mysqld] -heading names or program group -all specification lines following heading Eg: [mysqld] option = value option2 [client] otheroption [mysql] otheroption = some values Config File Structure * One specification per line * Full option name used *No leading -- char *value if needed,assigned using = with spaces *char values enclosed in quotes Special char - leading and trailing spaces deleted, escape sequence for special char \s,\t,\n,\r,\b comment begins with # or ; Important server settings * Server identity and resource locations &nbsp; server-id (numeric value) port or bind-address (numeric value) socket and pid-file (path value) basedir,datadir,tmpdir,slave-load-tmpdir (path value) log-bin,slow_query_log ,general_log (path value) log-error (path value) ft_stopword_file ( path value)-full text indexing *Operational Options lower_case_table_names - push all table nd db names as lower case for operation sql-mode (value) concurrent_insert [MyISAM engine] max_connections (value) wait_timeout or interactive timeout (value) connect_timeout (value) event-scheduler Server Startup Initialization init-file option *used to designate path to a script to be executed at launch of server *performs operations that config varaibles cant do -populate memory tables -Maintain custom startup log -Other setup as needed Syntax of script file *Seperate line for each statement and no statement terminators *Should not include comments *Any error will abort launch Eg: use world insert into memcity select * from city insert into memcodes select * from codes Connection Initialization init_connect Option *used to contain a script to be executed at launch of any connection *Statements in scripts are deliminated by semicolon *no delimiter at end of script *should not include comments *script not executed for super user Eg: [mysqld] init_connect=&quot;use world;set autocommit=1&quot; Replication Initialization init_slave option *used to contain a script to be executed each time the SQL thread starts for slave *same syntax rule as init_connect *No guaranteed to have executed when the START SLAVE command returns its response because SQL thread may not have begun" />
+<link rel="canonical" href="https://vemarahub.github.io/vrexploring/2019/07/08/mysql-configuration-setup.html" />
+<meta property="og:url" content="https://vemarahub.github.io/vrexploring/2019/07/08/mysql-configuration-setup.html" />
+<meta property="og:site_name" content="VR Exploring" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2019-07-08T13:38:00+00:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="MySQL Configuration &amp; Setup" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Rajesh Nair"},"dateModified":"2019-07-08T13:38:00+00:00","datePublished":"2019-07-08T13:38:00+00:00","description":"This blog will cover the various configuration and setups that can be performed over a mysql server for its operations. Server command line options *We can control the way server launches *specify how the server access resources *We can set connection defaults *some options are specified at launch and some can be specified later The various option specification techniques are: *On command line for manual launch *In shell script for auto launch, not used generally *Compile version with custom default values, also not used *Use of configuration file(s) is the preferred technique Global Server Variable *Variables for server operation *Apply only to server not to a connection - so only global scope Config File Location *Platform specific locations according to OS we use *We can use more than one config files *Accessed in order they are encountered in the config file i.e top to bottom Config File Structure Sections -section heading enclosed in square bracket [mysqld] -heading names or program group -all specification lines following heading Eg: [mysqld] option = value option2 [client] otheroption [mysql] otheroption = some values Config File Structure * One specification per line * Full option name used *No leading -- char *value if needed,assigned using = with spaces *char values enclosed in quotes Special char - leading and trailing spaces deleted, escape sequence for special char \\s,\\t,\\n,\\r,\\b comment begins with # or ; Important server settings * Server identity and resource locations &nbsp; server-id (numeric value) port or bind-address (numeric value) socket and pid-file (path value) basedir,datadir,tmpdir,slave-load-tmpdir (path value) log-bin,slow_query_log ,general_log (path value) log-error (path value) ft_stopword_file ( path value)-full text indexing *Operational Options lower_case_table_names - push all table nd db names as lower case for operation sql-mode (value) concurrent_insert [MyISAM engine] max_connections (value) wait_timeout or interactive timeout (value) connect_timeout (value) event-scheduler Server Startup Initialization init-file option *used to designate path to a script to be executed at launch of server *performs operations that config varaibles cant do -populate memory tables -Maintain custom startup log -Other setup as needed Syntax of script file *Seperate line for each statement and no statement terminators *Should not include comments *Any error will abort launch Eg: use world insert into memcity select * from city insert into memcodes select * from codes Connection Initialization init_connect Option *used to contain a script to be executed at launch of any connection *Statements in scripts are deliminated by semicolon *no delimiter at end of script *should not include comments *script not executed for super user Eg: [mysqld] init_connect=&quot;use world;set autocommit=1&quot; Replication Initialization init_slave option *used to contain a script to be executed each time the SQL thread starts for slave *same syntax rule as init_connect *No guaranteed to have executed when the START SLAVE command returns its response because SQL thread may not have begun","headline":"MySQL Configuration &amp; Setup","mainEntityOfPage":{"@type":"WebPage","@id":"https://vemarahub.github.io/vrexploring/2019/07/08/mysql-configuration-setup.html"},"url":"https://vemarahub.github.io/vrexploring/2019/07/08/mysql-configuration-setup.html"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/vrexploring/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://vemarahub.github.io/vrexploring/feed.xml" title="VR Exploring" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/vrexploring/">VR Exploring</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/vrexploring/about/">About</a><a class="page-link" href="/vrexploring/">Home</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">MySQL Configuration &amp; Setup</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2019-07-08T13:38:00+00:00" itemprop="datePublished">Jul 8, 2019
+      </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">Rajesh Nair</span></span></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <div dir="ltr" style="text-align: left;" trbidi="on">
+<div class="sidenav">
+This blog will cover the various configuration and setups that can be performed over a mysql server for its operations.</div>
+<br />
+<b>Server command line options</b><br />
+<br />
+*We can control the way server launches<br />
+*specify how the server access resources<br />
+*We can set connection defaults<br />
+*some options are specified at launch and some can be specified later<br />
+<br />
+The various option specification techniques are:<br />
+*On command line for manual launch<br />
+*In shell script for auto launch, not used generally<br />
+*Compile version with custom default values, also not used<br />
+*Use of configuration file(s) is the preferred technique<br />
+<b><br /></b>
+<b>Global Server Variable</b><br />
+*Variables for server operation<br />
+*Apply only to server not to a connection - so only global scope<br />
+<br />
+<b>Config File Location</b><br />
+*Platform specific locations according to OS we use<br />
+*We can use more than one config files<br />
+*Accessed in order they are encountered in the config file i.e top to bottom<br />
+<br />
+<b>Config File Structure</b><br />
+Sections<br />
+-section heading enclosed in square bracket [mysqld]<br />
+-heading names or program group<br />
+-all specification lines following heading<br />
+Eg:<br />
+[mysqld]<br />
+option = value<br />
+option2<br />
+<br />
+[client]<br />
+otheroption<br />
+<br />
+[mysql]<br />
+otheroption = some values<br />
+<br />
+<b>Config File Structure</b><br />
+* One specification per line<br />
+* Full option name used<br />
+*No leading -- char<br />
+*value if needed,assigned using = with spaces<br />
+*char values enclosed in quotes<br />
+<br />
+Special char - leading and trailing spaces deleted, escape sequence for special char \s,\t,\n,\r,\b<br />
+comment begins with # or ;<br />
+<br />
+<b>Important server settings</b><br />
+<br />
+* Server identity and resource locations<br />
+&nbsp;<span style="white-space: pre;"> </span>server-id (numeric value)<br />
+<span style="white-space: pre;"> </span>port or bind-address (numeric value)<br />
+<span style="white-space: pre;"> </span>socket and pid-file (path value)<br />
+<span style="white-space: pre;"> </span>basedir,datadir,tmpdir,slave-load-tmpdir (path value)<br />
+<span style="white-space: pre;"> </span>log-bin,slow_query_log ,general_log (path value)<br />
+<span style="white-space: pre;"> </span>log-error (path value)<br />
+<span style="white-space: pre;"> </span>ft_stopword_file ( path value)-full text indexing<br />
+<br />
+*Operational Options<br />
+<span style="white-space: pre;"> </span>lower_case_table_names - push all table nd db names as lower case for operation<br />
+<span style="white-space: pre;"> </span>sql-mode (value)<br />
+<span style="white-space: pre;"> </span>concurrent_insert [MyISAM engine]<br />
+<span style="white-space: pre;"> </span>max_connections (value)<br />
+<span style="white-space: pre;"> </span>wait_timeout or interactive timeout (value)<br />
+<span style="white-space: pre;"> </span>connect_timeout (value)<br />
+<span style="white-space: pre;"> </span>event-scheduler<br />
+<br />
+<b>Server Startup Initialization</b><br />
+<b><i>init-file option</i></b><br />
+*used to designate path to a script to be executed at launch of server<br />
+*performs operations that config varaibles cant do<br />
+<span style="white-space: pre;"> </span>-populate memory tables<br />
+<span style="white-space: pre;"> </span>-Maintain custom startup log<br />
+<span style="white-space: pre;"> </span>-Other setup as needed<br />
+<br />
+<b>Syntax of script file</b><br />
+*Seperate line for each statement and no statement terminators<br />
+*Should not include comments<br />
+*Any error will abort launch<br />
+Eg:<br />
+use world<br />
+insert into memcity select * from city<br />
+insert into memcodes select * from codes<br />
+<br />
+<b>Connection Initialization</b><br />
+<b><i>init_connect Option</i></b><br />
+*used to contain a script to be executed at launch of any connection<br />
+*Statements in scripts are deliminated by semicolon<br />
+*no delimiter at end of script<br />
+*should not include comments<br />
+*script not executed for super user<br />
+Eg:<br />
+[mysqld]<br />
+init_connect="use world;set autocommit=1"<br />
+<br />
+<b>Replication Initialization</b><br />
+<b><i>init_slave option</i></b><br />
+*used to contain a script to be executed each time the SQL thread starts for slave<br />
+*same syntax rule as init_connect<br />
+*No guaranteed to have executed when the START SLAVE command returns its response because SQL thread may not have begun</div>
+
+  </div><a class="u-url" href="/vrexploring/2019/07/08/mysql-configuration-setup.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/vrexploring/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">VR Exploring</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">VR Exploring</li><li><a class="u-email" href="mailto:vrexploring@gmail.com">vrexploring@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/vemarahub"><svg class="svg-icon"><use xlink:href="/vrexploring/assets/minima-social-icons.svg#github"></use></svg> <span class="username">vemarahub</span></a></li><li><a href="https://www.twitter.com/vrexploring"><svg class="svg-icon"><use xlink:href="/vrexploring/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">vrexploring</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>A space where i share my thoughts and experiences about technology , science, life, family and everything in between.</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Setting up a Database to Monitor in OEM | VR Exploring</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Setting up a Database to Monitor in OEM" />
+<meta name="author" content="Rajesh Nair" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="After doing initial configuration and setup , a OEM dashboard on login will look like as below showing the admin server and the various resources under the server: To add a database to monitor in the OEM, follow the below steps: 1. Go to Resources -&gt; Database. A&nbsp; form for all the database details will appear.Fill the form with the database details and click on submit 2. Once added , it will redirect to database listing page , with all the options related to the added database available as links.Click on configuration link to edit the default configuration to modify various startup paramters like -n,-Mn,-S,-BiBufs,-AiBufs etc. 3. -S ,-n client type(4gl,sql or both)&nbsp; etc can be edited by choosing &quot;servergroup.&lt;dbname&gt;.defaultconfiguration.defaultservergroup&quot; from the below page. Click on &quot;configuration.&lt;dbname&gt;.defaultconfiguration&nbsp;&quot; to edit the default configurations after clicking edit on the loaded screen. 4. Edit the required parameters and click on save. Note: All these configurations are saved in &quot;&lt;DLC PATH&gt;/properties/conmgr.properties&quot; file.We can directly edit in the conmgr.properties to reflect the configurations we want for the particular database. 5. We can start / stop the database now from directly OEM tool using start database button, start agent will automatically start with the database if monitored checkbox is ticked for the database.It will start collecting starts for the database and monitor the database for any errors in logs or db shutdown." />
+<meta property="og:description" content="After doing initial configuration and setup , a OEM dashboard on login will look like as below showing the admin server and the various resources under the server: To add a database to monitor in the OEM, follow the below steps: 1. Go to Resources -&gt; Database. A&nbsp; form for all the database details will appear.Fill the form with the database details and click on submit 2. Once added , it will redirect to database listing page , with all the options related to the added database available as links.Click on configuration link to edit the default configuration to modify various startup paramters like -n,-Mn,-S,-BiBufs,-AiBufs etc. 3. -S ,-n client type(4gl,sql or both)&nbsp; etc can be edited by choosing &quot;servergroup.&lt;dbname&gt;.defaultconfiguration.defaultservergroup&quot; from the below page. Click on &quot;configuration.&lt;dbname&gt;.defaultconfiguration&nbsp;&quot; to edit the default configurations after clicking edit on the loaded screen. 4. Edit the required parameters and click on save. Note: All these configurations are saved in &quot;&lt;DLC PATH&gt;/properties/conmgr.properties&quot; file.We can directly edit in the conmgr.properties to reflect the configurations we want for the particular database. 5. We can start / stop the database now from directly OEM tool using start database button, start agent will automatically start with the database if monitored checkbox is ticked for the database.It will start collecting starts for the database and monitor the database for any errors in logs or db shutdown." />
+<link rel="canonical" href="https://vemarahub.github.io/vrexploring/2018/08/06/setting-up-database-to-monitor-in-oem.html" />
+<meta property="og:url" content="https://vemarahub.github.io/vrexploring/2018/08/06/setting-up-database-to-monitor-in-oem.html" />
+<meta property="og:site_name" content="VR Exploring" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2018-08-06T11:41:00+00:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Setting up a Database to Monitor in OEM" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Rajesh Nair"},"dateModified":"2018-08-06T11:41:00+00:00","datePublished":"2018-08-06T11:41:00+00:00","description":"After doing initial configuration and setup , a OEM dashboard on login will look like as below showing the admin server and the various resources under the server: To add a database to monitor in the OEM, follow the below steps: 1. Go to Resources -&gt; Database. A&nbsp; form for all the database details will appear.Fill the form with the database details and click on submit 2. Once added , it will redirect to database listing page , with all the options related to the added database available as links.Click on configuration link to edit the default configuration to modify various startup paramters like -n,-Mn,-S,-BiBufs,-AiBufs etc. 3. -S ,-n client type(4gl,sql or both)&nbsp; etc can be edited by choosing &quot;servergroup.&lt;dbname&gt;.defaultconfiguration.defaultservergroup&quot; from the below page. Click on &quot;configuration.&lt;dbname&gt;.defaultconfiguration&nbsp;&quot; to edit the default configurations after clicking edit on the loaded screen. 4. Edit the required parameters and click on save. Note: All these configurations are saved in &quot;&lt;DLC PATH&gt;/properties/conmgr.properties&quot; file.We can directly edit in the conmgr.properties to reflect the configurations we want for the particular database. 5. We can start / stop the database now from directly OEM tool using start database button, start agent will automatically start with the database if monitored checkbox is ticked for the database.It will start collecting starts for the database and monitor the database for any errors in logs or db shutdown.","headline":"Setting up a Database to Monitor in OEM","mainEntityOfPage":{"@type":"WebPage","@id":"https://vemarahub.github.io/vrexploring/2018/08/06/setting-up-database-to-monitor-in-oem.html"},"url":"https://vemarahub.github.io/vrexploring/2018/08/06/setting-up-database-to-monitor-in-oem.html"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/vrexploring/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://vemarahub.github.io/vrexploring/feed.xml" title="VR Exploring" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/vrexploring/">VR Exploring</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/vrexploring/about/">About</a><a class="page-link" href="/vrexploring/">Home</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Setting up a Database to Monitor in OEM</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2018-08-06T11:41:00+00:00" itemprop="datePublished">Aug 6, 2018
+      </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">Rajesh Nair</span></span></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <div dir="ltr" style="text-align: left;" trbidi="on">
+<br />
+After doing initial configuration and setup , a OEM dashboard on login will look like as below showing the admin server and the various resources under the server:<br />
+<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj3E1ckCC9EO9pTtWaHilDvdsWf-eXcERzwE6DxMX2jLDkkTBbDAb-n4Sm3L0bzZrXsuY54dy9I4RxG31is2sYCyZnaw4Bl5wslWqF45r3qqtp6lIRgG0wsuVOmozzDwU0IyGiRI-K5xpKK/s1600/33.JPG" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="808" data-original-width="1600" height="322" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj3E1ckCC9EO9pTtWaHilDvdsWf-eXcERzwE6DxMX2jLDkkTBbDAb-n4Sm3L0bzZrXsuY54dy9I4RxG31is2sYCyZnaw4Bl5wslWqF45r3qqtp6lIRgG0wsuVOmozzDwU0IyGiRI-K5xpKK/s640/33.JPG" width="640" /></a></div>
+<br />
+<br />
+To add a database to monitor in the OEM, follow the below steps:<br />
+<br />
+1. Go to Resources -&gt; Database. A&nbsp; form for all the database details will appear.Fill the form with the database details and click on submit<br />
+<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgSz-_qwLN6wn7x-MQKvBp-v1cwXOptnaso5xx6773IIXjDHsQidE_jtyI_IHNoqYdGtQU7JDggXLDZYhiLNGiYZOpG1lKnsyKPrupxZnl6lSaJ-xc6VjzamRgcT5iY5GT6o005mvPP8v3b/s1600/33.JPG" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="943" data-original-width="1174" height="514" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgSz-_qwLN6wn7x-MQKvBp-v1cwXOptnaso5xx6773IIXjDHsQidE_jtyI_IHNoqYdGtQU7JDggXLDZYhiLNGiYZOpG1lKnsyKPrupxZnl6lSaJ-xc6VjzamRgcT5iY5GT6o005mvPP8v3b/s640/33.JPG" width="640" /></a></div>
+<br />
+2. Once added , it will redirect to database listing page , with all the options related to the added database available as links.Click on configuration link to edit the default configuration to modify various startup paramters like -n,-Mn,-S,-BiBufs,-AiBufs etc.<br />
+<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjVV8zMhLV06_DFN7m0AmoFKX1sgLSiV1VQNzfyAT54vmKVSGQ_JWPdiwMnHavO_I585Uu0nE04MCUkvGHZJQNL6r3vi2KBOfFmT_V9d5BXfxz2R9hJ1P_ngZadWzpvB-YQblNArNcbx7gv/s1600/33.JPG" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="831" data-original-width="1464" height="362" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjVV8zMhLV06_DFN7m0AmoFKX1sgLSiV1VQNzfyAT54vmKVSGQ_JWPdiwMnHavO_I585Uu0nE04MCUkvGHZJQNL6r3vi2KBOfFmT_V9d5BXfxz2R9hJ1P_ngZadWzpvB-YQblNArNcbx7gv/s640/33.JPG" width="640" /></a></div>
+<br />
+<br />
+3. -S ,-n client type(4gl,sql or both)&nbsp; etc can be edited by choosing "servergroup.&lt;dbname&gt;.defaultconfiguration.defaultservergroup" from the below page.<br />
+<br />
+Click on "configuration.&lt;dbname&gt;.defaultconfiguration<span style="font-family: &quot;roboto&quot; , &quot;arial&quot; , &quot;helvetica&quot; , sans-serif; font-size: 13px; white-space: nowrap;">&nbsp;</span>" to edit the default configurations after clicking edit on the loaded screen.<br />
+<br />
+<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgf2tDBNvLwjNLBD3NHFgXC9WJTZjrZxlBr2b5j9zIPKk-dSMhcaj_zvoYmEVA7rIv3AaLineNcW_3KKxo0goDYVkP_YYgstsqQzvk5pbKTbthA1ZGKJ14SuU9y0tbxoIKn63xhjmWyEIqR/s1600/33.JPG" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="486" data-original-width="1268" height="244" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgf2tDBNvLwjNLBD3NHFgXC9WJTZjrZxlBr2b5j9zIPKk-dSMhcaj_zvoYmEVA7rIv3AaLineNcW_3KKxo0goDYVkP_YYgstsqQzvk5pbKTbthA1ZGKJ14SuU9y0tbxoIKn63xhjmWyEIqR/s640/33.JPG" width="640" /></a></div>
+<br />
+4. Edit the required parameters and click on save.<br />
+<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhzKWzwBO-ZeqN0Eh6U7TRoMzIH75fTS1_BwysrYEfN92Q1zm6uzXCP8TupHzls5ShP0EKiM6w1mxSOBmgUFRS1VM2Xh3j8AGVpEcTEJAUzsqDLEWYR8uSpANgOc1qPnscgV1-jHs8WbG6l/s1600/33.JPG" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="768" data-original-width="1377" height="356" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhzKWzwBO-ZeqN0Eh6U7TRoMzIH75fTS1_BwysrYEfN92Q1zm6uzXCP8TupHzls5ShP0EKiM6w1mxSOBmgUFRS1VM2Xh3j8AGVpEcTEJAUzsqDLEWYR8uSpANgOc1qPnscgV1-jHs8WbG6l/s640/33.JPG" width="640" /></a></div>
+<br />
+<br />
+Note: All these configurations are saved in "&lt;DLC PATH&gt;/properties/conmgr.properties" file.We can directly edit in the conmgr.properties to reflect the configurations we want for the particular database.<br />
+<br />
+<br />
+5. We can start / stop the database now from directly OEM tool using start database button, start agent will automatically start with the database if monitored checkbox is ticked for the database.It will start collecting starts for the database and monitor the database for any errors in logs or db shutdown.<br />
+<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg9xRViP9R5yqUFUA-Vq_tkIlGIbANCXods95eA8RDIv686C4mScfReHoFtaYTtLMnZo9SBDgojFDOcp_-FhdVe5ZS827X_4WRh0Pmfk7m-ck3bwHgCW5nL4Xtsy6c973uzpa-2Zz2pZv2r/s1600/33.JPG" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="562" data-original-width="1235" height="290" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg9xRViP9R5yqUFUA-Vq_tkIlGIbANCXods95eA8RDIv686C4mScfReHoFtaYTtLMnZo9SBDgojFDOcp_-FhdVe5ZS827X_4WRh0Pmfk7m-ck3bwHgCW5nL4Xtsy6c973uzpa-2Zz2pZv2r/s640/33.JPG" width="640" /></a></div>
+<br /></div>
+
+  </div><a class="u-url" href="/vrexploring/2018/08/06/setting-up-database-to-monitor-in-oem.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/vrexploring/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">VR Exploring</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">VR Exploring</li><li><a class="u-email" href="mailto:vrexploring@gmail.com">vrexploring@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/vemarahub"><svg class="svg-icon"><use xlink:href="/vrexploring/assets/minima-social-icons.svg#github"></use></svg> <span class="username">vemarahub</span></a></li><li><a href="https://www.twitter.com/vrexploring"><svg class="svg-icon"><use xlink:href="/vrexploring/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">vrexploring</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>A space where i share my thoughts and experiences about technology , science, life, family and everything in between.</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://vemarahub.github.io/vrexploring/feed.xml" rel="self" type="application/atom+xml" /><link href="https://vemarahub.github.io/vrexploring/" rel="alternate" type="text/html" /><updated>2025-02-24T22:58:54+00:00</updated><id>https://vemarahub.github.io/vrexploring/feed.xml</id><title type="html">VR Exploring</title><subtitle>A space where i share my thoughts and experiences about technology , science, life, family and everything in between.</subtitle><entry><title type="html">Welcome to Jekyll!</title><link href="https://vemarahub.github.io/vrexploring/jekyll/update/2025/02/24/welcome-to-jekyll.html" rel="alternate" type="text/html" title="Welcome to Jekyll!" /><published>2025-02-24T18:04:33+00:00</published><updated>2025-02-24T18:04:33+00:00</updated><id>https://vemarahub.github.io/vrexploring/jekyll/update/2025/02/24/welcome-to-jekyll</id><content type="html" xml:base="https://vemarahub.github.io/vrexploring/jekyll/update/2025/02/24/welcome-to-jekyll.html"><![CDATA[<p>You’ll find this post in your <code class="language-plaintext highlighter-rouge">_posts</code> directory. Go ahead and edit it and re-build the site to see your changes. You can rebuild the site in many different ways, but the most common way is to run <code class="language-plaintext highlighter-rouge">jekyll serve</code>, which launches a web server and auto-regenerates your site when a file is updated.</p>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://vemarahub.github.io/vrexploring/feed.xml" rel="self" type="application/atom+xml" /><link href="https://vemarahub.github.io/vrexploring/" rel="alternate" type="text/html" /><updated>2025-02-24T23:14:45+00:00</updated><id>https://vemarahub.github.io/vrexploring/feed.xml</id><title type="html">VR Exploring</title><subtitle>A space where i share my thoughts and experiences about technology , science, life, family and everything in between.</subtitle><entry><title type="html">Welcome to Jekyll!</title><link href="https://vemarahub.github.io/vrexploring/jekyll/update/2025/02/24/welcome-to-jekyll.html" rel="alternate" type="text/html" title="Welcome to Jekyll!" /><published>2025-02-24T18:04:33+00:00</published><updated>2025-02-24T18:04:33+00:00</updated><id>https://vemarahub.github.io/vrexploring/jekyll/update/2025/02/24/welcome-to-jekyll</id><content type="html" xml:base="https://vemarahub.github.io/vrexploring/jekyll/update/2025/02/24/welcome-to-jekyll.html"><![CDATA[<p>You’ll find this post in your <code class="language-plaintext highlighter-rouge">_posts</code> directory. Go ahead and edit it and re-build the site to see your changes. You can rebuild the site in many different ways, but the most common way is to run <code class="language-plaintext highlighter-rouge">jekyll serve</code>, which launches a web server and auto-regenerates your site when a file is updated.</p>
 
 <p>Jekyll requires blog post files to be named according to the following format:</p>
 
@@ -14,4 +14,775 @@
 <span class="n">print_hi</span><span class="p">(</span><span class="s1">'Tom'</span><span class="p">)</span>
 <span class="c1">#=&gt; prints 'Hi, Tom' to STDOUT.</span></code></pre></figure>
 
-<p>Check out the <a href="https://jekyllrb.com/docs/home">Jekyll docs</a> for more info on how to get the most out of Jekyll. File all bugs/feature requests at <a href="https://github.com/jekyll/jekyll">Jekyll’s GitHub repo</a>. If you have questions, you can ask them on <a href="https://talk.jekyllrb.com/">Jekyll Talk</a>.</p>]]></content><author><name></name></author><category term="jekyll" /><category term="update" /><summary type="html"><![CDATA[You’ll find this post in your _posts directory. Go ahead and edit it and re-build the site to see your changes. You can rebuild the site in many different ways, but the most common way is to run jekyll serve, which launches a web server and auto-regenerates your site when a file is updated.]]></summary></entry></feed>
+<p>Check out the <a href="https://jekyllrb.com/docs/home">Jekyll docs</a> for more info on how to get the most out of Jekyll. File all bugs/feature requests at <a href="https://github.com/jekyll/jekyll">Jekyll’s GitHub repo</a>. If you have questions, you can ask them on <a href="https://talk.jekyllrb.com/">Jekyll Talk</a>.</p>]]></content><author><name></name></author><category term="jekyll" /><category term="update" /><summary type="html"><![CDATA[You’ll find this post in your _posts directory. Go ahead and edit it and re-build the site to see your changes. You can rebuild the site in many different ways, but the most common way is to run jekyll serve, which launches a web server and auto-regenerates your site when a file is updated.]]></summary></entry><entry><title type="html">Disaster Snapshot Recovery in Mongo</title><link href="https://vemarahub.github.io/vrexploring/2020/05/11/disaster-snapshot-recovery-in-mongo.html" rel="alternate" type="text/html" title="Disaster Snapshot Recovery in Mongo" /><published>2020-05-11T11:04:00+00:00</published><updated>2020-05-11T11:04:00+00:00</updated><id>https://vemarahub.github.io/vrexploring/2020/05/11/disaster-snapshot-recovery-in-mongo</id><content type="html" xml:base="https://vemarahub.github.io/vrexploring/2020/05/11/disaster-snapshot-recovery-in-mongo.html"><![CDATA[<div><br /></div><br /><div>Say for in a database maintenance activity we drop a collection by mistake, we can restore to the last state just before dropping the database using oplog file and the latest available backup.Follow the below steps to restore the database to last state:</div><div><br /></div><div>1. use local</div><div>db.oplog.rs.findOne({"o.drop":" "})</div><div>we will get epoch_sec for that particular drop statement.</div><div><br /></div><div>2. Dump the oplog file</div><div>mongodump -d local -c oplog.rs -out /data/oplog_dump -query {"ns":{"nin":[config.system.sessions,config.cache.collections]}}</div><div><br /></div><div>3. Restore the latest backup using mongorestore</div><div><br /></div><div>4. Restore the oplog upto the epoch time of collection drop</div><div>mongorestore --oplogReplay --oplogFile --oplogLimit epoch_sec</div><div><br /></div><div><br /></div><div>&nbsp;</div>]]></content><author><name>Rajesh Nair</name></author><summary type="html"><![CDATA[Say for in a database maintenance activity we drop a collection by mistake, we can restore to the last state just before dropping the database using oplog file and the latest available backup.Follow the below steps to restore the database to last state:1. use localdb.oplog.rs.findOne({"o.drop":" "})we will get epoch_sec for that particular drop statement.2. Dump the oplog filemongodump -d local -c oplog.rs -out /data/oplog_dump -query {"ns":{"nin":[config.system.sessions,config.cache.collections]}}3. Restore the latest backup using mongorestore4. Restore the oplog upto the epoch time of collection dropmongorestore --oplogReplay --oplogFile --oplogLimit epoch_sec&nbsp;]]></summary></entry><entry><title type="html">Styling with Angular Material</title><link href="https://vemarahub.github.io/vrexploring/2020/04/17/styling-with-angular-material.html" rel="alternate" type="text/html" title="Styling with Angular Material" /><published>2020-04-17T04:01:00+00:00</published><updated>2020-04-17T04:01:00+00:00</updated><id>https://vemarahub.github.io/vrexploring/2020/04/17/styling-with-angular-material</id><content type="html" xml:base="https://vemarahub.github.io/vrexploring/2020/04/17/styling-with-angular-material.html"><![CDATA[<div dir="ltr" style="text-align: left;" trbidi="on">
+In the last blog , the dashboard.component.html has been styled by using angular material by using mat card and other similar tags.Follow the below steps to implement angular material:<br />
+<br />
+<b>1. </b>Go to project path and in cmd and type below command:<br />
+ng add @angular/material<br />
+<br />
+<b>2.</b>&nbsp;Open the src/app/app.module.ts file and add the below code for material:<br />
+<div style="background-color: #1e1e1e; color: #d4d4d4; font-family: Consolas, &quot;Courier New&quot;, monospace; font-size: 14px; line-height: 19px; white-space: pre;">
+<div>
+<span style="color: #c586c0;">import</span>&nbsp;{&nbsp;<span style="color: #9cdcfe;">BrowserModule</span>&nbsp;}&nbsp;<span style="color: #c586c0;">from</span>&nbsp;<span style="color: #ce9178;">'@angular/platform-browser'</span>;</div>
+<div>
+<span style="color: #c586c0;">import</span>&nbsp;{&nbsp;<span style="color: #9cdcfe;">NgModule</span>&nbsp;}&nbsp;<span style="color: #c586c0;">from</span>&nbsp;<span style="color: #ce9178;">'@angular/core'</span>;</div>
+<br /><div>
+<span style="color: #c586c0;">import</span>&nbsp;{&nbsp;<span style="color: #9cdcfe;">AppRoutingModule</span>&nbsp;}&nbsp;<span style="color: #c586c0;">from</span>&nbsp;<span style="color: #ce9178;">'./app-routing.module'</span>;</div>
+<div>
+<span style="color: #c586c0;">import</span>&nbsp;{&nbsp;<span style="color: #9cdcfe;">AppComponent</span>&nbsp;}&nbsp;<span style="color: #c586c0;">from</span>&nbsp;<span style="color: #ce9178;">'./app.component'</span>;</div>
+<div>
+<span style="color: #c586c0;">import</span>&nbsp;{&nbsp;<span style="color: #9cdcfe;">DashboardComponent</span>&nbsp;}&nbsp;<span style="color: #c586c0;">from</span>&nbsp;<span style="color: #ce9178;">'./dashboard/dashboard.component'</span>;</div>
+<div>
+<span style="color: #c586c0;">import</span>&nbsp;{&nbsp;<span style="color: #9cdcfe;">AboutComponent</span>&nbsp;}&nbsp;<span style="color: #c586c0;">from</span>&nbsp;<span style="color: #ce9178;">'./about/about.component'</span>;</div>
+<div>
+<span style="color: #c586c0;">import</span>&nbsp;{&nbsp;<span style="color: #9cdcfe;">HttpClientModule</span>&nbsp;}&nbsp;<span style="color: #c586c0;">from</span>&nbsp;<span style="color: #ce9178;">'@angular/common/http'</span>;</div>
+<div>
+<span style="color: #c586c0;">import</span>&nbsp;{&nbsp;<span style="color: #9cdcfe;">BrowserAnimationsModule</span>&nbsp;}&nbsp;<span style="color: #c586c0;">from</span>&nbsp;<span style="color: #ce9178;">'@angular/platform-browser/animations'</span>;</div>
+<br /><div>
+<span style="color: #c586c0;">import</span>&nbsp;{&nbsp;<span style="color: #9cdcfe;">MatButtonModule</span>&nbsp;}&nbsp;<span style="color: #c586c0;">from</span>&nbsp;<span style="color: #ce9178;">'@angular/material/button'</span>;</div>
+<br /><div>
+<span style="color: #c586c0;">import</span>&nbsp;{&nbsp;<span style="color: #9cdcfe;">MatCardModule</span>&nbsp;}&nbsp;<span style="color: #c586c0;">from</span>&nbsp;<span style="color: #ce9178;">'@angular/material/card'</span>;</div>
+<br /><div>
+<span style="color: #c586c0;">import</span>&nbsp;{&nbsp;<span style="color: #9cdcfe;">MatIconModule</span>&nbsp;}&nbsp;<span style="color: #c586c0;">from</span>&nbsp;<span style="color: #ce9178;">'@angular/material/icon'</span>;</div>
+<br /><div>
+<span style="color: #c586c0;">import</span>&nbsp;{&nbsp;<span style="color: #9cdcfe;">MatProgressSpinnerModule</span>&nbsp;}&nbsp;<span style="color: #c586c0;">from</span>&nbsp;<span style="color: #ce9178;">'@angular/material/progress-spinner'</span>;</div>
+<br /><div>
+<span style="color: #c586c0;">import</span>&nbsp;{&nbsp;<span style="color: #9cdcfe;">MatToolbarModule</span>&nbsp;}&nbsp;<span style="color: #c586c0;">from</span>&nbsp;<span style="color: #ce9178;">'@angular/material/toolbar'</span>;</div>
+<br /><br /><br /><br /><div>
+@<span style="color: #dcdcaa;">NgModule</span>({</div>
+<div>
+&nbsp;&nbsp;<span style="color: #9cdcfe;">declarations:</span>&nbsp;[</div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #9cdcfe;">AppComponent</span>,</div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #9cdcfe;">DashboardComponent</span>,</div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #9cdcfe;">AboutComponent</span>,</div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;</div>
+<div>
+&nbsp;&nbsp;],</div>
+<div>
+&nbsp;&nbsp;<span style="color: #9cdcfe;">imports:</span>&nbsp;[</div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #9cdcfe;">BrowserModule</span>,</div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #9cdcfe;">AppRoutingModule</span>,</div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #9cdcfe;">HttpClientModule</span>,</div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #9cdcfe;">BrowserAnimationsModule</span>,</div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #9cdcfe;">MatCardModule</span>,</div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #9cdcfe;">MatToolbarModule</span>,</div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #9cdcfe;">MatIconModule</span>,</div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #9cdcfe;">MatButtonModule</span>,</div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #9cdcfe;">MatCardModule</span>,</div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #9cdcfe;">MatProgressSpinnerModule</span></div>
+<div>
+&nbsp;&nbsp;</div>
+<div>
+&nbsp;&nbsp;],</div>
+<div>
+&nbsp;&nbsp;<span style="color: #9cdcfe;">providers:</span>&nbsp;[],</div>
+<div>
+&nbsp;&nbsp;<span style="color: #9cdcfe;">bootstrap:</span>&nbsp;[<span style="color: #9cdcfe;">AppComponent</span>]</div>
+<div>
+})</div>
+<div>
+<span style="color: #c586c0;">export</span>&nbsp;<span style="color: #569cd6;">class</span>&nbsp;<span style="color: #4ec9b0;">AppModule</span>&nbsp;{&nbsp;}</div>
+</div>
+<br />
+<b>3. </b>Now you can use the material components in your html files, for example in&nbsp;src/app/app.component.html we can use material as below:<br />
+<div style="background-color: #1e1e1e; color: #d4d4d4; font-family: Consolas, &quot;Courier New&quot;, monospace; font-size: 14px; line-height: 19px; white-space: pre;">
+<div>
+<span style="color: grey;">&lt;</span><span style="color: #569cd6;">mat-toolbar</span>&nbsp;<span style="color: #9cdcfe;">color</span>=<span style="color: #ce9178;">"primary"</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;</span><span style="color: #569cd6;">h1</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;BookStore&nbsp;</div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;/</span><span style="color: #569cd6;">h1</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;</span><span style="color: #569cd6;">button</span>&nbsp;<span style="color: #9cdcfe;">mat-button</span>&nbsp;<span style="color: #9cdcfe;">routerLink</span>=<span style="color: #ce9178;">"/dashboard"</span><span style="color: grey;">&gt;</span>DashBoard<span style="color: grey;">&lt;/</span><span style="color: #569cd6;">button</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;</span><span style="color: #569cd6;">button</span>&nbsp;<span style="color: #9cdcfe;">mat-button</span>&nbsp;<span style="color: #9cdcfe;">routerLink</span>=<span style="color: #ce9178;">"/"</span><span style="color: grey;">&gt;</span>Add&nbsp;Books<span style="color: grey;">&lt;/</span><span style="color: #569cd6;">button</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;</span><span style="color: #569cd6;">button</span>&nbsp;<span style="color: #9cdcfe;">mat-button</span>&nbsp;<span style="color: #9cdcfe;">routerLink</span>=<span style="color: #ce9178;">"/"</span><span style="color: grey;">&gt;</span>Update&nbsp;Book<span style="color: grey;">&lt;/</span><span style="color: #569cd6;">button</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;</span><span style="color: #569cd6;">button</span>&nbsp;<span style="color: #9cdcfe;">mat-button</span>&nbsp;<span style="color: #9cdcfe;">routerLink</span>=<span style="color: #ce9178;">"/"</span><span style="color: grey;">&gt;</span>Delete&nbsp;Book<span style="color: grey;">&lt;/</span><span style="color: #569cd6;">button</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;</span><span style="color: #569cd6;">button</span>&nbsp;<span style="color: #9cdcfe;">mat-button</span>&nbsp;<span style="color: #9cdcfe;">routerLink</span>=<span style="color: #ce9178;">"/about"</span><span style="color: grey;">&gt;</span>About<span style="color: grey;">&lt;/</span><span style="color: #569cd6;">button</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;</div>
+<div>
+&nbsp;&nbsp;<span style="color: grey;">&lt;/</span><span style="color: #569cd6;">mat-toolbar</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;</div>
+<div>
+&nbsp;&nbsp;<span style="color: grey;">&lt;</span><span style="color: #569cd6;">router-outlet</span><span style="color: grey;">&gt;&lt;/</span><span style="color: #569cd6;">router-outlet</span><span style="color: grey;">&gt;</span></div>
+</div>
+</div>]]></content><author><name>Rajesh Nair</name></author><category term="angular material" /><category term="angular style" /><category term="angular" /><summary type="html"><![CDATA[In the last blog , the dashboard.component.html has been styled by using angular material by using mat card and other similar tags.Follow the below steps to implement angular material: 1. Go to project path and in cmd and type below command: ng add @angular/material 2.&nbsp;Open the src/app/app.module.ts file and add the below code for material: import&nbsp;{&nbsp;BrowserModule&nbsp;}&nbsp;from&nbsp;'@angular/platform-browser'; import&nbsp;{&nbsp;NgModule&nbsp;}&nbsp;from&nbsp;'@angular/core'; import&nbsp;{&nbsp;AppRoutingModule&nbsp;}&nbsp;from&nbsp;'./app-routing.module'; import&nbsp;{&nbsp;AppComponent&nbsp;}&nbsp;from&nbsp;'./app.component'; import&nbsp;{&nbsp;DashboardComponent&nbsp;}&nbsp;from&nbsp;'./dashboard/dashboard.component'; import&nbsp;{&nbsp;AboutComponent&nbsp;}&nbsp;from&nbsp;'./about/about.component'; import&nbsp;{&nbsp;HttpClientModule&nbsp;}&nbsp;from&nbsp;'@angular/common/http'; import&nbsp;{&nbsp;BrowserAnimationsModule&nbsp;}&nbsp;from&nbsp;'@angular/platform-browser/animations'; import&nbsp;{&nbsp;MatButtonModule&nbsp;}&nbsp;from&nbsp;'@angular/material/button'; import&nbsp;{&nbsp;MatCardModule&nbsp;}&nbsp;from&nbsp;'@angular/material/card'; import&nbsp;{&nbsp;MatIconModule&nbsp;}&nbsp;from&nbsp;'@angular/material/icon'; import&nbsp;{&nbsp;MatProgressSpinnerModule&nbsp;}&nbsp;from&nbsp;'@angular/material/progress-spinner'; import&nbsp;{&nbsp;MatToolbarModule&nbsp;}&nbsp;from&nbsp;'@angular/material/toolbar'; @NgModule({ &nbsp;&nbsp;declarations:&nbsp;[ &nbsp;&nbsp;&nbsp;&nbsp;AppComponent, &nbsp;&nbsp;&nbsp;&nbsp;DashboardComponent, &nbsp;&nbsp;&nbsp;&nbsp;AboutComponent, &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;], &nbsp;&nbsp;imports:&nbsp;[ &nbsp;&nbsp;&nbsp;&nbsp;BrowserModule, &nbsp;&nbsp;&nbsp;&nbsp;AppRoutingModule, &nbsp;&nbsp;&nbsp;&nbsp;HttpClientModule, &nbsp;&nbsp;&nbsp;&nbsp;BrowserAnimationsModule, &nbsp;&nbsp;&nbsp;&nbsp;MatCardModule, &nbsp;&nbsp;&nbsp;&nbsp;MatToolbarModule, &nbsp;&nbsp;&nbsp;&nbsp;MatIconModule, &nbsp;&nbsp;&nbsp;&nbsp;MatButtonModule, &nbsp;&nbsp;&nbsp;&nbsp;MatCardModule, &nbsp;&nbsp;&nbsp;&nbsp;MatProgressSpinnerModule &nbsp;&nbsp; &nbsp;&nbsp;], &nbsp;&nbsp;providers:&nbsp;[], &nbsp;&nbsp;bootstrap:&nbsp;[AppComponent] }) export&nbsp;class&nbsp;AppModule&nbsp;{&nbsp;} 3. Now you can use the material components in your html files, for example in&nbsp;src/app/app.component.html we can use material as below: &lt;mat-toolbar&nbsp;color="primary"&gt; &nbsp;&nbsp;&nbsp;&nbsp;&lt;h1&gt; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;BookStore&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&lt;/h1&gt; &nbsp;&nbsp;&nbsp;&nbsp;&lt;button&nbsp;mat-button&nbsp;routerLink="/dashboard"&gt;DashBoard&lt;/button&gt; &nbsp;&nbsp;&nbsp;&nbsp;&lt;button&nbsp;mat-button&nbsp;routerLink="/"&gt;Add&nbsp;Books&lt;/button&gt; &nbsp;&nbsp;&nbsp;&nbsp;&lt;button&nbsp;mat-button&nbsp;routerLink="/"&gt;Update&nbsp;Book&lt;/button&gt; &nbsp;&nbsp;&nbsp;&nbsp;&lt;button&nbsp;mat-button&nbsp;routerLink="/"&gt;Delete&nbsp;Book&lt;/button&gt; &nbsp;&nbsp;&nbsp;&nbsp;&lt;button&nbsp;mat-button&nbsp;routerLink="/about"&gt;About&lt;/button&gt; &nbsp;&nbsp; &nbsp;&nbsp;&lt;/mat-toolbar&gt; &nbsp;&nbsp; &nbsp;&nbsp;&lt;router-outlet&gt;&lt;/router-outlet&gt;]]></summary></entry><entry><title type="html">Rest Api in Angular</title><link href="https://vemarahub.github.io/vrexploring/2020/04/16/rest-api-in-angular.html" rel="alternate" type="text/html" title="Rest Api in Angular" /><published>2020-04-16T13:44:00+00:00</published><updated>2020-04-16T13:44:00+00:00</updated><id>https://vemarahub.github.io/vrexploring/2020/04/16/rest-api-in-angular</id><content type="html" xml:base="https://vemarahub.github.io/vrexploring/2020/04/16/rest-api-in-angular.html"><![CDATA[<div dir="ltr" style="text-align: left;" trbidi="on">
+To call a rest api service in angular, follow the below steps after setting up a fake service and routings as mentioned in previous blogs:<br />
+<br />
+<b>1. </b>Generate an Angular service that interfaces with the JSON REST API.<br />
+&nbsp;ng generate service data<br />
+<br />
+<b>2. </b>Write&nbsp;<span style="background-color: white; color: #292b2c; font-family: &quot;amiri&quot;; font-size: 16px;">&nbsp;</span><code style="background-color: white; box-sizing: inherit; color: #292b2c;">src/app/data.service.ts</code><span style="background-color: white; color: #292b2c; font-family: &quot;amiri&quot;; font-size: 16px;">&nbsp;file to call the fake rest api in the getAllBooks method as below:</span><br />
+<div style="background-color: #1e1e1e; color: #d4d4d4; font-family: Consolas, &quot;Courier New&quot;, monospace; font-size: 14px; line-height: 19px; white-space: pre;">
+<div>
+<span style="color: #c586c0;">import</span>&nbsp;{&nbsp;<span style="color: #9cdcfe;">Injectable</span>&nbsp;}&nbsp;<span style="color: #c586c0;">from</span>&nbsp;<span style="color: #ce9178;">'@angular/core'</span>;</div>
+<br />
+<div>
+<span style="color: #c586c0;">import</span>&nbsp;{&nbsp;<span style="color: #9cdcfe;">HttpClient</span>,&nbsp;<span style="color: #9cdcfe;">HttpErrorResponse</span>&nbsp;}&nbsp;<span style="color: #c586c0;">from</span>&nbsp;<span style="color: #ce9178;">'@angular/common/http'</span>;</div>
+<br />
+<div>
+<span style="color: #c586c0;">import</span>&nbsp;{&nbsp;&nbsp;<span style="color: #9cdcfe;">throwError</span>&nbsp;}&nbsp;<span style="color: #c586c0;">from</span>&nbsp;<span style="color: #ce9178;">'rxjs'</span>;</div>
+<div>
+<span style="color: #c586c0;">import</span>&nbsp;{&nbsp;<span style="color: #9cdcfe;">retry</span>,&nbsp;<span style="color: #9cdcfe;">catchError</span>&nbsp;}&nbsp;<span style="color: #c586c0;">from</span>&nbsp;<span style="color: #ce9178;">'rxjs/operators'</span>;</div>
+<br />
+<div>
+@<span style="color: #dcdcaa;">Injectable</span>({</div>
+<div>
+&nbsp;&nbsp;<span style="color: #9cdcfe;">providedIn:</span>&nbsp;<span style="color: #ce9178;">'root'</span></div>
+<div>
+})</div>
+<div>
+<span style="color: #c586c0;">export</span>&nbsp;<span style="color: #569cd6;">class</span>&nbsp;<span style="color: #4ec9b0;">DataService</span>&nbsp;{</div>
+<br />
+<div>
+&nbsp;&nbsp;<span style="color: #569cd6;">private</span>&nbsp;<span style="color: #9cdcfe;">REST_API_SERVER</span>&nbsp;=&nbsp;<span style="color: #ce9178;">"http://localhost:3000"</span>;</div>
+<br />
+<div>
+&nbsp;&nbsp;<span style="color: #569cd6;">constructor</span>(<span style="color: #569cd6;">private</span>&nbsp;<span style="color: #9cdcfe;">httpClient</span>:&nbsp;<span style="color: #4ec9b0;">HttpClient</span>)&nbsp;{&nbsp;}</div>
+<br />
+<div>
+&nbsp;&nbsp;<span style="color: #dcdcaa;">handleError</span>(<span style="color: #9cdcfe;">error</span>:&nbsp;<span style="color: #4ec9b0;">HttpErrorResponse</span>)&nbsp;{</div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #569cd6;">let</span>&nbsp;<span style="color: #9cdcfe;">errorMessage</span>&nbsp;=&nbsp;<span style="color: #ce9178;">'Unknown&nbsp;error!'</span>;</div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #c586c0;">if</span>&nbsp;(<span style="color: #9cdcfe;">error</span>.<span style="color: #9cdcfe;">error</span>&nbsp;<span style="color: #569cd6;">instanceof</span>&nbsp;<span style="color: #4ec9b0;">ErrorEvent</span>)&nbsp;{</div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #6a9955;">//&nbsp;Client-side&nbsp;errors</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #9cdcfe;">errorMessage</span>&nbsp;=&nbsp;<span style="color: #ce9178;">`Error:&nbsp;</span><span style="color: #569cd6;">${</span><span style="color: #9cdcfe;">error</span>.<span style="color: #9cdcfe;">error</span>.<span style="color: #9cdcfe;">message</span><span style="color: #569cd6;">}</span><span style="color: #ce9178;">`</span>;</div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;<span style="color: #c586c0;">else</span>&nbsp;{</div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #6a9955;">//&nbsp;Server-side&nbsp;errors</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #9cdcfe;">errorMessage</span>&nbsp;=&nbsp;<span style="color: #ce9178;">`Error&nbsp;Code:&nbsp;</span><span style="color: #569cd6;">${</span><span style="color: #9cdcfe;">error</span>.<span style="color: #9cdcfe;">status</span><span style="color: #569cd6;">}</span><span style="color: #d7ba7d;">\n</span><span style="color: #ce9178;">Message:&nbsp;</span><span style="color: #569cd6;">${</span><span style="color: #9cdcfe;">error</span>.<span style="color: #9cdcfe;">message</span><span style="color: #569cd6;">}</span><span style="color: #ce9178;">`</span>;</div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;}</div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #9cdcfe;">window</span>.<span style="color: #dcdcaa;">alert</span>(<span style="color: #9cdcfe;">errorMessage</span>);</div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #c586c0;">return</span>&nbsp;<span style="color: #dcdcaa;">throwError</span>(<span style="color: #9cdcfe;">errorMessage</span>);</div>
+<div>
+&nbsp;&nbsp;}</div>
+<br />
+<div>
+&nbsp;<span style="color: #569cd6;">public</span>&nbsp;<span style="color: #dcdcaa;">getAllBooks</span>(){</div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #c586c0;">return</span>&nbsp;<span style="color: #569cd6;">this</span>.<span style="color: #9cdcfe;">httpClient</span>.<span style="color: #dcdcaa;">get</span>(<span style="color: #569cd6;">this</span>.<span style="color: #9cdcfe;">REST_API_SERVER</span>+<span style="color: #ce9178;">"/books/"</span>).<span style="color: #dcdcaa;">pipe</span>(<span style="color: #dcdcaa;">retry</span>(<span style="color: #b5cea8;">3</span>),&nbsp;<span style="color: #dcdcaa;">catchError</span>(<span style="color: #569cd6;">this</span>.<span style="color: #9cdcfe;">handleError</span>));</div>
+<div>
+}</div>
+<br />
+<div>
+}</div>
+</div>
+<span style="background-color: white; color: #292b2c; font-family: &quot;amiri&quot;; font-size: 16px;"><br /></span>
+<span style="background-color: white; color: #292b2c; font-family: &quot;amiri&quot;; font-size: 16px;"><br /></span>
+<span style="background-color: white; color: #292b2c; font-family: &quot;amiri&quot;; font-size: 16px;"><b>3. </b>Open&nbsp;</span><span style="background-color: white; color: #292b2c; font-family: monospace; font-size: 13px;">src/app/dashboard/dashboard.component.ts and edit as below to use the service getAllBooks in the dashboard component.</span><br />
+<span style="background-color: white; color: #292b2c; font-family: monospace; font-size: 13px;"><br /></span>
+<br />
+<div style="background-color: #1e1e1e; color: #d4d4d4; font-family: Consolas, &quot;Courier New&quot;, monospace; font-size: 14px; line-height: 19px; white-space: pre;">
+<div>
+<span style="color: #c586c0;">import</span>&nbsp;{&nbsp;<span style="color: #9cdcfe;">Component</span>,&nbsp;<span style="color: #9cdcfe;">OnInit</span>&nbsp;}&nbsp;<span style="color: #c586c0;">from</span>&nbsp;<span style="color: #ce9178;">'@angular/core'</span>;</div>
+<div>
+<span style="color: #c586c0;">import</span>&nbsp;{&nbsp;<span style="color: #9cdcfe;">DataService</span>&nbsp;}&nbsp;<span style="color: #c586c0;">from</span>&nbsp;<span style="color: #ce9178;">'../data.service'</span>;</div>
+<div>
+<span style="color: #c586c0;">import</span>&nbsp;{&nbsp;&nbsp;<span style="color: #9cdcfe;">takeUntil</span>&nbsp;}&nbsp;<span style="color: #c586c0;">from</span>&nbsp;<span style="color: #ce9178;">'rxjs/operators'</span>;</div>
+<div>
+<span style="color: #c586c0;">import</span>&nbsp;{&nbsp;<span style="color: #9cdcfe;">Subject</span>&nbsp;}&nbsp;<span style="color: #c586c0;">from</span>&nbsp;<span style="color: #ce9178;">'rxjs'</span>;</div>
+<br />
+<div>
+@<span style="color: #dcdcaa;">Component</span>({</div>
+<div>
+&nbsp;&nbsp;<span style="color: #9cdcfe;">selector:</span>&nbsp;<span style="color: #ce9178;">'app-dashboard'</span>,</div>
+<div>
+&nbsp;&nbsp;<span style="color: #9cdcfe;">templateUrl:</span>&nbsp;<span style="color: #ce9178;">'./dashboard.component.html'</span>,</div>
+<div>
+&nbsp;&nbsp;<span style="color: #9cdcfe;">styleUrls:</span>&nbsp;[<span style="color: #ce9178;">'./dashboard.component.scss'</span>]</div>
+<div>
+})</div>
+<div>
+<span style="color: #c586c0;">export</span>&nbsp;<span style="color: #569cd6;">class</span>&nbsp;<span style="color: #4ec9b0;">DashboardComponent</span>&nbsp;<span style="color: #569cd6;">implements</span>&nbsp;<span style="color: #4ec9b0;">OnInit</span>&nbsp;{</div>
+<br />
+<div>
+&nbsp;&nbsp;<span style="color: #9cdcfe;">books</span>&nbsp;=&nbsp;[];</div>
+<div>
+&nbsp;&nbsp;<span style="color: #9cdcfe;">book</span>=<span style="color: #ce9178;">""</span>;</div>
+<div>
+&nbsp;&nbsp;<span style="color: #9cdcfe;">destroy$</span>:&nbsp;<span style="color: #4ec9b0;">Subject</span>&lt;<span style="color: #4ec9b0;">boolean</span>&gt;&nbsp;=&nbsp;<span style="color: #569cd6;">new</span>&nbsp;<span style="color: #4ec9b0;">Subject</span>&lt;<span style="color: #4ec9b0;">boolean</span>&gt;();</div>
+<br />
+<div>
+&nbsp;&nbsp;<span style="color: #569cd6;">constructor</span>(<span style="color: #569cd6;">private</span>&nbsp;<span style="color: #9cdcfe;">dataService</span>:&nbsp;<span style="color: #4ec9b0;">DataService</span>)&nbsp;{&nbsp;}</div>
+<br />
+<div>
+&nbsp;&nbsp;<span style="color: #dcdcaa;">ngOnInit</span>()&nbsp;{</div>
+<br />
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #569cd6;">this</span>.<span style="color: #9cdcfe;">dataService</span>.<span style="color: #dcdcaa;">getAllBooks</span>().<span style="color: #dcdcaa;">subscribe</span>((<span style="color: #9cdcfe;">data</span>:&nbsp;<span style="color: #4ec9b0;">any</span>[])<span style="color: #569cd6;">=&gt;</span>{</div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #4ec9b0;">console</span>.<span style="color: #dcdcaa;">log</span>(<span style="color: #9cdcfe;">data</span>);</div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #569cd6;">this</span>.<span style="color: #9cdcfe;">books</span>&nbsp;=&nbsp;<span style="color: #9cdcfe;">data</span>;</div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;})&nbsp;&nbsp;</div>
+<div>
+&nbsp;&nbsp;}</div>
+<br />
+<div>
+&nbsp;&nbsp;<span style="color: #dcdcaa;">ngOnDestroy</span>()&nbsp;{</div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #569cd6;">this</span>.<span style="color: #9cdcfe;">destroy$</span>.<span style="color: #dcdcaa;">next</span>(<span style="color: #569cd6;">true</span>);</div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #6a9955;">//&nbsp;Unsubscribe&nbsp;from&nbsp;the&nbsp;subject</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #569cd6;">this</span>.<span style="color: #9cdcfe;">destroy$</span>.<span style="color: #dcdcaa;">unsubscribe</span>();</div>
+<div>
+&nbsp;&nbsp;}</div>
+<br />
+<div>
+}</div>
+</div>
+<br />
+<b>4. </b>Open&nbsp;<span style="background-color: white; color: #292b2c; font-family: monospace; font-size: 13px;">src/app/home/dashboard.component.html and display the contents of Books json data in the dashboard screen of your angular app as below:</span><br />
+<span style="background-color: white; color: #292b2c; font-family: monospace; font-size: 13px;"><br /></span>
+<br />
+<div style="background-color: #1e1e1e; color: #d4d4d4; font-family: Consolas, &quot;Courier New&quot;, monospace; font-size: 14px; line-height: 19px; white-space: pre;">
+<div>
+<span style="color: grey;">&lt;</span><span style="color: #569cd6;">div</span>&nbsp;<span style="color: #9cdcfe;">style</span>=<span style="color: #ce9178;">"</span><span style="color: #ce9178;">padding:&nbsp;13px;</span><span style="color: #ce9178;">"</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;</span><span style="color: #569cd6;">mat-spinner</span>&nbsp;<span style="color: #9cdcfe;">*ngIf</span>=<span style="color: #ce9178;">"books.length&nbsp;===&nbsp;0"</span><span style="color: grey;">&gt;&lt;/</span><span style="color: #569cd6;">mat-spinner</span><span style="color: grey;">&gt;</span></div>
+<br />
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;</span><span style="color: #569cd6;">mat-card</span>&nbsp;<span style="color: #9cdcfe;">*ngFor</span>=<span style="color: #ce9178;">"let&nbsp;book&nbsp;of&nbsp;books"</span>&nbsp;<span style="color: #9cdcfe;">style</span>=<span style="color: #ce9178;">"</span><span style="color: #ce9178;">margin-top:10px;</span><span style="color: #ce9178;">"</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;</span><span style="color: #569cd6;">mat-card-header</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;</span><span style="color: #569cd6;">mat-card-title</span><span style="color: grey;">&gt;</span>{{book.title}}<span style="color: grey;">&lt;/</span><span style="color: #569cd6;">mat-card-title</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;</span><span style="color: #569cd6;">mat-card-subtitle</span><span style="color: grey;">&gt;</span>{{book.author}}<span style="color: grey;">&lt;/</span><span style="color: #569cd6;">mat-card-subtitle</span><span style="color: grey;">&gt;</span>&nbsp;</div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;/</span><span style="color: #569cd6;">mat-card-header</span><span style="color: grey;">&gt;</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;</span><span style="color: #569cd6;">mat-card-content</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;</span><span style="color: #569cd6;">p</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{book.description}}</div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;/</span><span style="color: #569cd6;">p</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;/</span><span style="color: #569cd6;">mat-card-content</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;</span><span style="color: #569cd6;">mat-card-actions</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;</span><span style="color: #569cd6;">button</span>&nbsp;<span style="color: #9cdcfe;">mat-button</span><span style="color: grey;">&gt;</span>&nbsp;Buy&nbsp;Book<span style="color: grey;">&lt;/</span><span style="color: #569cd6;">button</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;/</span><span style="color: #569cd6;">mat-card-actions</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;</div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;/</span><span style="color: #569cd6;">mat-card</span><span style="color: grey;">&gt;</span></div>
+<div>
+<span style="color: grey;">&lt;/</span><span style="color: #569cd6;">div</span><span style="color: grey;">&gt;</span></div>
+</div>
+</div>]]></content><author><name>Rajesh Nair</name></author><category term="service in angular" /><category term="rest api" /><category term="angular" /><summary type="html"><![CDATA[To call a rest api service in angular, follow the below steps after setting up a fake service and routings as mentioned in previous blogs: 1. Generate an Angular service that interfaces with the JSON REST API. &nbsp;ng generate service data 2. Write&nbsp;&nbsp;src/app/data.service.ts&nbsp;file to call the fake rest api in the getAllBooks method as below: import&nbsp;{&nbsp;Injectable&nbsp;}&nbsp;from&nbsp;'@angular/core'; import&nbsp;{&nbsp;HttpClient,&nbsp;HttpErrorResponse&nbsp;}&nbsp;from&nbsp;'@angular/common/http'; import&nbsp;{&nbsp;&nbsp;throwError&nbsp;}&nbsp;from&nbsp;'rxjs'; import&nbsp;{&nbsp;retry,&nbsp;catchError&nbsp;}&nbsp;from&nbsp;'rxjs/operators'; @Injectable({ &nbsp;&nbsp;providedIn:&nbsp;'root' }) export&nbsp;class&nbsp;DataService&nbsp;{ &nbsp;&nbsp;private&nbsp;REST_API_SERVER&nbsp;=&nbsp;"http://localhost:3000"; &nbsp;&nbsp;constructor(private&nbsp;httpClient:&nbsp;HttpClient)&nbsp;{&nbsp;} &nbsp;&nbsp;handleError(error:&nbsp;HttpErrorResponse)&nbsp;{ &nbsp;&nbsp;&nbsp;&nbsp;let&nbsp;errorMessage&nbsp;=&nbsp;'Unknown&nbsp;error!'; &nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(error.error&nbsp;instanceof&nbsp;ErrorEvent)&nbsp;{ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;Client-side&nbsp;errors &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;errorMessage&nbsp;=&nbsp;`Error:&nbsp;${error.error.message}`; &nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;else&nbsp;{ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;Server-side&nbsp;errors &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;errorMessage&nbsp;=&nbsp;`Error&nbsp;Code:&nbsp;${error.status}\nMessage:&nbsp;${error.message}`; &nbsp;&nbsp;&nbsp;&nbsp;} &nbsp;&nbsp;&nbsp;&nbsp;window.alert(errorMessage); &nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;throwError(errorMessage); &nbsp;&nbsp;} &nbsp;public&nbsp;getAllBooks(){ &nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;this.httpClient.get(this.REST_API_SERVER+"/books/").pipe(retry(3),&nbsp;catchError(this.handleError)); } } 3. Open&nbsp;src/app/dashboard/dashboard.component.ts and edit as below to use the service getAllBooks in the dashboard component. import&nbsp;{&nbsp;Component,&nbsp;OnInit&nbsp;}&nbsp;from&nbsp;'@angular/core'; import&nbsp;{&nbsp;DataService&nbsp;}&nbsp;from&nbsp;'../data.service'; import&nbsp;{&nbsp;&nbsp;takeUntil&nbsp;}&nbsp;from&nbsp;'rxjs/operators'; import&nbsp;{&nbsp;Subject&nbsp;}&nbsp;from&nbsp;'rxjs'; @Component({ &nbsp;&nbsp;selector:&nbsp;'app-dashboard', &nbsp;&nbsp;templateUrl:&nbsp;'./dashboard.component.html', &nbsp;&nbsp;styleUrls:&nbsp;['./dashboard.component.scss'] }) export&nbsp;class&nbsp;DashboardComponent&nbsp;implements&nbsp;OnInit&nbsp;{ &nbsp;&nbsp;books&nbsp;=&nbsp;[]; &nbsp;&nbsp;book=""; &nbsp;&nbsp;destroy$:&nbsp;Subject&lt;boolean&gt;&nbsp;=&nbsp;new&nbsp;Subject&lt;boolean&gt;(); &nbsp;&nbsp;constructor(private&nbsp;dataService:&nbsp;DataService)&nbsp;{&nbsp;} &nbsp;&nbsp;ngOnInit()&nbsp;{ &nbsp;&nbsp;&nbsp;&nbsp;this.dataService.getAllBooks().subscribe((data:&nbsp;any[])=&gt;{ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;console.log(data); &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;this.books&nbsp;=&nbsp;data; &nbsp;&nbsp;&nbsp;&nbsp;})&nbsp;&nbsp; &nbsp;&nbsp;} &nbsp;&nbsp;ngOnDestroy()&nbsp;{ &nbsp;&nbsp;&nbsp;&nbsp;this.destroy$.next(true); &nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;Unsubscribe&nbsp;from&nbsp;the&nbsp;subject &nbsp;&nbsp;&nbsp;&nbsp;this.destroy$.unsubscribe(); &nbsp;&nbsp;} } 4. Open&nbsp;src/app/home/dashboard.component.html and display the contents of Books json data in the dashboard screen of your angular app as below: &lt;div&nbsp;style="padding:&nbsp;13px;"&gt; &nbsp;&nbsp;&nbsp;&nbsp;&lt;mat-spinner&nbsp;*ngIf="books.length&nbsp;===&nbsp;0"&gt;&lt;/mat-spinner&gt; &nbsp;&nbsp;&nbsp;&nbsp;&lt;mat-card&nbsp;*ngFor="let&nbsp;book&nbsp;of&nbsp;books"&nbsp;style="margin-top:10px;"&gt; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;mat-card-header&gt; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;mat-card-title&gt;{{book.title}}&lt;/mat-card-title&gt; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;mat-card-subtitle&gt;{{book.author}}&lt;/mat-card-subtitle&gt;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/mat-card-header&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;mat-card-content&gt; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;p&gt; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{book.description}} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/p&gt; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/mat-card-content&gt; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;mat-card-actions&gt; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;button&nbsp;mat-button&gt;&nbsp;Buy&nbsp;Book&lt;/button&gt; &nbsp;&nbsp;&nbsp;&nbsp;&lt;/mat-card-actions&gt; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&lt;/mat-card&gt; &lt;/div&gt;]]></summary></entry><entry><title type="html">Fake Service in Angular</title><link href="https://vemarahub.github.io/vrexploring/2020/04/16/fake-service-in-angular.html" rel="alternate" type="text/html" title="Fake Service in Angular" /><published>2020-04-16T13:31:00+00:00</published><updated>2020-04-16T13:31:00+00:00</updated><id>https://vemarahub.github.io/vrexploring/2020/04/16/fake-service-in-angular</id><content type="html" xml:base="https://vemarahub.github.io/vrexploring/2020/04/16/fake-service-in-angular.html"><![CDATA[<div dir="ltr" style="text-align: left;" trbidi="on">
+<br />
+To call a fake rest api service from our angular application , we can use a fake service using angular.Follow the below steps to create a fake server hosting a json database for angular service calls:<br />
+<br />
+<b>1.</b> In the project path run the below command from cmd:<br />
+npm install json-server --save<br />
+<br />
+<b>2.</b> Inside project folder create a folder "server" with a json file, database.json with below data<br />
+{<br />
+&nbsp; &nbsp; "books": [<br />
+<span style="color: #212121; font-family: Consolas, Lucida Console, Courier New, monospace;"><span style="font-size: 12px; white-space: nowrap;">{id: 1, title: "Lockdown Dairies", author: "raje"},</span></span><br />
+<span style="color: #212121; font-family: Consolas, Lucida Console, Courier New, monospace;"><span style="font-size: 12px; white-space: nowrap;">{id: 2, title: "who do", author: "qao"}</span></span><br />
+]<br />
+}<br />
+<br />
+<b>3.</b>Add the below lines in "scripts" tag of package.json of your project<br />
+"server": "json-server --watch ./server/database.json"<br />
+<b><br /></b>
+<b>4.</b>Run the below command to run the fake service<br />
+<b>npm run server</b><br />
+<br />
+<br />
+The resource would be available at :<br />
+http://localhost:3000/books</div>]]></content><author><name>Rajesh Nair</name></author><category term="faker service" /><category term="rest api" /><category term="angular" /><summary type="html"><![CDATA[To call a fake rest api service from our angular application , we can use a fake service using angular.Follow the below steps to create a fake server hosting a json database for angular service calls: 1. In the project path run the below command from cmd: npm install json-server --save 2. Inside project folder create a folder "server" with a json file, database.json with below data { &nbsp; &nbsp; "books": [ {id: 1, title: "Lockdown Dairies", author: "raje"}, {id: 2, title: "who do", author: "qao"} ] } 3.Add the below lines in "scripts" tag of package.json of your project "server": "json-server --watch ./server/database.json" 4.Run the below command to run the fake service npm run server The resource would be available at : http://localhost:3000/books]]></summary></entry><entry><title type="html">Routing in Angular</title><link href="https://vemarahub.github.io/vrexploring/2020/04/10/routing-in-angular.html" rel="alternate" type="text/html" title="Routing in Angular" /><published>2020-04-10T07:07:00+00:00</published><updated>2020-04-10T07:07:00+00:00</updated><id>https://vemarahub.github.io/vrexploring/2020/04/10/routing-in-angular</id><content type="html" xml:base="https://vemarahub.github.io/vrexploring/2020/04/10/routing-in-angular.html"><![CDATA[<div dir="ltr" style="text-align: left;" trbidi="on">
+<br />
+We can route hyperlinks to route to any of the components based on url changes using single page application at client side instead of loading whole page.So basically what routing does is:<br />
+<br />
+* Page navigation, to create " Single Page Application"<br />
+* Route maps a URL to its component<br />
+<br />
+<h3 style="text-align: left;">
+Steps for routing:</h3>
+<div>
+<br /></div>
+<div>
+<b>1.</b> Importing @angular/router package in package.json ( already present when ng new is created )</div>
+<div>
+<br /></div>
+<div>
+<b>2. </b>Define base url in index.html<br />
+<div style="background-color: #1e1e1e; color: #d4d4d4; font-family: Consolas, &quot;Courier New&quot;, monospace; font-size: 14px; line-height: 19px; white-space: pre;">
+&nbsp;&nbsp;<span style="color: grey;">&lt;</span><span style="color: #569cd6;">base</span>&nbsp;<span style="color: #9cdcfe;">href</span>=<span style="color: #ce9178;">"/"</span><span style="color: grey;">&gt;</span></div>
+</div>
+<div>
+<base href="/"></base></div>
+<br />
+<b>3. </b>Create hyperlink for route ( in app.component.html)<br />
+<br />
+eg:<br />
+<div style="background-color: #1e1e1e; color: #d4d4d4; font-family: Consolas, &quot;Courier New&quot;, monospace; font-size: 14px; line-height: 19px; white-space: pre;">
+<span style="color: grey;">&lt;</span><span style="color: #569cd6;">a</span>&nbsp;<span style="color: #9cdcfe;">class</span>=<span style="color: #ce9178;">"nav-link"</span>&nbsp;<span style="color: #9cdcfe;">routerLink</span>=<span style="color: #ce9178;">"dashboard"</span><span style="color: grey;">&gt;</span>Dashboard<span style="color: grey;">&lt;/</span><span style="color: #569cd6;">a</span><span style="color: grey;">&gt;</span></div>
+<br />
+<b>4.</b>Create router module in app-routing.module.ts ( add path and component for components to be added like dashboard, rest will already be created by ng new initially)<br />
+<div style="background-color: #1e1e1e; color: #d4d4d4; font-family: Consolas, &quot;Courier New&quot;, monospace; font-size: 14px; line-height: 19px; white-space: pre;">
+<div>
+<span style="color: #c586c0;">import</span>&nbsp;{&nbsp;<span style="color: #9cdcfe;">NgModule</span>&nbsp;}&nbsp;<span style="color: #c586c0;">from</span>&nbsp;<span style="color: #ce9178;">'@angular/core'</span>;</div>
+<div>
+<span style="color: #c586c0;">import</span>&nbsp;{&nbsp;<span style="color: #9cdcfe;">Routes</span>,&nbsp;<span style="color: #9cdcfe;">RouterModule</span>&nbsp;}&nbsp;<span style="color: #c586c0;">from</span>&nbsp;<span style="color: #ce9178;">'@angular/router'</span>;</div>
+<div>
+<span style="color: #c586c0;">import</span>&nbsp;{&nbsp;<span style="color: #9cdcfe;">DashboardComponent</span>&nbsp;}&nbsp;<span style="color: #c586c0;">from</span>&nbsp;<span style="color: #ce9178;">'./dashboard/dashboard.component'</span>;</div>
+<div>
+<span style="color: #c586c0;">import</span>&nbsp;{&nbsp;<span style="color: #9cdcfe;">AboutComponent</span>&nbsp;}&nbsp;<span style="color: #c586c0;">from</span>&nbsp;<span style="color: #ce9178;">'./about/about.component'</span>;</div>
+<br />
+<br />
+<div>
+<span style="color: #569cd6;">const</span>&nbsp;<span style="color: #9cdcfe;">routes</span>:&nbsp;<span style="color: #4ec9b0;">Routes</span>&nbsp;=&nbsp;[</div>
+<div>
+&nbsp;&nbsp;{</div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #9cdcfe;">path</span><span style="color: #9cdcfe;">:</span><span style="color: #ce9178;">"dashboard"</span>,<span style="color: #4ec9b0;">component</span><span style="color: #9cdcfe;">:</span><span style="color: #4ec9b0;">DashboardComponent</span></div>
+<div>
+&nbsp;&nbsp;},</div>
+<div>
+&nbsp;&nbsp;{</div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #9cdcfe;">path</span><span style="color: #9cdcfe;">:</span><span style="color: #ce9178;">"about"</span>,<span style="color: #4ec9b0;">component</span><span style="color: #9cdcfe;">:</span><span style="color: #4ec9b0;">AboutComponent</span></div>
+<div>
+&nbsp;&nbsp;}</div>
+<div>
+];</div>
+<br />
+<div>
+@<span style="color: #4ec9b0;">NgModule</span>({</div>
+<div>
+&nbsp;&nbsp;<span style="color: #9cdcfe;">imports</span><span style="color: #9cdcfe;">:</span>&nbsp;[<span style="color: #4ec9b0;">RouterModule</span>.<span style="color: #dcdcaa;">forRoot</span>(<span style="color: #9cdcfe;">routes</span>)],</div>
+<div>
+&nbsp;&nbsp;<span style="color: #9cdcfe;">exports</span><span style="color: #9cdcfe;">:</span>&nbsp;[<span style="color: #4ec9b0;">RouterModule</span>]</div>
+<div>
+})</div>
+<div>
+<span style="color: #c586c0;">export</span>&nbsp;<span style="color: #569cd6;">class</span>&nbsp;<span style="color: #4ec9b0;">AppRoutingModule</span>&nbsp;{&nbsp;}</div>
+</div>
+<br />
+<br />
+<b>5. </b>Create router outlet in app.component.html<br />
+<div style="background-color: #1e1e1e; color: #d4d4d4; font-family: Consolas, &quot;Courier New&quot;, monospace; font-size: 14px; line-height: 19px; white-space: pre;">
+<div>
+<span style="color: grey;">&lt;</span><span style="color: #569cd6;">div</span>&nbsp;<span style="color: #9cdcfe;">class</span>=<span style="color: #ce9178;">"container-fluid"</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;<span style="color: grey;">&lt;</span><span style="color: #569cd6;">router-outlet</span><span style="color: grey;">&gt;&lt;/</span><span style="color: #569cd6;">router-outlet</span><span style="color: grey;">&gt;</span></div>
+<div>
+<span style="color: grey;">&lt;/</span><span style="color: #569cd6;">div</span><span style="color: grey;">&gt;</span></div>
+</div>
+</div>]]></content><author><name>Rajesh Nair</name></author><category term="routing" /><category term="bootstrap" /><category term="angular" /><summary type="html"><![CDATA[We can route hyperlinks to route to any of the components based on url changes using single page application at client side instead of loading whole page.So basically what routing does is: * Page navigation, to create " Single Page Application" * Route maps a URL to its component Steps for routing: 1. Importing @angular/router package in package.json ( already present when ng new is created ) 2. Define base url in index.html &nbsp;&nbsp;&lt;base&nbsp;href="/"&gt; 3. Create hyperlink for route ( in app.component.html) eg: &lt;a&nbsp;class="nav-link"&nbsp;routerLink="dashboard"&gt;Dashboard&lt;/a&gt; 4.Create router module in app-routing.module.ts ( add path and component for components to be added like dashboard, rest will already be created by ng new initially) import&nbsp;{&nbsp;NgModule&nbsp;}&nbsp;from&nbsp;'@angular/core'; import&nbsp;{&nbsp;Routes,&nbsp;RouterModule&nbsp;}&nbsp;from&nbsp;'@angular/router'; import&nbsp;{&nbsp;DashboardComponent&nbsp;}&nbsp;from&nbsp;'./dashboard/dashboard.component'; import&nbsp;{&nbsp;AboutComponent&nbsp;}&nbsp;from&nbsp;'./about/about.component'; const&nbsp;routes:&nbsp;Routes&nbsp;=&nbsp;[ &nbsp;&nbsp;{ &nbsp;&nbsp;&nbsp;&nbsp;path:"dashboard",component:DashboardComponent &nbsp;&nbsp;}, &nbsp;&nbsp;{ &nbsp;&nbsp;&nbsp;&nbsp;path:"about",component:AboutComponent &nbsp;&nbsp;} ]; @NgModule({ &nbsp;&nbsp;imports:&nbsp;[RouterModule.forRoot(routes)], &nbsp;&nbsp;exports:&nbsp;[RouterModule] }) export&nbsp;class&nbsp;AppRoutingModule&nbsp;{&nbsp;} 5. Create router outlet in app.component.html &lt;div&nbsp;class="container-fluid"&gt; &nbsp;&nbsp;&lt;router-outlet&gt;&lt;/router-outlet&gt; &lt;/div&gt;]]></summary></entry><entry><title type="html">Bootstrap in Angular</title><link href="https://vemarahub.github.io/vrexploring/2020/04/10/bootstrap-in-angular.html" rel="alternate" type="text/html" title="Bootstrap in Angular" /><published>2020-04-10T06:04:00+00:00</published><updated>2020-04-10T06:04:00+00:00</updated><id>https://vemarahub.github.io/vrexploring/2020/04/10/bootstrap-in-angular</id><content type="html" xml:base="https://vemarahub.github.io/vrexploring/2020/04/10/bootstrap-in-angular.html"><![CDATA[<div dir="ltr" style="text-align: left;" trbidi="on">
+<br />
+To implement bootstrap in an angular application after creating it with ng new command , follow the below steps:<br />
+<br />
+<b>1. </b>Open command prompt and cd to the project directory and run&nbsp; below commands<br />
+<br />
+<div class="MsoNormal">
+<br /></div>
+<div class="MsoNormal">
+npm install jquery –save<o:p></o:p></div>
+<div class="MsoNormal">
+npm install popper.js – save<o:p></o:p></div>
+<div class="MsoNormal">
+npm install bootstrap –save<o:p></o:p></div>
+<div class="MsoNormal">
+npm install font-awesome –save<o:p></o:p></div>
+<br /><br />
+<b>2.</b>&nbsp;Open project folder in visual studio and in the angular.json file of the project add the below styles and scripts:<br />
+<div class="MsoNormal">
+&nbsp; &nbsp; "styles": [<o:p></o:p></div>
+<div class="MsoNormal">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+"src/styles.scss",<o:p></o:p></div>
+<div class="MsoNormal">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+"node_modules/bootstrap/dist/css/bootstrap.css",<o:p></o:p></div>
+<div class="MsoNormal">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+"node_modules/font-awesome/css/font-awesome.css"<o:p></o:p></div>
+<div class="MsoNormal">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ],<o:p></o:p></div>
+<div class="MsoNormal">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+"scripts": [<o:p></o:p></div>
+<div class="MsoNormal">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+"node_modules/jquery/dist/jquery.js",<o:p></o:p></div>
+<div class="MsoNormal">
+&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"node_modules/popper.js/dist/umd/popper.js",<o:p></o:p></div>
+<div class="MsoNormal">
+<br /></div>
+<div class="MsoNormal">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+"node_modules/bootstrap/dist/js/bootstrap.js"<o:p></o:p></div>
+<br />
+<div class="MsoNormal">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ]<o:p></o:p></div>
+<div class="MsoNormal">
+<br /></div>
+<div class="MsoNormal">
+<b>3. </b>To add a nav bar with dashboard and about as two menu options and a search bar, add the below code in app.component.html</div>
+<div style="background-color: #1e1e1e; color: #d4d4d4; font-family: Consolas, &quot;Courier New&quot;, monospace; font-size: 14px; line-height: 19px; white-space: pre;">
+<div>
+<span style="color: grey;">&lt;</span><span style="color: #569cd6;">nav</span>&nbsp;<span style="color: #9cdcfe;">class</span>=<span style="color: #ce9178;">"navbar&nbsp;navbar-expand-sm&nbsp;bg-success&nbsp;navbar-dark"</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;<span style="color: grey;">&lt;</span><span style="color: #569cd6;">a</span>&nbsp;<span style="color: #9cdcfe;">class</span>=<span style="color: #ce9178;">"navbar-brand"</span>&nbsp;<span style="color: #9cdcfe;">href</span>=<span style="color: #ce9178;">"#"</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Angular&nbsp;Task&nbsp;Manager</div>
+<div>
+&nbsp;&nbsp;<span style="color: grey;">&lt;/</span><span style="color: #569cd6;">a</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;<span style="color: grey;">&lt;</span><span style="color: #569cd6;">button</span>&nbsp;<span style="color: #9cdcfe;">class</span>=<span style="color: #ce9178;">"navbar-toggler"</span>&nbsp;<span style="color: #9cdcfe;">type</span>=<span style="color: #ce9178;">"button"</span>&nbsp;<span style="color: #9cdcfe;">data-toggle</span>=<span style="color: #ce9178;">"collapse"</span>&nbsp;<span style="color: #9cdcfe;">data-target</span>=<span style="color: #ce9178;">"#mynav"</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;</span><span style="color: #569cd6;">span</span>&nbsp;<span style="color: #9cdcfe;">class</span>=<span style="color: #ce9178;">"navbar-toggler-icon"</span><span style="color: grey;">&gt;&lt;/</span><span style="color: #569cd6;">span</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;<span style="color: grey;">&lt;/</span><span style="color: #569cd6;">button</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;<span style="color: grey;">&lt;</span><span style="color: #569cd6;">div</span>&nbsp;<span style="color: #9cdcfe;">class</span>=<span style="color: #ce9178;">"collapse&nbsp;navbar-collapse"</span>&nbsp;<span style="color: #9cdcfe;">id</span>=<span style="color: #ce9178;">"mynav"</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;</span><span style="color: #569cd6;">ul</span>&nbsp;<span style="color: #9cdcfe;">class</span>=<span style="color: #ce9178;">"navbar-nav&nbsp;mr-auto"</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;</span><span style="color: #569cd6;">li</span>&nbsp;<span style="color: #9cdcfe;">class</span>=<span style="color: #ce9178;">"nav-item"</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;</span><span style="color: #569cd6;">a</span>&nbsp;<span style="color: #9cdcfe;">class</span>=<span style="color: #ce9178;">"nav-link"</span>&nbsp;<span style="color: #9cdcfe;">routerLink</span>=<span style="color: #ce9178;">"Dashboard"</span><span style="color: grey;">&gt;</span>Dashboard<span style="color: grey;">&lt;/</span><span style="color: #569cd6;">a</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;/</span><span style="color: #569cd6;">li</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;</span><span style="color: #569cd6;">li</span>&nbsp;<span style="color: #9cdcfe;">class</span>=<span style="color: #ce9178;">"nav-item"</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;</span><span style="color: #569cd6;">a</span>&nbsp;<span style="color: #9cdcfe;">class</span>=<span style="color: #ce9178;">"nav-link"</span>&nbsp;<span style="color: #9cdcfe;">routerLink</span>=<span style="color: #ce9178;">"About"</span><span style="color: grey;">&gt;</span>About<span style="color: grey;">&lt;/</span><span style="color: #569cd6;">a</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;/</span><span style="color: #569cd6;">li</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;/</span><span style="color: #569cd6;">ul</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;</span><span style="color: #569cd6;">form</span>&nbsp;<span style="color: #9cdcfe;">class</span>=<span style="color: #ce9178;">"form-inline&nbsp;my-2&nbsp;my-lg-0"</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;</span><span style="color: #569cd6;">div</span>&nbsp;<span style="color: #9cdcfe;">class</span>=<span style="color: #ce9178;">"input-group"</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;</span><span style="color: #569cd6;">div</span>&nbsp;<span style="color: #9cdcfe;">class</span>=<span style="color: #ce9178;">"input-group-prepend"</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;</span><span style="color: #569cd6;">span</span>&nbsp;<span style="color: #9cdcfe;">class</span>=<span style="color: #ce9178;">"input-group-text"</span>&nbsp;<span style="color: #9cdcfe;">id</span>=<span style="color: #ce9178;">"search"</span><span style="color: grey;">&gt;&lt;</span><span style="color: #569cd6;">i</span>&nbsp;<span style="color: #9cdcfe;">class</span>=<span style="color: #ce9178;">"fa&nbsp;fa-search"</span><span style="color: grey;">&gt;&lt;/</span><span style="color: #569cd6;">i</span><span style="color: grey;">&gt;&lt;/</span><span style="color: #569cd6;">span</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;/</span><span style="color: #569cd6;">div</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;</span><span style="color: #569cd6;">input</span>&nbsp;<span style="color: #9cdcfe;">type</span>=<span style="color: #ce9178;">"text"</span>&nbsp;<span style="color: #9cdcfe;">class</span>=<span style="color: #ce9178;">"form-control"</span>&nbsp;<span style="color: #9cdcfe;">placeholder</span>=<span style="color: #ce9178;">"Search"</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;/</span><span style="color: #569cd6;">div</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;</span><span style="color: #569cd6;">button</span>&nbsp;<span style="color: #9cdcfe;">class</span>=<span style="color: #ce9178;">"btn&nbsp;btn-warning&nbsp;my2-&nbsp;my-sm-0"</span>&nbsp;<span style="color: #9cdcfe;">type</span>=<span style="color: #ce9178;">"button"</span><span style="color: grey;">&gt;</span>Search<span style="color: grey;">&lt;/</span><span style="color: #569cd6;">button</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;/</span><span style="color: #569cd6;">form</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;<span style="color: grey;">&lt;/</span><span style="color: #569cd6;">div</span><span style="color: grey;">&gt;</span></div>
+<div>
+<span style="color: grey;">&lt;/</span><span style="color: #569cd6;">nav</span><span style="color: grey;">&gt;</span></div>
+<br /><br /></div>
+<br />
+<b>4. </b>Create a component for each dashboard and about using command prompt and running below commands:<br />
+<div class="MsoNormal">
+ng g component dashboard<o:p></o:p></div>
+<div class="MsoNormal">
+ng g component about<o:p></o:p></div>
+<div class="MsoNormal">
+<br /></div>
+<div class="MsoNormal">
+This will create folders dashboard and about inside your main project folder with all related files for angular.eg:</div>
+<div class="MsoNormal">
+dashboard.component.html</div>
+<div class="MsoNormal">
+dashboard.component.scss</div>
+<div class="MsoNormal">
+dashboard.component.spec.ts</div>
+<div class="MsoNormal">
+dashboard.component.ts</div>
+<div class="MsoNormal">
+<br /></div>
+<div class="MsoNormal">
+<b>5. </b>Open dashboard.component.ts and the name given for selector field in @Component tag can be edited and used in our app.component.html file to add that component to our app.</div>
+<div class="MsoNormal">
+For eg:&nbsp;app-dashboard</div>
+<div class="MsoNormal">
+This can be used in app.component .html as:</div>
+<div class="MsoNormal">
+<div>
+<app-dashboard></app-dashboard></div>
+</div>
+<div class="MsoNormal">
+<br /></div>
+<div class="MsoNormal">
+<br /></div>
+<br />
+<br /></div>]]></content><author><name>Rajesh Nair</name></author><category term="bootstrap" /><category term="UI" /><category term="angular" /><summary type="html"><![CDATA[To implement bootstrap in an angular application after creating it with ng new command , follow the below steps: 1. Open command prompt and cd to the project directory and run&nbsp; below commands npm install jquery –save npm install popper.js – save npm install bootstrap –save npm install font-awesome –save 2.&nbsp;Open project folder in visual studio and in the angular.json file of the project add the below styles and scripts: &nbsp; &nbsp; "styles": [ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "src/styles.scss", &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "node_modules/bootstrap/dist/css/bootstrap.css", &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "node_modules/font-awesome/css/font-awesome.css" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ], &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "scripts": [ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "node_modules/jquery/dist/jquery.js", &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"node_modules/popper.js/dist/umd/popper.js", &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "node_modules/bootstrap/dist/js/bootstrap.js" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ] 3. To add a nav bar with dashboard and about as two menu options and a search bar, add the below code in app.component.html &lt;nav&nbsp;class="navbar&nbsp;navbar-expand-sm&nbsp;bg-success&nbsp;navbar-dark"&gt; &nbsp;&nbsp;&lt;a&nbsp;class="navbar-brand"&nbsp;href="#"&gt; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Angular&nbsp;Task&nbsp;Manager &nbsp;&nbsp;&lt;/a&gt; &nbsp;&nbsp;&lt;button&nbsp;class="navbar-toggler"&nbsp;type="button"&nbsp;data-toggle="collapse"&nbsp;data-target="#mynav"&gt; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;span&nbsp;class="navbar-toggler-icon"&gt;&lt;/span&gt; &nbsp;&nbsp;&lt;/button&gt; &nbsp;&nbsp;&lt;div&nbsp;class="collapse&nbsp;navbar-collapse"&nbsp;id="mynav"&gt; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;ul&nbsp;class="navbar-nav&nbsp;mr-auto"&gt; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;li&nbsp;class="nav-item"&gt; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;a&nbsp;class="nav-link"&nbsp;routerLink="Dashboard"&gt;Dashboard&lt;/a&gt; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/li&gt; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;li&nbsp;class="nav-item"&gt; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;a&nbsp;class="nav-link"&nbsp;routerLink="About"&gt;About&lt;/a&gt; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/li&gt; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/ul&gt; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;form&nbsp;class="form-inline&nbsp;my-2&nbsp;my-lg-0"&gt; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;div&nbsp;class="input-group"&gt; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;div&nbsp;class="input-group-prepend"&gt; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;span&nbsp;class="input-group-text"&nbsp;id="search"&gt;&lt;i&nbsp;class="fa&nbsp;fa-search"&gt;&lt;/i&gt;&lt;/span&gt; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/div&gt; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;input&nbsp;type="text"&nbsp;class="form-control"&nbsp;placeholder="Search"&gt; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/div&gt; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;button&nbsp;class="btn&nbsp;btn-warning&nbsp;my2-&nbsp;my-sm-0"&nbsp;type="button"&gt;Search&lt;/button&gt; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/form&gt; &nbsp;&nbsp;&lt;/div&gt; &lt;/nav&gt; 4. Create a component for each dashboard and about using command prompt and running below commands: ng g component dashboard ng g component about This will create folders dashboard and about inside your main project folder with all related files for angular.eg: dashboard.component.html dashboard.component.scss dashboard.component.spec.ts dashboard.component.ts 5. Open dashboard.component.ts and the name given for selector field in @Component tag can be edited and used in our app.component.html file to add that component to our app. For eg:&nbsp;app-dashboard This can be used in app.component .html as:]]></summary></entry><entry><title type="html">Angular Overview</title><link href="https://vemarahub.github.io/vrexploring/2020/04/09/angular-overview.html" rel="alternate" type="text/html" title="Angular Overview" /><published>2020-04-09T04:43:00+00:00</published><updated>2020-04-09T04:43:00+00:00</updated><id>https://vemarahub.github.io/vrexploring/2020/04/09/angular-overview</id><content type="html" xml:base="https://vemarahub.github.io/vrexploring/2020/04/09/angular-overview.html"><![CDATA[<div dir="ltr" style="text-align: left;" trbidi="on">
+<h3 style="text-align: left;">
+Angular JS components are a below:</h3>
+<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiP9XlFkNq8SJKapMTRSncNrDs9h7dZtVPbUfY35857eETMOr9QYOwG5cw1TrXdkcPWQ9LlygT-nBzXAgMbhXuk6qOAnEgtdo7NXHcN6AL3sfwMdENonzFFlb-fw-QZGf7bluUftdTyJ9A/s1600/Picture1.png" imageanchor="1" style="clear: left; float: left; margin-bottom: 1em; margin-right: 1em;"><img border="0" data-original-height="398" data-original-width="975" height="260" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiP9XlFkNq8SJKapMTRSncNrDs9h7dZtVPbUfY35857eETMOr9QYOwG5cw1TrXdkcPWQ9LlygT-nBzXAgMbhXuk6qOAnEgtdo7NXHcN6AL3sfwMdENonzFFlb-fw-QZGf7bluUftdTyJ9A/s640/Picture1.png" width="640" /></a></div>
+<br />
+<h3 style="text-align: left;">
+</h3>
+<h3 style="text-align: left;">
+</h3>
+<h3 style="text-align: left;">
+</h3>
+<h3 style="text-align: left;">
+</h3>
+<h3 style="text-align: left;">
+</h3>
+<h3 style="text-align: left;">
+</h3>
+<h3 style="text-align: left;">
+</h3>
+<h3 style="text-align: left;">
+</h3>
+<h3 style="text-align: left;">
+</h3>
+<h3 style="text-align: left;">
+</h3>
+<h3 style="text-align: left;">
+</h3>
+<h3 style="text-align: left;">
+</h3>
+<h3 style="text-align: left;">
+</h3>
+<h3 style="text-align: left;">
+</h3>
+<h3 style="text-align: left;">
+</h3>
+<h3 style="text-align: left;">
+</h3>
+<h3 style="text-align: left;">
+&nbsp; &nbsp; &nbsp; &nbsp;</h3>
+<h3 style="text-align: left;">
+</h3>
+<h3 style="text-align: left;">
+</h3>
+<h3 style="text-align: left;">
+</h3>
+<h3 style="text-align: left;">
+</h3>
+<div>
+<br />
+<br />
+<br />
+<br />
+<br /></div>
+<h3 style="text-align: left;">
+The benefits of Angular JS&nbsp; are:</h3>
+<div>
+<br /></div>
+<div>
+<br /></div>
+<a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhc9FX4YAR6IVLoLHDDVWHB4ceYVYeISJAQ-glI4d5NAMM0wmJgK0nW8tlegVuSUwe84_Q26yYC4zcnpSWIAcBTCuVosfoWFaMjKwalEmGnRNgro8HziUN5M61zdeJDVMKTpXkh6Yz8rMo/s1600/Picture2.png" imageanchor="1" style="clear: left; float: left; margin-bottom: 1em; margin-right: 1em;"><img border="0" data-original-height="538" data-original-width="975" height="352" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhc9FX4YAR6IVLoLHDDVWHB4ceYVYeISJAQ-glI4d5NAMM0wmJgK0nW8tlegVuSUwe84_Q26yYC4zcnpSWIAcBTCuVosfoWFaMjKwalEmGnRNgro8HziUN5M61zdeJDVMKTpXkh6Yz8rMo/s640/Picture2.png" width="640" /></a><br />
+<br />
+<h3 style="text-align: left;">
+</h3>
+<h3 style="text-align: left;">
+</h3>
+<h3 style="text-align: left;">
+</h3>
+<h3 style="text-align: left;">
+</h3>
+<h3 style="text-align: left;">
+</h3>
+<h3 style="text-align: left;">
+</h3>
+<h3 style="text-align: left;">
+</h3>
+<h3 style="text-align: left;">
+</h3>
+<h3 style="text-align: left;">
+</h3>
+<h3 style="text-align: left;">
+</h3>
+<h3 style="text-align: left;">
+</h3>
+<h3 style="text-align: left;">
+</h3>
+<h3 style="text-align: left;">
+</h3>
+<h3 style="text-align: left;">
+</h3>
+<h3 style="text-align: left;">
+</h3>
+<h3 style="text-align: left;">
+</h3>
+<h3 style="text-align: left;">
+</h3>
+<h3 style="text-align: left;">
+</h3>
+<h3 style="text-align: left;">
+</h3>
+<h3 style="text-align: left;">
+</h3>
+<h3 style="text-align: left;">
+</h3>
+<h3 style="text-align: left;">
+</h3>
+<div>
+<br /></div>
+<h3 style="text-align: left;">
+<br /></h3>
+<h3 style="text-align: left;">
+<br /></h3>
+<h3 style="text-align: left;">
+<br /></h3>
+<h3 style="text-align: left;">
+<br /></h3>
+<h3 style="text-align: left;">
+<br /></h3>
+<h3 style="text-align: left;">
+<br /></h3>
+<h3 style="text-align: left;">
+<br /></h3>
+<h3 style="text-align: left;">
+<br /></h3>
+<h3 style="text-align: left;">
+<br /></h3>
+<h3 style="text-align: left;">
+<br /></h3>
+<h3 style="text-align: left;">
+<br /></h3>
+<h3 style="text-align: left;">
+The building blocks of Angular are:</h3>
+<div>
+<br /></div>
+<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEh2kfCbZOmRiwWl2_F5iCg4IeK-83fAn0NnpQRDHXwUTob50PIWrJp2Hr1YjU5smpUHAgazB4FAPmgnEDtj2ZdgcXWd_HyWDilF4x1_59PxJpaYc1U7dAtkH5PkIByVJ4HIsgSlvit236M/s1600/Picture3.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="551" data-original-width="975" height="360" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEh2kfCbZOmRiwWl2_F5iCg4IeK-83fAn0NnpQRDHXwUTob50PIWrJp2Hr1YjU5smpUHAgazB4FAPmgnEDtj2ZdgcXWd_HyWDilF4x1_59PxJpaYc1U7dAtkH5PkIByVJ4HIsgSlvit236M/s640/Picture3.png" width="640" /></a></div>
+<br /></div>]]></content><author><name>Rajesh Nair</name></author><category term="angular overview" /><category term="angular" /><summary type="html"><![CDATA[Angular JS components are a below: &nbsp; &nbsp; &nbsp; &nbsp; The benefits of Angular JS&nbsp; are: The building blocks of Angular are:]]></summary></entry><entry><title type="html">Angular Project Setup</title><link href="https://vemarahub.github.io/vrexploring/2020/04/03/angular-project-setup.html" rel="alternate" type="text/html" title="Angular Project Setup" /><published>2020-04-03T09:04:00+00:00</published><updated>2020-04-03T09:04:00+00:00</updated><id>https://vemarahub.github.io/vrexploring/2020/04/03/angular-project-setup</id><content type="html" xml:base="https://vemarahub.github.io/vrexploring/2020/04/03/angular-project-setup.html"><![CDATA[<div dir="ltr" style="text-align: left;" trbidi="on">
+<br />
+The below steps will help to setup a new project in angular js to develop an angular js based project.<br />
+<br />
+<b>1.</b> Check if your system has already node js by using below command on command prompt:<br />
+ng -version<br />
+<br />
+<b>2.</b> If its not installed , install node js from nodejs.org website using msi file and check step 1 to confirm the installation.<br />
+<br />
+<b>3.</b> Install a text editor like visual studio code from visual studio website<br />
+<br />
+<b>4. </b>install angular cli globally using below command on command prompt:<br />
+npm install -g @angular/cli<br />
+<br />
+<b>5.</b> Open visual studio and press ctrl + ~ to open built in terminal after opening the folder where you want to create new angular project.<br />
+<br />
+<b>6. </b>Type the below command on the visual studio terminal:<br />
+ng new TaskManager --skip-install --routing<project name=""></project><br />
+<br />
+<b>7.</b> After this command executes we can see the folder in workspace with default folder structure.Open the project Task Manager folder in visual studio<br />
+npm install<br />
+<br />
+<b>8. </b>To run the application on default browser open visual studio terminal and execute:<br />
+ng serve --open<br />
+<br />
+<b>9. </b>You can see the application running on localhost:4200 .You can terminate ng serve by typing ctrl+C twice.<br />
+<br />
+<br />
+<br /></div>]]></content><author><name>Rajesh Nair</name></author><category term="programming" /><category term="development" /><category term="angular" /><category term="java" /><summary type="html"><![CDATA[The below steps will help to setup a new project in angular js to develop an angular js based project. 1. Check if your system has already node js by using below command on command prompt: ng -version 2. If its not installed , install node js from nodejs.org website using msi file and check step 1 to confirm the installation. 3. Install a text editor like visual studio code from visual studio website 4. install angular cli globally using below command on command prompt: npm install -g @angular/cli 5. Open visual studio and press ctrl + ~ to open built in terminal after opening the folder where you want to create new angular project. 6. Type the below command on the visual studio terminal: ng new TaskManager --skip-install --routing 7. After this command executes we can see the folder in workspace with default folder structure.Open the project Task Manager folder in visual studio npm install 8. To run the application on default browser open visual studio terminal and execute: ng serve --open 9. You can see the application running on localhost:4200 .You can terminate ng serve by typing ctrl+C twice.]]></summary></entry><entry><title type="html">Shell Script - Progress lk info</title><link href="https://vemarahub.github.io/vrexploring/2020/03/30/shell-script-progress-lk-info.html" rel="alternate" type="text/html" title="Shell Script - Progress lk info" /><published>2020-03-30T05:49:00+00:00</published><updated>2020-03-30T05:49:00+00:00</updated><id>https://vemarahub.github.io/vrexploring/2020/03/30/shell-script-progress-lk-info</id><content type="html" xml:base="https://vemarahub.github.io/vrexploring/2020/03/30/shell-script-progress-lk-info.html"><![CDATA[<div dir="ltr" style="text-align: left;" trbidi="on">
+<br />
+<b>Script : </b>Progress database lk file information<br />
+<br />
+<b>Script Name: </b>lkinfo.sh<br />
+<br />
+<b>Script Function: </b>Information about the database status from lk file<br />
+<b><br /></b>
+<b>Script Usage: </b>./lkinfo.sh &lt; db path &gt;<br />
+<br />
+<b><u>Code:</u></b><br />
+<b><u><br /></u></b>
+#Info - script to check the contents of .lk file<br />
+<br />
+lkFile=$1".lk"<br />
+<br />
+GetLong()<br />
+{<br />
+# Returns 4-byte unsigned integer.<br />
+&nbsp; File=$1<br />
+&nbsp; Offset=$2<br />
+<br />
+# od -D&nbsp; Interpret long words in unsigned decimal:<br />
+&nbsp; od -D $File | \<br />
+&nbsp; awk '{ printf"%d",$2; exit }'<br />
+} # GetLong()<br />
+<br />
+if [ -f $lkFile ]<br />
+then<br />
+<br />
+# Database mode:<br />
+lkMode=`GetLong $lkFile 0`<br />
+case $lkMode in<br />
+&nbsp; 1) Desc="Single-user mode";;<br />
+&nbsp; 2) Desc="Multi-user mode" ;;<br />
+&nbsp;64) Desc="Crash recovery"&nbsp; ;;<br />
+&nbsp; *) Desc="Unknown mode"&nbsp; &nbsp; ;;<br />
+esac<br />
+<br />
+# ID of the process that opens database:<br />
+lkPID=`GetLong $lkFile 4`<br />
+<br />
+# Host where the process is running:<br />
+lkHost=`tail $lkFile`<br />
+<br />
+echo "Database mode: $lkMode ($Desc)"<br />
+echo "Opened by PID: $lkPID"<br />
+echo "&nbsp; &nbsp; &nbsp; On Host: $lkHost"<br />
+echo "&nbsp; &nbsp; This host: `uname -n`"<br />
+ps -fp $lkPID || echo "Process PID=$lkPID not found."<br />
+<br />
+else<br />
+&nbsp; echo "lk file not found"<br />
+&nbsp; if [ -f $1".db" ]<br />
+&nbsp; then<br />
+&nbsp; &nbsp;echo " Database $1 is down or in Single User mode"<br />
+&nbsp; else<br />
+&nbsp; &nbsp;echo "Database $1 does not exist"<br />
+&nbsp; &nbsp;fi<br />
+<br />
+&nbsp;exit 0<br />
+<br />
+fi<br />
+<div>
+<br /></div>
+<div>
+<br /></div>
+</div>]]></content><author><name>Rajesh Nair</name></author><category term="progress" /><category term="lk file" /><category term="shell scripting" /><summary type="html"><![CDATA[Script : Progress database lk file information Script Name: lkinfo.sh Script Function: Information about the database status from lk file Script Usage: ./lkinfo.sh &lt; db path &gt; Code: #Info - script to check the contents of .lk file lkFile=$1".lk" GetLong() { # Returns 4-byte unsigned integer. &nbsp; File=$1 &nbsp; Offset=$2 # od -D&nbsp; Interpret long words in unsigned decimal: &nbsp; od -D $File | \ &nbsp; awk '{ printf"%d",$2; exit }' } # GetLong() if [ -f $lkFile ] then # Database mode: lkMode=`GetLong $lkFile 0` case $lkMode in &nbsp; 1) Desc="Single-user mode";; &nbsp; 2) Desc="Multi-user mode" ;; &nbsp;64) Desc="Crash recovery"&nbsp; ;; &nbsp; *) Desc="Unknown mode"&nbsp; &nbsp; ;; esac # ID of the process that opens database: lkPID=`GetLong $lkFile 4` # Host where the process is running: lkHost=`tail $lkFile` echo "Database mode: $lkMode ($Desc)" echo "Opened by PID: $lkPID" echo "&nbsp; &nbsp; &nbsp; On Host: $lkHost" echo "&nbsp; &nbsp; This host: `uname -n`" ps -fp $lkPID || echo "Process PID=$lkPID not found." else &nbsp; echo "lk file not found" &nbsp; if [ -f $1".db" ] &nbsp; then &nbsp; &nbsp;echo " Database $1 is down or in Single User mode" &nbsp; else &nbsp; &nbsp;echo "Database $1 does not exist" &nbsp; &nbsp;fi &nbsp;exit 0 fi]]></summary></entry></feed>

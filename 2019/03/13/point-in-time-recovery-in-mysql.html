@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Point in Time Recovery in MySQL | VR Exploring</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Point in Time Recovery in MySQL" />
+<meta name="author" content="Rajesh Nair" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Point in Time recovery is the recovery mechanism where we can recover a lost transaction back to our MySQL server.The transaction here might be a database or a table or some data which might have got lost during any power outage or by human error. For example if a database is dropped by an administrator or developer by mistake and we have to recover that lost database , point in time recovery can be used to perform the same. Follow the below steps to perform point in time recovery: Pre Requisite: In /etc/my.cnf file add the below entry to enable journaling log-bin=mysql.bin server-id=1 Check if the logs are getting generated in /var/lib/mysql path , or check in mysql console using: show binary logs; show master status; Use flush logs to start log entries in a new log file flush logs; Once the pre requisite is met, any lost transactions can be recovered using point in time recovery by following the below steps for a case where a database &quot;test1&quot; has been dropped by mistake and has to be recovered: 1. Search the mysql.* logs to find the transaction for creating the database &quot;test1&quot; mysqlbinlog mysql.000001 mysqlbinlog mysql.000002 mysqlbinlog mysql.000003 2.Say if the transaction has been found in&nbsp; mysql.000002 file, we need to find the epoch time for the particular transaction in the&nbsp; mysql.000002 file and convert it to system date format. epoch time is the value corresponding to number of seconds from Jan 1st 1970 lets say the epoch time converts system date :&nbsp;2019-03-11 14:31 3.Use mysqlbinlog utility to redirect the transactions starting from the computed time to a sql file. mysqlbinlog --start-datetime=&quot;2019-03-11 14:31&quot; mysql.000002 &gt; /tmp/mysql-restore.sql 4. Validate the&nbsp;&nbsp;/tmp/mysql-restore.sql file to check for any transaction which is not required to be recovered and remove those transaction keeping only the transaction which has to be part of the point in time recovery 5.Load the sql file to the mysql server using below command mysql -u root -p &lt; /tmp/mysql-restore.sql or login to mysql prompt and use source /tmp/mysql-restore.sql 6. Now if you login to you mysql prompt, you can see the dropped database test1 in the MySQL server." />
+<meta property="og:description" content="Point in Time recovery is the recovery mechanism where we can recover a lost transaction back to our MySQL server.The transaction here might be a database or a table or some data which might have got lost during any power outage or by human error. For example if a database is dropped by an administrator or developer by mistake and we have to recover that lost database , point in time recovery can be used to perform the same. Follow the below steps to perform point in time recovery: Pre Requisite: In /etc/my.cnf file add the below entry to enable journaling log-bin=mysql.bin server-id=1 Check if the logs are getting generated in /var/lib/mysql path , or check in mysql console using: show binary logs; show master status; Use flush logs to start log entries in a new log file flush logs; Once the pre requisite is met, any lost transactions can be recovered using point in time recovery by following the below steps for a case where a database &quot;test1&quot; has been dropped by mistake and has to be recovered: 1. Search the mysql.* logs to find the transaction for creating the database &quot;test1&quot; mysqlbinlog mysql.000001 mysqlbinlog mysql.000002 mysqlbinlog mysql.000003 2.Say if the transaction has been found in&nbsp; mysql.000002 file, we need to find the epoch time for the particular transaction in the&nbsp; mysql.000002 file and convert it to system date format. epoch time is the value corresponding to number of seconds from Jan 1st 1970 lets say the epoch time converts system date :&nbsp;2019-03-11 14:31 3.Use mysqlbinlog utility to redirect the transactions starting from the computed time to a sql file. mysqlbinlog --start-datetime=&quot;2019-03-11 14:31&quot; mysql.000002 &gt; /tmp/mysql-restore.sql 4. Validate the&nbsp;&nbsp;/tmp/mysql-restore.sql file to check for any transaction which is not required to be recovered and remove those transaction keeping only the transaction which has to be part of the point in time recovery 5.Load the sql file to the mysql server using below command mysql -u root -p &lt; /tmp/mysql-restore.sql or login to mysql prompt and use source /tmp/mysql-restore.sql 6. Now if you login to you mysql prompt, you can see the dropped database test1 in the MySQL server." />
+<link rel="canonical" href="https://vemarahub.github.io/vrexploring/2019/03/13/point-in-time-recovery-in-mysql.html" />
+<meta property="og:url" content="https://vemarahub.github.io/vrexploring/2019/03/13/point-in-time-recovery-in-mysql.html" />
+<meta property="og:site_name" content="VR Exploring" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2019-03-13T04:20:00+00:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Point in Time Recovery in MySQL" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Rajesh Nair"},"dateModified":"2019-03-13T04:20:00+00:00","datePublished":"2019-03-13T04:20:00+00:00","description":"Point in Time recovery is the recovery mechanism where we can recover a lost transaction back to our MySQL server.The transaction here might be a database or a table or some data which might have got lost during any power outage or by human error. For example if a database is dropped by an administrator or developer by mistake and we have to recover that lost database , point in time recovery can be used to perform the same. Follow the below steps to perform point in time recovery: Pre Requisite: In /etc/my.cnf file add the below entry to enable journaling log-bin=mysql.bin server-id=1 Check if the logs are getting generated in /var/lib/mysql path , or check in mysql console using: show binary logs; show master status; Use flush logs to start log entries in a new log file flush logs; Once the pre requisite is met, any lost transactions can be recovered using point in time recovery by following the below steps for a case where a database &quot;test1&quot; has been dropped by mistake and has to be recovered: 1. Search the mysql.* logs to find the transaction for creating the database &quot;test1&quot; mysqlbinlog mysql.000001 mysqlbinlog mysql.000002 mysqlbinlog mysql.000003 2.Say if the transaction has been found in&nbsp; mysql.000002 file, we need to find the epoch time for the particular transaction in the&nbsp; mysql.000002 file and convert it to system date format. epoch time is the value corresponding to number of seconds from Jan 1st 1970 lets say the epoch time converts system date :&nbsp;2019-03-11 14:31 3.Use mysqlbinlog utility to redirect the transactions starting from the computed time to a sql file. mysqlbinlog --start-datetime=&quot;2019-03-11 14:31&quot; mysql.000002 &gt; /tmp/mysql-restore.sql 4. Validate the&nbsp;&nbsp;/tmp/mysql-restore.sql file to check for any transaction which is not required to be recovered and remove those transaction keeping only the transaction which has to be part of the point in time recovery 5.Load the sql file to the mysql server using below command mysql -u root -p &lt; /tmp/mysql-restore.sql or login to mysql prompt and use source /tmp/mysql-restore.sql 6. Now if you login to you mysql prompt, you can see the dropped database test1 in the MySQL server.","headline":"Point in Time Recovery in MySQL","mainEntityOfPage":{"@type":"WebPage","@id":"https://vemarahub.github.io/vrexploring/2019/03/13/point-in-time-recovery-in-mysql.html"},"url":"https://vemarahub.github.io/vrexploring/2019/03/13/point-in-time-recovery-in-mysql.html"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/vrexploring/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://vemarahub.github.io/vrexploring/feed.xml" title="VR Exploring" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/vrexploring/">VR Exploring</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/vrexploring/about/">About</a><a class="page-link" href="/vrexploring/">Home</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Point in Time Recovery in MySQL</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2019-03-13T04:20:00+00:00" itemprop="datePublished">Mar 13, 2019
+      </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">Rajesh Nair</span></span></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <div dir="ltr" style="text-align: left;" trbidi="on">
+Point in Time recovery is the recovery mechanism where we can recover a lost transaction back to our MySQL server.The transaction here might be a database or a table or some data which might have got lost during any power outage or by human error.<br />
+For example if a database is dropped by an administrator or developer by mistake and we have to recover that lost database , point in time recovery can be used to perform the same.<br />
+<br />
+Follow the below steps to perform point in time recovery:<br />
+<br />
+<b>Pre Requisite:</b><br />
+<br />
+In /etc/my.cnf file add the below entry to enable journaling<br />
+<b>log-bin=mysql.bin</b><br />
+<b>server-id=1</b><br />
+<b><br /></b>
+Check if the logs are getting generated in /var/lib/mysql path , or check in mysql console using:<br />
+<b>show binary logs;</b><br />
+<b>show master status;</b><br />
+<b><br /></b>
+Use flush logs to start log entries in a new log file<br />
+<b>flush logs;</b><br />
+<b><br /></b>
+Once the pre requisite is met, any lost transactions can be recovered using point in time recovery by following the below steps for a case where a database "test1" has been dropped by mistake and has to be recovered:<br />
+1. Search the mysql.* logs to find the transaction for creating the database "test1"<br />
+<b>mysqlbinlog mysql.000001</b><br />
+<b>mysqlbinlog mysql.000002</b><br />
+<b>mysqlbinlog mysql.000003</b><br />
+<br />
+2.Say if the transaction has been found in&nbsp; mysql.000002 file, we need to find the epoch time for the particular transaction in the&nbsp; mysql.000002 file and convert it to system date format.<br />
+epoch time is the value corresponding to number of seconds from Jan 1st 1970<br />
+lets say the epoch time converts system date :&nbsp;2019-03-11 14:31<br />
+<br />
+3.Use mysqlbinlog utility to redirect the transactions starting from the computed time to a sql file.<br />
+<b>mysqlbinlog --start-datetime="2019-03-11 14:31" mysql.000002 &gt; /tmp/mysql-restore.sql</b><br />
+<b><br /></b>
+4. Validate the&nbsp;<b>&nbsp;</b>/tmp/mysql-restore.sql file to check for any transaction which is not required to be recovered and remove those transaction keeping only the transaction which has to be part of the point in time recovery<br />
+<br />
+5.Load the sql file to the mysql server using below command<br />
+<b>mysql -u root -p &lt; /tmp/mysql-restore.sql</b><br />
+or login to mysql prompt and use<br />
+<b>source /tmp/mysql-restore.sql</b><br />
+<b><br /></b>
+6. Now if you login to you mysql prompt, you can see the dropped database test1 in the MySQL server.<br />
+<br /></div>
+
+  </div><a class="u-url" href="/vrexploring/2019/03/13/point-in-time-recovery-in-mysql.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/vrexploring/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">VR Exploring</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">VR Exploring</li><li><a class="u-email" href="mailto:vrexploring@gmail.com">vrexploring@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/vemarahub"><svg class="svg-icon"><use xlink:href="/vrexploring/assets/minima-social-icons.svg#github"></use></svg> <span class="username">vemarahub</span></a></li><li><a href="https://www.twitter.com/vrexploring"><svg class="svg-icon"><use xlink:href="/vrexploring/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">vrexploring</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>A space where i share my thoughts and experiences about technology , science, life, family and everything in between.</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

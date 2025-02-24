@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Command Line Clients | VR Exploring</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Command Line Clients" />
+<meta name="author" content="Rajesh Nair" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Command Line tool benefits *Quick *Specific *Low overhead *Scriptable *Schedulable *Combinable General Syntax: command --opt1 --opt2=value[target] *Names usually lowercase *options can be boolean switches or require values *usaully order of option is not significant *String can be unquoted *Target is a filename or path Input and Output *File can be read as input to command command &lt; path_to_input *File can be created or appended to by output command &gt; filepath (creates or overwrites ) command &gt;&gt; filepath (appends ) *output of one can be used as input to another command 1|command2 MySQL Client Interactive Mode general purpose db command line.Send any command the server can execute.Used for maintainence,debugging mysql -u user -p [options] [db] MySQL Client Batch Mode Directly execute one or more SQL command: mysql --execute(-e) &quot;cmd[;cmd]&quot; [database] Directly output to a file: mysql [database] -Ne &quot;cmd[;cmd]&quot; &gt; Execute an SQL script: mysql -t [datbase] &lt; cat | mysql [database] MYSQL Admin Client Purpose: perform simple administrative tasks and archive results from certain commands mysqladmin cmd[cmd..] #&gt;mysqladmin -u root -proot ping mysqld is alive #&gt;mysqladmin -u root -proot status Uptime: 35&nbsp; Threads: 1&nbsp; Questions: 5&nbsp; Slow queries: 0&nbsp; Opens: 105&nbsp; Flush tables: 1&nbsp; Open tables: 98&nbsp; Queries per second avg: 0.142 #&gt;mysqladmin -u root -proot version Server version&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 5.7.18 Protocol version&nbsp; &nbsp; &nbsp; &nbsp; 10 Connection&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; localhost via TCP/IP TCP port&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 3306 Uptime:&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;1 hour 10 min 30 sec Threads: 1&nbsp; Questions: 7&nbsp; Slow queries: 0&nbsp; Opens: 105&nbsp; Flush tables: 1&nbsp; Open tables: 98&nbsp; Queries per second avg: 0.001 #&gt;mysqladmin -u root -proot processlist +----+------+-----------------+----+---------+------+----------+------------------+ | Id | User | Host&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | db | Command | Time | State&nbsp; &nbsp; | Info&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;| +----+------+-----------------+----+---------+------+----------+------------------+ | 7&nbsp; | root | localhost:53727 |&nbsp; &nbsp; | Query&nbsp; &nbsp;| 0&nbsp; &nbsp; | starting | show processlist | +----+------+-----------------+----+---------+------+----------+------------------+ #&gt;mysqladmin -u root -proot kill 5,6 #&gt;mysqladmin -u root -proot ve pro ext Server version&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 5.7.18 Protocol version&nbsp; &nbsp; &nbsp; &nbsp; 10 Connection&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; localhost via TCP/IP TCP port&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 3306 Uptime:&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;1 hour 14 min 37 sec Threads: 1&nbsp; Questions: 13&nbsp; Slow queries: 0&nbsp; Opens: 105&nbsp; Flush tables: 1&nbsp; Open tables: 98&nbsp; Queries per second avg: 0.002 +----+------+-----------------+----+---------+------+----------+------------------+ | Id | User | Host&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | db | Command | Time | State&nbsp; &nbsp; | Info&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;| +----+------+-----------------+----+---------+------+----------+------------------+ | 9&nbsp; | root | localhost:53836 |&nbsp; &nbsp; | Query&nbsp; &nbsp;| 0&nbsp; &nbsp; | starting | show processlist | +----+------+-----------------+----+---------+------+----------+------------------+ +-----------------------------------------------+--------------------------------------------------+ | Variable_name&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;| Value&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | +-----------------------------------------------+--------------------------------------------------+ | Aborted_clients&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;| 0&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | | Aborted_connects&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | 1&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | | Binlog_cache_disk_use&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;| 0&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | | Binlog_cache_use&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | 0&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | | Binlog_stmt_cache_disk_use&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | 0&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | | Binlog_stmt_cache_use&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;| 0&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | | Bytes_received&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | 1548&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;| | Bytes_sent&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | 1774&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;| | Com_admin_commands&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | 1&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | | Com_assign_to_keycache&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | 0&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | | Com_alter_db&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | 0&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | | Com_alter_db_upgrade&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | 0&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | | Com_alter_event&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;| 0&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | &nbsp;--------------------------------------------------------------------------------------------------- MySQL Import Client Purpose : Import data into one or more existing tables. mysqlimport database path Name of import file must match table name table must already exist mysqlimport -u root -p world /usr/data/newtab.txt MySQL Dump Client Purpose:Backup and export data and structure information exported as sql script or delimated data or text file.Table information dumped by default,but views,triggers,routines etc can be included. mysqldump database [tablelist] mysqldump --databases dblist mysqldump --all-databases mysqldump -u root -p world city country &gt; /usr/data/dump.sql MySQL Check Client Purpose: Perform table maintainence operations - check(default),analyze,optimize and repair mysqlcheck database [tablelist] mysqlcheck --databases dblist mysqlcheck --all-databases various Options are: --check,--analyze,--optimize,--repair #&gt;mysqlcheck -u root -p schoolmgr userdetails Enter password: ********* schoolmgr.userdetails&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; OK #&gt;mysqlcheck -u root -p --analyze schoolmgr userdetails Enter password: ********* schoolmgr.userdetails&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; OK MySQL Slap Client Purpose: Load emulate operations to execute queries on multiple threads.Used for performance tuning. mysqlslap #&gt; mysqlslap -u root -proot --delimiter=&quot;;&quot; --create=&quot;CREATE TABLE test (id int, name char(10));INSERT INTO test VALUES (23, &#39;Al&#39;), (18, &#39;Andy&#39;), (20, &#39;Ann&#39;)&quot; --query=&quot;SELECT * FROM test&quot; --concurrency=10 --iterations=20 mysqlslap: [Warning] Using a password on the command line interface can be insecure. Benchmark &nbsp; &nbsp; &nbsp; &nbsp; Average number of seconds to run all queries: 0.012 seconds &nbsp; &nbsp; &nbsp; &nbsp; Minimum number of seconds to run all queries: 0.000 seconds &nbsp; &nbsp; &nbsp; &nbsp; Maximum number of seconds to run all queries: 0.016 seconds &nbsp; &nbsp; &nbsp; &nbsp; Number of clients running queries: 10 &nbsp; &nbsp; &nbsp; &nbsp; Average number of queries per client: 1 Other Command Line Tools can be found in bin folder. like myisamchk, myisampchk etc Client Configuration Settings We can add a section for specific client program in configuration file: command line options will overrride config file [mysqldump] order-by-primary [mysql] prompt=&quot;\\r:\\m:\\s[\\d]&gt;&quot; connect_timeout=1200 [mysqlslap] concurrency=50 iterations=500" />
+<meta property="og:description" content="Command Line tool benefits *Quick *Specific *Low overhead *Scriptable *Schedulable *Combinable General Syntax: command --opt1 --opt2=value[target] *Names usually lowercase *options can be boolean switches or require values *usaully order of option is not significant *String can be unquoted *Target is a filename or path Input and Output *File can be read as input to command command &lt; path_to_input *File can be created or appended to by output command &gt; filepath (creates or overwrites ) command &gt;&gt; filepath (appends ) *output of one can be used as input to another command 1|command2 MySQL Client Interactive Mode general purpose db command line.Send any command the server can execute.Used for maintainence,debugging mysql -u user -p [options] [db] MySQL Client Batch Mode Directly execute one or more SQL command: mysql --execute(-e) &quot;cmd[;cmd]&quot; [database] Directly output to a file: mysql [database] -Ne &quot;cmd[;cmd]&quot; &gt; Execute an SQL script: mysql -t [datbase] &lt; cat | mysql [database] MYSQL Admin Client Purpose: perform simple administrative tasks and archive results from certain commands mysqladmin cmd[cmd..] #&gt;mysqladmin -u root -proot ping mysqld is alive #&gt;mysqladmin -u root -proot status Uptime: 35&nbsp; Threads: 1&nbsp; Questions: 5&nbsp; Slow queries: 0&nbsp; Opens: 105&nbsp; Flush tables: 1&nbsp; Open tables: 98&nbsp; Queries per second avg: 0.142 #&gt;mysqladmin -u root -proot version Server version&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 5.7.18 Protocol version&nbsp; &nbsp; &nbsp; &nbsp; 10 Connection&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; localhost via TCP/IP TCP port&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 3306 Uptime:&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;1 hour 10 min 30 sec Threads: 1&nbsp; Questions: 7&nbsp; Slow queries: 0&nbsp; Opens: 105&nbsp; Flush tables: 1&nbsp; Open tables: 98&nbsp; Queries per second avg: 0.001 #&gt;mysqladmin -u root -proot processlist +----+------+-----------------+----+---------+------+----------+------------------+ | Id | User | Host&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | db | Command | Time | State&nbsp; &nbsp; | Info&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;| +----+------+-----------------+----+---------+------+----------+------------------+ | 7&nbsp; | root | localhost:53727 |&nbsp; &nbsp; | Query&nbsp; &nbsp;| 0&nbsp; &nbsp; | starting | show processlist | +----+------+-----------------+----+---------+------+----------+------------------+ #&gt;mysqladmin -u root -proot kill 5,6 #&gt;mysqladmin -u root -proot ve pro ext Server version&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 5.7.18 Protocol version&nbsp; &nbsp; &nbsp; &nbsp; 10 Connection&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; localhost via TCP/IP TCP port&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 3306 Uptime:&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;1 hour 14 min 37 sec Threads: 1&nbsp; Questions: 13&nbsp; Slow queries: 0&nbsp; Opens: 105&nbsp; Flush tables: 1&nbsp; Open tables: 98&nbsp; Queries per second avg: 0.002 +----+------+-----------------+----+---------+------+----------+------------------+ | Id | User | Host&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | db | Command | Time | State&nbsp; &nbsp; | Info&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;| +----+------+-----------------+----+---------+------+----------+------------------+ | 9&nbsp; | root | localhost:53836 |&nbsp; &nbsp; | Query&nbsp; &nbsp;| 0&nbsp; &nbsp; | starting | show processlist | +----+------+-----------------+----+---------+------+----------+------------------+ +-----------------------------------------------+--------------------------------------------------+ | Variable_name&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;| Value&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | +-----------------------------------------------+--------------------------------------------------+ | Aborted_clients&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;| 0&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | | Aborted_connects&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | 1&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | | Binlog_cache_disk_use&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;| 0&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | | Binlog_cache_use&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | 0&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | | Binlog_stmt_cache_disk_use&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | 0&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | | Binlog_stmt_cache_use&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;| 0&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | | Bytes_received&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | 1548&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;| | Bytes_sent&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | 1774&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;| | Com_admin_commands&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | 1&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | | Com_assign_to_keycache&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | 0&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | | Com_alter_db&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | 0&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | | Com_alter_db_upgrade&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | 0&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | | Com_alter_event&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;| 0&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | &nbsp;--------------------------------------------------------------------------------------------------- MySQL Import Client Purpose : Import data into one or more existing tables. mysqlimport database path Name of import file must match table name table must already exist mysqlimport -u root -p world /usr/data/newtab.txt MySQL Dump Client Purpose:Backup and export data and structure information exported as sql script or delimated data or text file.Table information dumped by default,but views,triggers,routines etc can be included. mysqldump database [tablelist] mysqldump --databases dblist mysqldump --all-databases mysqldump -u root -p world city country &gt; /usr/data/dump.sql MySQL Check Client Purpose: Perform table maintainence operations - check(default),analyze,optimize and repair mysqlcheck database [tablelist] mysqlcheck --databases dblist mysqlcheck --all-databases various Options are: --check,--analyze,--optimize,--repair #&gt;mysqlcheck -u root -p schoolmgr userdetails Enter password: ********* schoolmgr.userdetails&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; OK #&gt;mysqlcheck -u root -p --analyze schoolmgr userdetails Enter password: ********* schoolmgr.userdetails&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; OK MySQL Slap Client Purpose: Load emulate operations to execute queries on multiple threads.Used for performance tuning. mysqlslap #&gt; mysqlslap -u root -proot --delimiter=&quot;;&quot; --create=&quot;CREATE TABLE test (id int, name char(10));INSERT INTO test VALUES (23, &#39;Al&#39;), (18, &#39;Andy&#39;), (20, &#39;Ann&#39;)&quot; --query=&quot;SELECT * FROM test&quot; --concurrency=10 --iterations=20 mysqlslap: [Warning] Using a password on the command line interface can be insecure. Benchmark &nbsp; &nbsp; &nbsp; &nbsp; Average number of seconds to run all queries: 0.012 seconds &nbsp; &nbsp; &nbsp; &nbsp; Minimum number of seconds to run all queries: 0.000 seconds &nbsp; &nbsp; &nbsp; &nbsp; Maximum number of seconds to run all queries: 0.016 seconds &nbsp; &nbsp; &nbsp; &nbsp; Number of clients running queries: 10 &nbsp; &nbsp; &nbsp; &nbsp; Average number of queries per client: 1 Other Command Line Tools can be found in bin folder. like myisamchk, myisampchk etc Client Configuration Settings We can add a section for specific client program in configuration file: command line options will overrride config file [mysqldump] order-by-primary [mysql] prompt=&quot;\\r:\\m:\\s[\\d]&gt;&quot; connect_timeout=1200 [mysqlslap] concurrency=50 iterations=500" />
+<link rel="canonical" href="https://vemarahub.github.io/vrexploring/2019/07/09/command-line-clients.html" />
+<meta property="og:url" content="https://vemarahub.github.io/vrexploring/2019/07/09/command-line-clients.html" />
+<meta property="og:site_name" content="VR Exploring" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2019-07-09T14:57:00+00:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Command Line Clients" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Rajesh Nair"},"dateModified":"2019-07-09T14:57:00+00:00","datePublished":"2019-07-09T14:57:00+00:00","description":"Command Line tool benefits *Quick *Specific *Low overhead *Scriptable *Schedulable *Combinable General Syntax: command --opt1 --opt2=value[target] *Names usually lowercase *options can be boolean switches or require values *usaully order of option is not significant *String can be unquoted *Target is a filename or path Input and Output *File can be read as input to command command &lt; path_to_input *File can be created or appended to by output command &gt; filepath (creates or overwrites ) command &gt;&gt; filepath (appends ) *output of one can be used as input to another command 1|command2 MySQL Client Interactive Mode general purpose db command line.Send any command the server can execute.Used for maintainence,debugging mysql -u user -p [options] [db] MySQL Client Batch Mode Directly execute one or more SQL command: mysql --execute(-e) &quot;cmd[;cmd]&quot; [database] Directly output to a file: mysql [database] -Ne &quot;cmd[;cmd]&quot; &gt; Execute an SQL script: mysql -t [datbase] &lt; cat | mysql [database] MYSQL Admin Client Purpose: perform simple administrative tasks and archive results from certain commands mysqladmin cmd[cmd..] #&gt;mysqladmin -u root -proot ping mysqld is alive #&gt;mysqladmin -u root -proot status Uptime: 35&nbsp; Threads: 1&nbsp; Questions: 5&nbsp; Slow queries: 0&nbsp; Opens: 105&nbsp; Flush tables: 1&nbsp; Open tables: 98&nbsp; Queries per second avg: 0.142 #&gt;mysqladmin -u root -proot version Server version&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 5.7.18 Protocol version&nbsp; &nbsp; &nbsp; &nbsp; 10 Connection&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; localhost via TCP/IP TCP port&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 3306 Uptime:&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;1 hour 10 min 30 sec Threads: 1&nbsp; Questions: 7&nbsp; Slow queries: 0&nbsp; Opens: 105&nbsp; Flush tables: 1&nbsp; Open tables: 98&nbsp; Queries per second avg: 0.001 #&gt;mysqladmin -u root -proot processlist +----+------+-----------------+----+---------+------+----------+------------------+ | Id | User | Host&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | db | Command | Time | State&nbsp; &nbsp; | Info&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;| +----+------+-----------------+----+---------+------+----------+------------------+ | 7&nbsp; | root | localhost:53727 |&nbsp; &nbsp; | Query&nbsp; &nbsp;| 0&nbsp; &nbsp; | starting | show processlist | +----+------+-----------------+----+---------+------+----------+------------------+ #&gt;mysqladmin -u root -proot kill 5,6 #&gt;mysqladmin -u root -proot ve pro ext Server version&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 5.7.18 Protocol version&nbsp; &nbsp; &nbsp; &nbsp; 10 Connection&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; localhost via TCP/IP TCP port&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 3306 Uptime:&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;1 hour 14 min 37 sec Threads: 1&nbsp; Questions: 13&nbsp; Slow queries: 0&nbsp; Opens: 105&nbsp; Flush tables: 1&nbsp; Open tables: 98&nbsp; Queries per second avg: 0.002 +----+------+-----------------+----+---------+------+----------+------------------+ | Id | User | Host&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | db | Command | Time | State&nbsp; &nbsp; | Info&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;| +----+------+-----------------+----+---------+------+----------+------------------+ | 9&nbsp; | root | localhost:53836 |&nbsp; &nbsp; | Query&nbsp; &nbsp;| 0&nbsp; &nbsp; | starting | show processlist | +----+------+-----------------+----+---------+------+----------+------------------+ +-----------------------------------------------+--------------------------------------------------+ | Variable_name&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;| Value&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | +-----------------------------------------------+--------------------------------------------------+ | Aborted_clients&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;| 0&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | | Aborted_connects&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | 1&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | | Binlog_cache_disk_use&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;| 0&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | | Binlog_cache_use&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | 0&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | | Binlog_stmt_cache_disk_use&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | 0&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | | Binlog_stmt_cache_use&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;| 0&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | | Bytes_received&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | 1548&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;| | Bytes_sent&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | 1774&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;| | Com_admin_commands&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | 1&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | | Com_assign_to_keycache&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | 0&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | | Com_alter_db&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | 0&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | | Com_alter_db_upgrade&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | 0&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | | Com_alter_event&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;| 0&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | &nbsp;--------------------------------------------------------------------------------------------------- MySQL Import Client Purpose : Import data into one or more existing tables. mysqlimport database path Name of import file must match table name table must already exist mysqlimport -u root -p world /usr/data/newtab.txt MySQL Dump Client Purpose:Backup and export data and structure information exported as sql script or delimated data or text file.Table information dumped by default,but views,triggers,routines etc can be included. mysqldump database [tablelist] mysqldump --databases dblist mysqldump --all-databases mysqldump -u root -p world city country &gt; /usr/data/dump.sql MySQL Check Client Purpose: Perform table maintainence operations - check(default),analyze,optimize and repair mysqlcheck database [tablelist] mysqlcheck --databases dblist mysqlcheck --all-databases various Options are: --check,--analyze,--optimize,--repair #&gt;mysqlcheck -u root -p schoolmgr userdetails Enter password: ********* schoolmgr.userdetails&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; OK #&gt;mysqlcheck -u root -p --analyze schoolmgr userdetails Enter password: ********* schoolmgr.userdetails&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; OK MySQL Slap Client Purpose: Load emulate operations to execute queries on multiple threads.Used for performance tuning. mysqlslap #&gt; mysqlslap -u root -proot --delimiter=&quot;;&quot; --create=&quot;CREATE TABLE test (id int, name char(10));INSERT INTO test VALUES (23, &#39;Al&#39;), (18, &#39;Andy&#39;), (20, &#39;Ann&#39;)&quot; --query=&quot;SELECT * FROM test&quot; --concurrency=10 --iterations=20 mysqlslap: [Warning] Using a password on the command line interface can be insecure. Benchmark &nbsp; &nbsp; &nbsp; &nbsp; Average number of seconds to run all queries: 0.012 seconds &nbsp; &nbsp; &nbsp; &nbsp; Minimum number of seconds to run all queries: 0.000 seconds &nbsp; &nbsp; &nbsp; &nbsp; Maximum number of seconds to run all queries: 0.016 seconds &nbsp; &nbsp; &nbsp; &nbsp; Number of clients running queries: 10 &nbsp; &nbsp; &nbsp; &nbsp; Average number of queries per client: 1 Other Command Line Tools can be found in bin folder. like myisamchk, myisampchk etc Client Configuration Settings We can add a section for specific client program in configuration file: command line options will overrride config file [mysqldump] order-by-primary [mysql] prompt=&quot;\\\\r:\\\\m:\\\\s[\\\\d]&gt;&quot; connect_timeout=1200 [mysqlslap] concurrency=50 iterations=500","headline":"Command Line Clients","mainEntityOfPage":{"@type":"WebPage","@id":"https://vemarahub.github.io/vrexploring/2019/07/09/command-line-clients.html"},"url":"https://vemarahub.github.io/vrexploring/2019/07/09/command-line-clients.html"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/vrexploring/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://vemarahub.github.io/vrexploring/feed.xml" title="VR Exploring" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/vrexploring/">VR Exploring</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/vrexploring/about/">About</a><a class="page-link" href="/vrexploring/">Home</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Command Line Clients</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2019-07-09T14:57:00+00:00" itemprop="datePublished">Jul 9, 2019
+      </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">Rajesh Nair</span></span></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <div dir="ltr" style="text-align: left;" trbidi="on">
+<div class="sidenav">
+<b>Command Line tool benefits</b></div>
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<br />
+*Quick<br />
+*Specific<br />
+*Low overhead<br />
+*Scriptable<br />
+*Schedulable<br />
+*Combinable<br />
+<br />
+<b>General Syntax:</b><br />
+command --opt1 --opt2=value[target]<br />
+*Names usually lowercase<br />
+*options can be boolean switches or require values<br />
+*usaully order of option is not significant<br />
+*String can be unquoted<br />
+*Target is a filename or path<br />
+<br />
+<b>Input and Output</b><br />
+<br />
+*File can be read as input to command<br />
+command &lt; path_to_input<br />
+*File can be created or appended to by output<br />
+command &gt; filepath (creates or overwrites )<br />
+command &gt;&gt; filepath (appends )<br />
+*output of one can be used as input to another<br />
+command 1|command2<br />
+<br />
+<b>MySQL Client Interactive Mode</b><br />
+<br />
+general purpose db command line.Send any command the server can execute.Used for maintainence,debugging<br />
+<br />
+mysql -u user -p [options] [db]<br />
+<br />
+<b>MySQL Client Batch Mode</b><br />
+<br />
+Directly execute one or more SQL command:<br />
+mysql <auth> --execute(-e) "cmd[;cmd]" [database]</auth><br />
+<br />
+Directly output to a file:<br />
+mysql <auth amp="" opts=""> [database] -Ne "cmd[;cmd]" &gt; <path></path></auth><br />
+<br />
+Execute an SQL script:<br />
+mysql <auth amp="" opts=""> -t [datbase] &lt; <path></path></auth><br />
+<br />
+cat <path> | mysql <auth amp="" otps=""> [database]</auth></path><br />
+<br />
+<b>MYSQL Admin Client</b><br />
+<br />
+<b>Purpose:</b> perform simple administrative tasks and archive results from certain commands<br />
+<br />
+mysqladmin <auth amp="" opts=""> cmd[cmd..]</auth><br />
+<br />
+#&gt;mysqladmin -u root -proot ping<br />
+mysqld is alive<br />
+<br />
+#&gt;mysqladmin -u root -proot status<br />
+Uptime: 35&nbsp; Threads: 1&nbsp; Questions: 5&nbsp; Slow queries: 0&nbsp; Opens: 105&nbsp; Flush tables: 1&nbsp; Open tables: 98&nbsp; Queries per second avg: 0.142<br />
+<br />
+#&gt;mysqladmin -u root -proot version<br />
+<br />
+Server version&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 5.7.18<br />
+Protocol version&nbsp; &nbsp; &nbsp; &nbsp; 10<br />
+Connection&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; localhost via TCP/IP<br />
+TCP port&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 3306<br />
+Uptime:&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;1 hour 10 min 30 sec<br />
+<br />
+Threads: 1&nbsp; Questions: 7&nbsp; Slow queries: 0&nbsp; Opens: 105&nbsp; Flush tables: 1&nbsp; Open tables: 98&nbsp; Queries per second avg: 0.001<br />
+<br />
+<br />
+#&gt;mysqladmin -u root -proot processlist<br />
++----+------+-----------------+----+---------+------+----------+------------------+<br />
+| Id | User | Host&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | db | Command | Time | State&nbsp; &nbsp; | Info&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;|<br />
++----+------+-----------------+----+---------+------+----------+------------------+<br />
+| 7&nbsp; | root | localhost:53727 |&nbsp; &nbsp; | Query&nbsp; &nbsp;| 0&nbsp; &nbsp; | starting | show processlist |<br />
++----+------+-----------------+----+---------+------+----------+------------------+<br />
+<br />
+#&gt;mysqladmin -u root -proot kill 5,6<br />
+<br />
+#&gt;mysqladmin -u root -proot ve pro ext<br />
+<br />
+Server version&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 5.7.18<br />
+Protocol version&nbsp; &nbsp; &nbsp; &nbsp; 10<br />
+Connection&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; localhost via TCP/IP<br />
+TCP port&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 3306<br />
+Uptime:&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;1 hour 14 min 37 sec<br />
+<br />
+Threads: 1&nbsp; Questions: 13&nbsp; Slow queries: 0&nbsp; Opens: 105&nbsp; Flush tables: 1&nbsp; Open tables: 98&nbsp; Queries per second avg: 0.002<br />
++----+------+-----------------+----+---------+------+----------+------------------+<br />
+| Id | User | Host&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | db | Command | Time | State&nbsp; &nbsp; | Info&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;|<br />
++----+------+-----------------+----+---------+------+----------+------------------+<br />
+| 9&nbsp; | root | localhost:53836 |&nbsp; &nbsp; | Query&nbsp; &nbsp;| 0&nbsp; &nbsp; | starting | show processlist |<br />
++----+------+-----------------+----+---------+------+----------+------------------+<br />
++-----------------------------------------------+--------------------------------------------------+<br />
+| Variable_name&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;| Value&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; |<br />
++-----------------------------------------------+--------------------------------------------------+<br />
+| Aborted_clients&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;| 0&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; |<br />
+| Aborted_connects&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | 1&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; |<br />
+| Binlog_cache_disk_use&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;| 0&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; |<br />
+| Binlog_cache_use&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | 0&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; |<br />
+| Binlog_stmt_cache_disk_use&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | 0&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; |<br />
+| Binlog_stmt_cache_use&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;| 0&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; |<br />
+| Bytes_received&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | 1548&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;|<br />
+| Bytes_sent&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | 1774&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;|<br />
+| Com_admin_commands&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | 1&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; |<br />
+| Com_assign_to_keycache&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | 0&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; |<br />
+| Com_alter_db&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | 0&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; |<br />
+| Com_alter_db_upgrade&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; | 0&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; |<br />
+| Com_alter_event&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;| 0&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; |<br />
+&nbsp;---------------------------------------------------------------------------------------------------<br />
+<br />
+<b>MySQL Import Client</b><br />
+<br />
+Purpose : Import data into one or more existing tables.<br />
+<br />
+mysqlimport <auth amp="" opts=""> database path</auth><br />
+<br />
+Name of import file must match table name<br />
+table must already exist<br />
+<br />
+mysqlimport -u root -p world /usr/data/newtab.txt<br />
+<br />
+<b>MySQL Dump Client</b><br />
+<br />
+Purpose:Backup and export data and structure information exported as sql script or delimated data or text file.Table information dumped by default,but views,triggers,routines etc can be included.<br />
+<br />
+mysqldump <auth amp="" opts=""> database [tablelist]</auth><br />
+mysqldump <auth amp="" opts=""> --databases dblist</auth><br />
+mysqldump <auth amp="" opts=""> --all-databases</auth><br />
+<br />
+mysqldump -u root -p world city country &gt; /usr/data/dump.sql<br />
+<br />
+<b>MySQL Check Client</b><br />
+<br />
+Purpose: Perform table maintainence operations - check(default),analyze,optimize and repair<br />
+<br />
+mysqlcheck <auth amp="" opts=""> database [tablelist]</auth><br />
+mysqlcheck <auth amp="" opts=""> --databases dblist</auth><br />
+mysqlcheck <auth amp="" opts=""> --all-databases</auth><br />
+<br />
+various Options are: --check,--analyze,--optimize,--repair<br />
+<br />
+#&gt;mysqlcheck -u root -p schoolmgr userdetails<br />
+Enter password: *********<br />
+schoolmgr.userdetails&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; OK<br />
+<br />
+#&gt;mysqlcheck -u root -p --analyze schoolmgr userdetails<br />
+Enter password: *********<br />
+schoolmgr.userdetails&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; OK<br />
+<br />
+<b>MySQL Slap Client</b><br />
+<br />
+Purpose: Load emulate operations to execute queries on multiple threads.Used for performance tuning.<br />
+<br />
+mysqlslap <auth amp="" opts=""></auth><br />
+<br />
+#&gt; mysqlslap -u root -proot --delimiter=";" --create="CREATE TABLE test (id int, name char(10));INSERT INTO test VALUES (23, 'Al'), (18, 'Andy'), (20, 'Ann')" --query="SELECT * FROM test" --concurrency=10 --iterations=20<br />
+mysqlslap: [Warning] Using a password on the command line interface can be insecure.<br />
+Benchmark<br />
+&nbsp; &nbsp; &nbsp; &nbsp; Average number of seconds to run all queries: 0.012 seconds<br />
+&nbsp; &nbsp; &nbsp; &nbsp; Minimum number of seconds to run all queries: 0.000 seconds<br />
+&nbsp; &nbsp; &nbsp; &nbsp; Maximum number of seconds to run all queries: 0.016 seconds<br />
+&nbsp; &nbsp; &nbsp; &nbsp; Number of clients running queries: 10<br />
+&nbsp; &nbsp; &nbsp; &nbsp; Average number of queries per client: 1<br />
+<br />
+Other Command Line Tools can be found in bin folder. like myisamchk, myisampchk etc<br />
+<br />
+<b>Client Configuration Settings</b><br />
+<br />
+We can add a section for specific client program in configuration file:<br />
+command line options will overrride config file<br />
+<br />
+[mysqldump]<br />
+order-by-primary<br />
+<br />
+[mysql]<br />
+prompt="\\r:\\m:\\s[\\d]&gt;"<br />
+connect_timeout=1200<br />
+<br />
+[mysqlslap]<br />
+concurrency=50<br />
+iterations=500</div>
+</div>
+
+  </div><a class="u-url" href="/vrexploring/2019/07/09/command-line-clients.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/vrexploring/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">VR Exploring</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">VR Exploring</li><li><a class="u-email" href="mailto:vrexploring@gmail.com">vrexploring@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/vemarahub"><svg class="svg-icon"><use xlink:href="/vrexploring/assets/minima-social-icons.svg#github"></use></svg> <span class="username">vemarahub</span></a></li><li><a href="https://www.twitter.com/vrexploring"><svg class="svg-icon"><use xlink:href="/vrexploring/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">vrexploring</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>A space where i share my thoughts and experiences about technology , science, life, family and everything in between.</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

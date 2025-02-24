@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>OpenEdge Installation Unix/Linux | VR Exploring</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="OpenEdge Installation Unix/Linux" />
+<meta name="author" content="Rajesh Nair" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="These are the steps for installing progress openedge RDBMS in a  *nix OS: Installation Steps for Progress OpenEdge Product: Pre-requisite: DBA to make sure Java and apache already installed and we have progress Setup(installation pack), Root access Login to server and switch to root user, you always should be in /tmp directory to install the progress Open edge. ~#cd /tmp /tmp#/installation/path/directory/proinst when you hit above command you will be directed to below screen where it check the JVM and lets you select the required version. It is must that JVM should be installed in your machine where you going to install progress Open-edge, usually progress consultants will always prefer java 1.5 for 10.2b and 1.6 above for 11.x. You can check which java version is installed in your server by hitting command java -version. 1.Welcome screen of installation. hope you agree for the copyrights hit enter. 2. Information required are, a. company name (which is owning the license) b. serial number c. control number you can enter multiple licenses by hitting Enter company name will remain same serial and control number will varies. Once you done with entering all the licenses hit ctrl + E. it will prompt you to ask whether you have done entering all licenses hit y. 3.Next screen which appears is below. Open Edge Explorer functionality is provided within the browser interface for the OpenEdge Management. When the Admin Server is running, a web browser such as Internet Explorer or FireFox may be directed to http://localhost:9090 (the default location of the OpenEdge Management / Explorer connection). hit “y” if you have installed openedge app svr enterprise license. 4. if you hit “Y” you will be directed to below screen Here you have to give JAVAHOME path which will be $JAVA_HOME environment variable. hit enter to next screen. 5. Below screen will ask 3 important things, a. Type of installation · complete install · Custom install select complete install which will install the entire package which comes under it. b. Destination path name · Here you have to put destination of the open edge which will be $DLC and work directory destination. 3. Management Path name · Here you have to put the management path and work directory management. Once you complete entering all the directory hit enter when marker is on continue with installation. 6. Next screen will be Sonic ESB installation. Sonic ESB is an enterprise service bus (ESB) which simplifies the integration and flexible reuse of business components using a standards-based, service-oriented architecture (SOA). Sonic ESB connects, mediates, and controls services, wherever they are deployed and eliminates hard-wired service dependencies. Sonic ESB provides fast, dependable and secure communications and transactional failover of service interactions. Sonic ESB operates across domains, physical networks, and corporate boundaries. We don’t need it in standard installation hit “N”. 7. Next screen which appears is It allows you to build applications that use HTML, XML, WML, DHTML, and most other mark-up languages (MLs) as the user interface. 8. hit y enter to next screen where you need to provide some configuration for webspeed. 9. This screen will asks for 3 steps a. Type of web speed · sun webserver · CGI -compatible (always prefer this apache needs CGI compatible works on all machine) b. Select web-server script directory · enter the cgi-bin directory path of apache directory · /path/to/apache2/cgi-bin c. copy static HTML · Enter the same path which you have mentioned above. Continue with installation hit enter. Next section will be language selection section. Hit enter to select and enter to proceed next screen, you can select as many language you want. After that next screen which appears is settings for languages. a. character setting, collation, case setting · select American, united states,IS08859-1,basic,basic (if you selected English -American in prev screen) b. Select date format (according to your company standard). c. Select number format (according to your company standard). Continue with installation. 10. Web speed adapter URL you can change if you want. 11. Hit enter to next screen. You can hit y only if you need it if not press N, You can also enable it once complete the installation also. 12. Here comes the screen before installation which will brief your product details which you going to install 13. Hit y to proceed. 14. Once installation completes below screen will appear. 15. Hit enter This will be last screen of installation. Enjoy the facilities of progress open edge. Silent installation The installation has stored a file named /usr/dlc/install/response.ini (or your installation directory). This file can be used to repeat the exact same installation again in a &quot;silent&quot; install that can be scriptet and run without any interaction. To run a silent install simply do: /path-to-proinst/proinst -b /path-to-response-file/response.ini -l /path-to-store-log/silent.log" />
+<meta property="og:description" content="These are the steps for installing progress openedge RDBMS in a  *nix OS: Installation Steps for Progress OpenEdge Product: Pre-requisite: DBA to make sure Java and apache already installed and we have progress Setup(installation pack), Root access Login to server and switch to root user, you always should be in /tmp directory to install the progress Open edge. ~#cd /tmp /tmp#/installation/path/directory/proinst when you hit above command you will be directed to below screen where it check the JVM and lets you select the required version. It is must that JVM should be installed in your machine where you going to install progress Open-edge, usually progress consultants will always prefer java 1.5 for 10.2b and 1.6 above for 11.x. You can check which java version is installed in your server by hitting command java -version. 1.Welcome screen of installation. hope you agree for the copyrights hit enter. 2. Information required are, a. company name (which is owning the license) b. serial number c. control number you can enter multiple licenses by hitting Enter company name will remain same serial and control number will varies. Once you done with entering all the licenses hit ctrl + E. it will prompt you to ask whether you have done entering all licenses hit y. 3.Next screen which appears is below. Open Edge Explorer functionality is provided within the browser interface for the OpenEdge Management. When the Admin Server is running, a web browser such as Internet Explorer or FireFox may be directed to http://localhost:9090 (the default location of the OpenEdge Management / Explorer connection). hit “y” if you have installed openedge app svr enterprise license. 4. if you hit “Y” you will be directed to below screen Here you have to give JAVAHOME path which will be $JAVA_HOME environment variable. hit enter to next screen. 5. Below screen will ask 3 important things, a. Type of installation · complete install · Custom install select complete install which will install the entire package which comes under it. b. Destination path name · Here you have to put destination of the open edge which will be $DLC and work directory destination. 3. Management Path name · Here you have to put the management path and work directory management. Once you complete entering all the directory hit enter when marker is on continue with installation. 6. Next screen will be Sonic ESB installation. Sonic ESB is an enterprise service bus (ESB) which simplifies the integration and flexible reuse of business components using a standards-based, service-oriented architecture (SOA). Sonic ESB connects, mediates, and controls services, wherever they are deployed and eliminates hard-wired service dependencies. Sonic ESB provides fast, dependable and secure communications and transactional failover of service interactions. Sonic ESB operates across domains, physical networks, and corporate boundaries. We don’t need it in standard installation hit “N”. 7. Next screen which appears is It allows you to build applications that use HTML, XML, WML, DHTML, and most other mark-up languages (MLs) as the user interface. 8. hit y enter to next screen where you need to provide some configuration for webspeed. 9. This screen will asks for 3 steps a. Type of web speed · sun webserver · CGI -compatible (always prefer this apache needs CGI compatible works on all machine) b. Select web-server script directory · enter the cgi-bin directory path of apache directory · /path/to/apache2/cgi-bin c. copy static HTML · Enter the same path which you have mentioned above. Continue with installation hit enter. Next section will be language selection section. Hit enter to select and enter to proceed next screen, you can select as many language you want. After that next screen which appears is settings for languages. a. character setting, collation, case setting · select American, united states,IS08859-1,basic,basic (if you selected English -American in prev screen) b. Select date format (according to your company standard). c. Select number format (according to your company standard). Continue with installation. 10. Web speed adapter URL you can change if you want. 11. Hit enter to next screen. You can hit y only if you need it if not press N, You can also enable it once complete the installation also. 12. Here comes the screen before installation which will brief your product details which you going to install 13. Hit y to proceed. 14. Once installation completes below screen will appear. 15. Hit enter This will be last screen of installation. Enjoy the facilities of progress open edge. Silent installation The installation has stored a file named /usr/dlc/install/response.ini (or your installation directory). This file can be used to repeat the exact same installation again in a &quot;silent&quot; install that can be scriptet and run without any interaction. To run a silent install simply do: /path-to-proinst/proinst -b /path-to-response-file/response.ini -l /path-to-store-log/silent.log" />
+<link rel="canonical" href="https://vemarahub.github.io/vrexploring/2017/12/14/openedge-installation-unixlinux.html" />
+<meta property="og:url" content="https://vemarahub.github.io/vrexploring/2017/12/14/openedge-installation-unixlinux.html" />
+<meta property="og:site_name" content="VR Exploring" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-12-14T17:15:00+00:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="OpenEdge Installation Unix/Linux" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Rajesh Nair"},"dateModified":"2017-12-14T17:15:00+00:00","datePublished":"2017-12-14T17:15:00+00:00","description":"These are the steps for installing progress openedge RDBMS in a  *nix OS: Installation Steps for Progress OpenEdge Product: Pre-requisite: DBA to make sure Java and apache already installed and we have progress Setup(installation pack), Root access Login to server and switch to root user, you always should be in /tmp directory to install the progress Open edge. ~#cd /tmp /tmp#/installation/path/directory/proinst when you hit above command you will be directed to below screen where it check the JVM and lets you select the required version. It is must that JVM should be installed in your machine where you going to install progress Open-edge, usually progress consultants will always prefer java 1.5 for 10.2b and 1.6 above for 11.x. You can check which java version is installed in your server by hitting command java -version. 1.Welcome screen of installation. hope you agree for the copyrights hit enter. 2. Information required are, a. company name (which is owning the license) b. serial number c. control number you can enter multiple licenses by hitting Enter company name will remain same serial and control number will varies. Once you done with entering all the licenses hit ctrl + E. it will prompt you to ask whether you have done entering all licenses hit y. 3.Next screen which appears is below. Open Edge Explorer functionality is provided within the browser interface for the OpenEdge Management. When the Admin Server is running, a web browser such as Internet Explorer or FireFox may be directed to http://localhost:9090 (the default location of the OpenEdge Management / Explorer connection). hit “y” if you have installed openedge app svr enterprise license. 4. if you hit “Y” you will be directed to below screen Here you have to give JAVAHOME path which will be $JAVA_HOME environment variable. hit enter to next screen. 5. Below screen will ask 3 important things, a. Type of installation · complete install · Custom install select complete install which will install the entire package which comes under it. b. Destination path name · Here you have to put destination of the open edge which will be $DLC and work directory destination. 3. Management Path name · Here you have to put the management path and work directory management. Once you complete entering all the directory hit enter when marker is on continue with installation. 6. Next screen will be Sonic ESB installation. Sonic ESB is an enterprise service bus (ESB) which simplifies the integration and flexible reuse of business components using a standards-based, service-oriented architecture (SOA). Sonic ESB connects, mediates, and controls services, wherever they are deployed and eliminates hard-wired service dependencies. Sonic ESB provides fast, dependable and secure communications and transactional failover of service interactions. Sonic ESB operates across domains, physical networks, and corporate boundaries. We don’t need it in standard installation hit “N”. 7. Next screen which appears is It allows you to build applications that use HTML, XML, WML, DHTML, and most other mark-up languages (MLs) as the user interface. 8. hit y enter to next screen where you need to provide some configuration for webspeed. 9. This screen will asks for 3 steps a. Type of web speed · sun webserver · CGI -compatible (always prefer this apache needs CGI compatible works on all machine) b. Select web-server script directory · enter the cgi-bin directory path of apache directory · /path/to/apache2/cgi-bin c. copy static HTML · Enter the same path which you have mentioned above. Continue with installation hit enter. Next section will be language selection section. Hit enter to select and enter to proceed next screen, you can select as many language you want. After that next screen which appears is settings for languages. a. character setting, collation, case setting · select American, united states,IS08859-1,basic,basic (if you selected English -American in prev screen) b. Select date format (according to your company standard). c. Select number format (according to your company standard). Continue with installation. 10. Web speed adapter URL you can change if you want. 11. Hit enter to next screen. You can hit y only if you need it if not press N, You can also enable it once complete the installation also. 12. Here comes the screen before installation which will brief your product details which you going to install 13. Hit y to proceed. 14. Once installation completes below screen will appear. 15. Hit enter This will be last screen of installation. Enjoy the facilities of progress open edge. Silent installation The installation has stored a file named /usr/dlc/install/response.ini (or your installation directory). This file can be used to repeat the exact same installation again in a &quot;silent&quot; install that can be scriptet and run without any interaction. To run a silent install simply do: /path-to-proinst/proinst -b /path-to-response-file/response.ini -l /path-to-store-log/silent.log","headline":"OpenEdge Installation Unix/Linux","mainEntityOfPage":{"@type":"WebPage","@id":"https://vemarahub.github.io/vrexploring/2017/12/14/openedge-installation-unixlinux.html"},"url":"https://vemarahub.github.io/vrexploring/2017/12/14/openedge-installation-unixlinux.html"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/vrexploring/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://vemarahub.github.io/vrexploring/feed.xml" title="VR Exploring" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/vrexploring/">VR Exploring</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/vrexploring/about/">About</a><a class="page-link" href="/vrexploring/">Home</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">OpenEdge Installation Unix/Linux</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-12-14T17:15:00+00:00" itemprop="datePublished">Dec 14, 2017
+      </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">Rajesh Nair</span></span></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    These are the steps for installing progress openedge RDBMS in a&nbsp; *nix OS:<br />
+<br />
+<div>
+<b>Installation Steps for Progress OpenEdge Product:</b><br />
+<br />
+Pre-requisite: DBA to make sure Java and apache already installed and we have progress Setup(installation pack), Root access <br />
+Login to server and switch to root user, you always should be in /tmp directory to install the progress Open edge.<br />
+<br />
+~#cd /tmp<br />
+<br />
+/tmp#/installation/path/directory/proinst<br />
+<br />
+when you hit above command you will be directed to below screen where it check the JVM and lets you select the required version.<br />
+<br />
+It is must that JVM should be installed in your machine where you going to install progress Open-edge, usually progress consultants will always prefer java 1.5 for 10.2b and 1.6 above for 11.x.<br />
+<br />
+You can check which java version is installed in your server by hitting command java -version.<br />
+<br />
+1.Welcome screen of installation.<br />
+<br />
+<a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjy5Rpb8nare3c1y5FNIpxMtFd0Oyby6uj4uVWCDUIlmtjdYyx_QtW2WsnWV2iI5zyBp9jsHlJpKZfU83vYhRWtQOO4GSDe1G5tTN3n077cIAzA1eDdl9Z5wr-do2iNHu3ik7_4-CypnebI/s1600/11.png"><img border="0" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjy5Rpb8nare3c1y5FNIpxMtFd0Oyby6uj4uVWCDUIlmtjdYyx_QtW2WsnWV2iI5zyBp9jsHlJpKZfU83vYhRWtQOO4GSDe1G5tTN3n077cIAzA1eDdl9Z5wr-do2iNHu3ik7_4-CypnebI/s640/11.png" /></a><br />
+<br />
+hope you agree for the copyrights hit enter.<br />
+<br />
+2. Information required are,<br />
+a.                company name (which is owning the license)<br />
+b.                serial number<br />
+c.                control number<br />
+<br />
+<a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjIK-6x_sE9HolLMSifLpu-r6HHtlIAjdVzJVetlIgpnGX2p1G07XvzZN6dReN8v4T-UGpV2vUwZLqJKZ9-D_SzGniaBqhEyYcUzxyxv9tGqJ8-0OyaftJrCOvx6QZxZ6_X77RM-RnV890-/s1600/22.jpg"><img border="0" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjIK-6x_sE9HolLMSifLpu-r6HHtlIAjdVzJVetlIgpnGX2p1G07XvzZN6dReN8v4T-UGpV2vUwZLqJKZ9-D_SzGniaBqhEyYcUzxyxv9tGqJ8-0OyaftJrCOvx6QZxZ6_X77RM-RnV890-/s640/22.jpg" /></a><br />
+<br />
+<br />
+you can enter multiple licenses by hitting Enter company name will remain same serial and control number will varies. Once you done with entering all the licenses hit ctrl + E. it will prompt you to ask whether you have done entering all licenses hit y.<br />
+<br />
+<br />
+3.Next screen which appears is below.<br />
+<br />
+Open Edge Explorer functionality is provided within the browser interface for the OpenEdge Management.<br />
+<br />
+When the Admin Server is running, a web browser such as Internet Explorer or FireFox may be directed to http://localhost:9090 (the default location of the OpenEdge Management / Explorer connection).<br />
+<br />
+<a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjObZAr27tAqIDGYdo-gxHC33SZOgne0H7RvWgoIJVOItZX6SAaIfA5xLTZG5jqeZ1GGacizfaDEDfin7v22A9kals9FaPFA4Htc2mGrMHYmwU4WJ5DdJ7fa-1dXigqfTGOrhn4HzcKl3DN/s1600/33.png"><img border="0" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjObZAr27tAqIDGYdo-gxHC33SZOgne0H7RvWgoIJVOItZX6SAaIfA5xLTZG5jqeZ1GGacizfaDEDfin7v22A9kals9FaPFA4Htc2mGrMHYmwU4WJ5DdJ7fa-1dXigqfTGOrhn4HzcKl3DN/s640/33.png" /></a><br />
+<br />
+<br />
+hit “y” if you have installed openedge app svr enterprise license.<br />
+<br />
+4. if you hit “Y” you will be directed to below screen<br />
+<br />
+<a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiQUTexRvCFxY6uLFeT8-T6u5Gws6hdWJ1gPHEOLVPZagqPjGVPCBr-tV28NmUUr_GVGaUHz8Q2MY_7fhlo-nkErukVFZ9TxVCh-m7xcA4IQu2gE2kgTC8nnkMb6sBz5sVb1R0Y9JvZeXvn/s1600/44.png"><img border="0" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiQUTexRvCFxY6uLFeT8-T6u5Gws6hdWJ1gPHEOLVPZagqPjGVPCBr-tV28NmUUr_GVGaUHz8Q2MY_7fhlo-nkErukVFZ9TxVCh-m7xcA4IQu2gE2kgTC8nnkMb6sBz5sVb1R0Y9JvZeXvn/s640/44.png" /></a><br />
+<br />
+Here you have to give JAVAHOME path which will be $JAVA_HOME environment variable. hit enter to next screen.<br />
+<br />
+5. Below screen will ask 3 important things,<br />
+a.                Type of installation<br />
+·                  complete install<br />
+·                  Custom install    select complete install which will install the entire package which comes under it.</div>
+<div>
+b.                Destination path name<br />
+·                  Here you have to put destination of the open edge which will be $DLC and work directory destination.<br />
+<br />
+3.                Management Path name<br />
+·                  Here you have to put the management path and work directory management.<br />
+<br />
+<a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhSWqIZpvT1jLbUKYGJ02Bal9bvX3J1SgehzuhTQo0O4UCm3desp-FYEQygRNJQSCWOerG7hyphenhyphenQ-psWUmw8zGpSXMYhV77gRQbd1eicdK8MIf9UXBDEEry2nNSkDjTMZYLlT99B7YlY5bCrP/s1600/55.png"><img border="0" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhSWqIZpvT1jLbUKYGJ02Bal9bvX3J1SgehzuhTQo0O4UCm3desp-FYEQygRNJQSCWOerG7hyphenhyphenQ-psWUmw8zGpSXMYhV77gRQbd1eicdK8MIf9UXBDEEry2nNSkDjTMZYLlT99B7YlY5bCrP/s640/55.png" /></a><br />
+<br />
+Once you complete entering all the directory hit enter when marker is on continue with installation.<br />
+<br />
+6. Next screen will be Sonic ESB installation.<br />
+<br />
+<a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEh2aHb9lHKvdm-OH19gaswO9D2KIa1oLwpKbtnwa2h3FRoKurp3LUh1ePNwrzONM1TnknEa5ygybWrhp_QZYoTOBnOeZckdXZdgXDu2axoZO0rLk-Ib2UkFPG51tslOHA0dynitiWjwLRe9/s1600/66.png"><img border="0" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEh2aHb9lHKvdm-OH19gaswO9D2KIa1oLwpKbtnwa2h3FRoKurp3LUh1ePNwrzONM1TnknEa5ygybWrhp_QZYoTOBnOeZckdXZdgXDu2axoZO0rLk-Ib2UkFPG51tslOHA0dynitiWjwLRe9/s640/66.png" /></a><br />
+<br />
+Sonic ESB is an enterprise service bus (ESB) which simplifies the integration and flexible reuse of business components using a standards-based, service-oriented architecture (SOA). Sonic ESB connects, mediates, and controls services, wherever they are deployed and eliminates hard-wired service dependencies. Sonic ESB provides fast, dependable and secure communications and transactional failover of service interactions. Sonic ESB operates across domains, physical networks, and corporate boundaries.</div>
+<div>
+We don’t need it in standard installation hit “N”.<br />
+<br />
+7. Next screen which appears is<br />
+<br />
+<a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiRQcSoGIay9ejxz97Jwc68cjJ_EPw2QhYsoOm3cW9ecaOGbw5SMcR0NO1U_d04JoBSKYMKFMBNPLqHBy6Hxpam2EmUg3JQJsIiwv_HNi06THgtv8MuQS1FU_l9hCYXVOoszzaavCgxAeEx/s1600/77.png"><img border="0" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiRQcSoGIay9ejxz97Jwc68cjJ_EPw2QhYsoOm3cW9ecaOGbw5SMcR0NO1U_d04JoBSKYMKFMBNPLqHBy6Hxpam2EmUg3JQJsIiwv_HNi06THgtv8MuQS1FU_l9hCYXVOoszzaavCgxAeEx/s640/77.png" /></a><br />
+<br />
+It allows you to build applications that use HTML, XML, WML, DHTML, and  most other mark-up languages (MLs) as the user interface.<br />
+<br />
+8. hit y enter to next screen where you need to provide some configuration for webspeed.<br />
+<br />
+<a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEghwyEc0s8Fkm-EDw3ek1CvoLN8RWBEqNSii1ToLhCp2NeZVKjOr4_zuHBhC_v1upLtMTyt5iPVfzLL-dWfVSEDj2AIAKMsLUFWHn9oTl_SpfyScPckgDQyQ06z5wIhum-V1-V3V5b0gvxj/s1600/88.png"><img border="0" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEghwyEc0s8Fkm-EDw3ek1CvoLN8RWBEqNSii1ToLhCp2NeZVKjOr4_zuHBhC_v1upLtMTyt5iPVfzLL-dWfVSEDj2AIAKMsLUFWHn9oTl_SpfyScPckgDQyQ06z5wIhum-V1-V3V5b0gvxj/s640/88.png" /></a><br />
+<br />
+9. This screen will asks for 3 steps<br />
+<br />
+<br />
+a.                Type of web speed<br />
+<br />
+<br />
+·                  sun webserver<br />
+<br />
+<br />
+·                  CGI -compatible  (always prefer this apache needs CGI compatible works on all machine)<br />
+<br />
+<br />
+b.                Select web-server script directory<br />
+<br />
+<br />
+·                  enter the cgi-bin directory path of apache directory<br />
+<br />
+<br />
+·                  /path/to/apache2/cgi-bin<br />
+<br />
+<br />
+c.                copy static HTML<br />
+<br />
+<br />
+·                  Enter the same path which you have mentioned above.<br />
+<br />
+<br />
+Continue with installation hit enter.<br />
+<br />
+Next section will be language selection section. Hit enter to select and enter to proceed next screen, you can select as many language you want.<br />
+<br />
+After that next screen which appears is settings for languages.<br />
+<br />
+a.                character setting, collation, case setting<br />
+<br />
+<br />
+·                  select American, united states,IS08859-1,basic,basic (if you selected English -American in prev screen)<br />
+<br />
+<br />
+b.                Select date format (according to your company standard).<br />
+<br />
+<br />
+c.                Select number format (according to your company standard).<br />
+<br />
+<br />
+Continue with installation.<br />
+<br />
+10. Web speed adapter URL you can change if you want.<br />
+<br />
+<a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhukvMusH74PbBVcMkwJnaokjDoBPQtzXIuIeMhM4S3cLFHx4lGjw2k11bGr8HYMUMdwR_eBZJTiwgWtM7AVIn9xfpy0sJDYgSEl_4w3sQd1-2oniwu9hbiNsiWonR_2iNzdModjZQs0KZ3/s1600/99.png"><img border="0" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhukvMusH74PbBVcMkwJnaokjDoBPQtzXIuIeMhM4S3cLFHx4lGjw2k11bGr8HYMUMdwR_eBZJTiwgWtM7AVIn9xfpy0sJDYgSEl_4w3sQd1-2oniwu9hbiNsiWonR_2iNzdModjZQs0KZ3/s640/99.png" /></a><br />
+<br />
+<br />
+11. Hit enter to next screen.<br />
+<br />
+<br />
+<a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEh3l2X_EMf8HJ_GQzfS7NaoWvNSJdLTQFWjxN0i0PCxDAZfR-rUXX3jKitj0RpUtwuI7icKsfdtm6tJzxyskjDNna5EgKWoW4E6GN_WfVpWtMpgt0oRBaqHVIv5t62tbiAK8D1urVtfiGD-/s1600/1010.png"><img border="0" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEh3l2X_EMf8HJ_GQzfS7NaoWvNSJdLTQFWjxN0i0PCxDAZfR-rUXX3jKitj0RpUtwuI7icKsfdtm6tJzxyskjDNna5EgKWoW4E6GN_WfVpWtMpgt0oRBaqHVIv5t62tbiAK8D1urVtfiGD-/s640/1010.png" /></a><br />
+<br />
+You can hit y only if you need it if not press N,<br />
+<br />
+<br />
+You can also enable it once complete the installation also.<br />
+<br />
+12. Here comes the screen before installation which will brief your product details which you going to install<br />
+<br />
+<a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi7DTwmxQBvrRQWt-5JHcaQKn02L8-SrIB1UwmzQl7up5MNxpotFUsXAJftTyqkhzthNkgSzxaGTcVeTKet9BzOb0DtcOlmErqwS2H027FvWM13VjuXSo_pmcn9yoruRKPdJamxr686HdDg/s1600/1111.png"><img border="0" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi7DTwmxQBvrRQWt-5JHcaQKn02L8-SrIB1UwmzQl7up5MNxpotFUsXAJftTyqkhzthNkgSzxaGTcVeTKet9BzOb0DtcOlmErqwS2H027FvWM13VjuXSo_pmcn9yoruRKPdJamxr686HdDg/s640/1111.png" /></a><br />
+<br />
+13. Hit y to proceed.<br />
+<br />
+<a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhBPX14QgxFM6RqrQUh1naR7AckWVeLX9m28uSHH8GUtaOwqADr8IkRk56KUkJt4yrSyyeKxh-r3l0n9-jTX_GtE6rFq32fZ0F_LHj-ZfJpZKpCKx-aCVFuNDy35NnfK01HbBomIj2r1wTh/s1600/1212.png"><img border="0" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhBPX14QgxFM6RqrQUh1naR7AckWVeLX9m28uSHH8GUtaOwqADr8IkRk56KUkJt4yrSyyeKxh-r3l0n9-jTX_GtE6rFq32fZ0F_LHj-ZfJpZKpCKx-aCVFuNDy35NnfK01HbBomIj2r1wTh/s640/1212.png" /></a><br />
+<br />
+14. Once installation completes below screen will appear.<br />
+<br />
+<a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhfjjQb9PXQW8MSW2IDwRyeZAJl8pMunEE2ezCa0Cp_PrQ6v7Dz0njLRCyFlgEHtLuU1_ZmN_a1XrEmIFq4btxghJ8n2kiIuVquYR0Af8_6nprC6cj0-Ck-JbCZNDfAKkPUvzx3Q-4Y5ysy/s1600/1313.png"><img border="0" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhfjjQb9PXQW8MSW2IDwRyeZAJl8pMunEE2ezCa0Cp_PrQ6v7Dz0njLRCyFlgEHtLuU1_ZmN_a1XrEmIFq4btxghJ8n2kiIuVquYR0Af8_6nprC6cj0-Ck-JbCZNDfAKkPUvzx3Q-4Y5ysy/s640/1313.png" /></a><br />
+<br />
+15. Hit enter<br />
+<br />
+<a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiKmsLfdkIIkAcDZObdKQGgnSHDi84y8v3qyQj_c2ymB73GfF3NQGa-UYaEof950M0KMfZfrilwg8QUGeC9-Vw-brT-frIwplPSFsYFFlOZjd8cVZxmjbrsPGcIFRd76v5XK3n_nkOR_967/s1600/1414.png"><img border="0" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiKmsLfdkIIkAcDZObdKQGgnSHDi84y8v3qyQj_c2ymB73GfF3NQGa-UYaEof950M0KMfZfrilwg8QUGeC9-Vw-brT-frIwplPSFsYFFlOZjd8cVZxmjbrsPGcIFRd76v5XK3n_nkOR_967/s640/1414.png" /></a><br />
+<br />
+<br />
+This will be last screen of installation. Enjoy the facilities of progress open edge.<br />
+<br />
+Silent installation<br />
+The installation has stored a file named /usr/dlc/install/response.ini (or your installation directory). This file can be used to repeat the exact same installation again in a "silent" install that can be scriptet and run without any interaction.<br />
+<br />
+To run a silent install simply do:<br />
+/path-to-proinst/proinst -b /path-to-response-file/response.ini -l /path-to-store-log/silent.log</div>
+
+
+  </div><a class="u-url" href="/vrexploring/2017/12/14/openedge-installation-unixlinux.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/vrexploring/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">VR Exploring</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">VR Exploring</li><li><a class="u-email" href="mailto:vrexploring@gmail.com">vrexploring@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/vemarahub"><svg class="svg-icon"><use xlink:href="/vrexploring/assets/minima-social-icons.svg#github"></use></svg> <span class="username">vemarahub</span></a></li><li><a href="https://www.twitter.com/vrexploring"><svg class="svg-icon"><use xlink:href="/vrexploring/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">vrexploring</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>A space where i share my thoughts and experiences about technology , science, life, family and everything in between.</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

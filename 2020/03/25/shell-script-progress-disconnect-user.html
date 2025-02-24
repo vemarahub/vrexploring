@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Shell Script - Progress Disconnect User | VR Exploring</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Shell Script - Progress Disconnect User" />
+<meta name="author" content="Rajesh Nair" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Script : Disconnect user from database Script Name: disconnect.sh Script Function: &nbsp;Disconnect users from databases using &quot;proshut&quot; Required Files:&nbsp; 1.&nbsp;usr.registry - in the&nbsp;$HOME/bin path containing database details uder the below headers DB&nbsp; DBPATH&nbsp; PF-File 2. disconnect.p Script Usage: ./disconnect.sh [ -h help]&nbsp;[ -d devicename ]&nbsp;[ -p pid ]&nbsp;[ -n username ]&nbsp;[ -u usernumber ] Code: disconnect.sh #!/bin/bash STARTDIR=$HOME/bin DBREG=$STARTDIR/usr.registry DLC=/usr/dlc;export DLC DLCPATH=$DLC/bin PROMSGS=$DLC/promsgs;export PROMSGS PROTERMCAP=$DLC/protermcap;export PROTERMCAP TERM=vt100 PATH=$PATH:$DLCPATH;export PATH display_banner=no usage() { echo &quot;Syntax is: $0&quot; echo &quot;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;[ -h ] (Shows this help page)&quot; echo &quot;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;[ -d devicename ]&quot; echo &quot;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;[ -p pid ]&quot; echo &quot;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;[ -n username ]&quot; echo &quot;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;[ -u usernumber ]&quot; exit } cleanfiles() { rm -f $tmpfile 2&gt;/dev/null rm -f $tmpfile2 2&gt;/dev/null } if [ $# -eq 0 ] then &nbsp; usage fi devicename= pid= username= userid= while getopts &quot;:d:p:n:u:h:&quot; option do case $option in &nbsp; &nbsp;d) &nbsp; &nbsp;devicename=&quot;$OPTARG&quot; &nbsp; &nbsp;;; &nbsp; &nbsp;p) &nbsp; &nbsp;pid=&quot;$OPTARG&quot; &nbsp; &nbsp;expr $pid + 0 &gt; /dev/null 2&gt;&amp;1 &nbsp; &nbsp;if [ $? -ne 0 ] &nbsp; &nbsp;then &nbsp; &nbsp; &nbsp;echo &quot;PID should be numeric only...&quot; &nbsp; &nbsp; &nbsp;exit &nbsp; &nbsp;fi &nbsp; &nbsp;;; &nbsp; &nbsp;n) &nbsp; &nbsp;username=&quot;$OPTARG&quot; &nbsp; &nbsp;;; &nbsp; &nbsp;u) &nbsp; &nbsp;userid=&quot;$OPTARG&quot; &nbsp; &nbsp;expr $userid + 0 &gt; /dev/null 2&gt;&amp;1 &nbsp; &nbsp;if [ $? -ne 0 ] &nbsp; &nbsp;then &nbsp; &nbsp; &nbsp;echo &quot;User ID should be numeric only...&quot; &nbsp; &nbsp; &nbsp;exit &nbsp; &nbsp;fi &nbsp; &nbsp;;; &nbsp; &nbsp;h) &nbsp; &nbsp;usage &nbsp; &nbsp;;; &nbsp; &nbsp;*) &nbsp; &nbsp;usage &nbsp; &nbsp;;; esac done PARMS=&quot;$devicename,$pid,$username,$userid&quot; if [ &quot;$PARMS&quot; = &quot;,,,&quot; ] then &nbsp; usage fi cd $STARTDIR if [ ! -f $DBREG ] then &nbsp; echo &quot;$DBREG is missing. It should have the entry like below format. Under the same header&quot; &nbsp; echo &quot;DB&nbsp; DBPATH&nbsp; PF-File&quot; &nbsp; echo &quot;Script exiting&quot; &nbsp; exit fi tmpfile=/tmp/disconnect.$$.txt export tmpfile2=/tmp/disconnect2.$$.txt cat $DBREG |grep -v DB| while read line do &nbsp; DBNAME=`echo $line|awk -F&quot; &quot; &#39;{print $1}&#39;` &nbsp; DBPATH=`echo $line|awk -F&quot; &quot; &#39;{print $2}&#39;` &nbsp; if [ ! -f $DBPATH/$DBNAME.db ] &nbsp; then &nbsp; &nbsp; echo &quot;DB name is not valid $DBPATH/$DBNAME&quot; &nbsp; &nbsp; cleanfiles &nbsp; &nbsp; exit &nbsp; fi &nbsp; echo &quot;Connections from $DBPATH/$DBNAME:&quot; &gt;&gt; $tmpfile &nbsp; $DLCPATH/_progres -b $DBPATH/$DBNAME -p disconnect.p -param &quot;$PARMS&quot; &gt;&gt; $tmpfile &nbsp; echo &gt;&gt; $tmpfile done cat $tmpfile fromtime=$SECONDS ans=n echo &quot;Do you want to disconnect the users above? y/n (Default is &#39;n&#39;)&quot; echo &quot;You have 4 seconds to respond...&quot; read ans if [ &quot;$ans&quot; = &quot;y&quot; -o &quot;$ans&quot; = &quot;Y&quot; ] then &nbsp; totime=$SECONDS &nbsp; if [ `expr $totime - $fromtime` -gt 4 ] &nbsp; then &nbsp; &nbsp; echo &quot;Timeout expired, exiting...&quot; &nbsp; &nbsp; cleanfiles &nbsp; &nbsp; exit &nbsp; fi &nbsp; cat $tmpfile2 | &nbsp; while read db usrno &nbsp; do &nbsp; &nbsp; echo $db $usrno &nbsp; &nbsp; $DLCPATH/proshut $db -C disconnect $usrno &nbsp; done fi cleanfiles disconnect.p define variable l_connect-name&nbsp; &nbsp;like _connect-name no-undo. define variable l_connect-usr&nbsp; &nbsp; like _connect-usr no-undo. define variable l_connect-pid&nbsp; &nbsp; like _connect-pid no-undo. define variable l_connect-device like _connect-device no-undo. define variable l_answer&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;as logical no-undo. assign l_connect-device = entry(1,session:parameter) &nbsp; &nbsp; &nbsp; &nbsp;l_connect-pid&nbsp; &nbsp; = integer(entry(2,session:parameter)) &nbsp; &nbsp; &nbsp; &nbsp;l_connect-name&nbsp; &nbsp;= entry(3,session:parameter) &nbsp; &nbsp; &nbsp; &nbsp;l_connect-usr&nbsp; &nbsp; = integer(entry(4,session:parameter)). define stream a. output stream a to value(os-getenv(&quot;tmpfile2&quot;)) append. for each _connect where _connect-usr &lt;&gt; ? &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; and _connect-name &lt;&gt; &quot;progress&quot; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; and _connect-name = (if l_connect-name = &quot;&quot; then &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; _connect-name &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;else &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; l_connect-name) &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; and _connect-usr&nbsp; = (if l_connect-usr = 0 then &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; _connect-usr &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;else &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; l_connect-usr) &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; and _connect-pid = (if l_connect-pid = 0 then &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;_connect-pid &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; else &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;l_connect-pid) &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; and _connect-device = (if l_connect-device = &quot;&quot; then &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;_connect-device &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; else &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;l_connect-device) &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; no-lock: &nbsp; &nbsp; display _connect-usr _connect-name format &quot;x(12)&quot; _connect-pid&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; _connect-device. &nbsp; &nbsp; put stream a unformatted pdbname(1) &quot; &quot; _connect-usr skip. end. output stream a close. quit." />
+<meta property="og:description" content="Script : Disconnect user from database Script Name: disconnect.sh Script Function: &nbsp;Disconnect users from databases using &quot;proshut&quot; Required Files:&nbsp; 1.&nbsp;usr.registry - in the&nbsp;$HOME/bin path containing database details uder the below headers DB&nbsp; DBPATH&nbsp; PF-File 2. disconnect.p Script Usage: ./disconnect.sh [ -h help]&nbsp;[ -d devicename ]&nbsp;[ -p pid ]&nbsp;[ -n username ]&nbsp;[ -u usernumber ] Code: disconnect.sh #!/bin/bash STARTDIR=$HOME/bin DBREG=$STARTDIR/usr.registry DLC=/usr/dlc;export DLC DLCPATH=$DLC/bin PROMSGS=$DLC/promsgs;export PROMSGS PROTERMCAP=$DLC/protermcap;export PROTERMCAP TERM=vt100 PATH=$PATH:$DLCPATH;export PATH display_banner=no usage() { echo &quot;Syntax is: $0&quot; echo &quot;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;[ -h ] (Shows this help page)&quot; echo &quot;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;[ -d devicename ]&quot; echo &quot;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;[ -p pid ]&quot; echo &quot;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;[ -n username ]&quot; echo &quot;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;[ -u usernumber ]&quot; exit } cleanfiles() { rm -f $tmpfile 2&gt;/dev/null rm -f $tmpfile2 2&gt;/dev/null } if [ $# -eq 0 ] then &nbsp; usage fi devicename= pid= username= userid= while getopts &quot;:d:p:n:u:h:&quot; option do case $option in &nbsp; &nbsp;d) &nbsp; &nbsp;devicename=&quot;$OPTARG&quot; &nbsp; &nbsp;;; &nbsp; &nbsp;p) &nbsp; &nbsp;pid=&quot;$OPTARG&quot; &nbsp; &nbsp;expr $pid + 0 &gt; /dev/null 2&gt;&amp;1 &nbsp; &nbsp;if [ $? -ne 0 ] &nbsp; &nbsp;then &nbsp; &nbsp; &nbsp;echo &quot;PID should be numeric only...&quot; &nbsp; &nbsp; &nbsp;exit &nbsp; &nbsp;fi &nbsp; &nbsp;;; &nbsp; &nbsp;n) &nbsp; &nbsp;username=&quot;$OPTARG&quot; &nbsp; &nbsp;;; &nbsp; &nbsp;u) &nbsp; &nbsp;userid=&quot;$OPTARG&quot; &nbsp; &nbsp;expr $userid + 0 &gt; /dev/null 2&gt;&amp;1 &nbsp; &nbsp;if [ $? -ne 0 ] &nbsp; &nbsp;then &nbsp; &nbsp; &nbsp;echo &quot;User ID should be numeric only...&quot; &nbsp; &nbsp; &nbsp;exit &nbsp; &nbsp;fi &nbsp; &nbsp;;; &nbsp; &nbsp;h) &nbsp; &nbsp;usage &nbsp; &nbsp;;; &nbsp; &nbsp;*) &nbsp; &nbsp;usage &nbsp; &nbsp;;; esac done PARMS=&quot;$devicename,$pid,$username,$userid&quot; if [ &quot;$PARMS&quot; = &quot;,,,&quot; ] then &nbsp; usage fi cd $STARTDIR if [ ! -f $DBREG ] then &nbsp; echo &quot;$DBREG is missing. It should have the entry like below format. Under the same header&quot; &nbsp; echo &quot;DB&nbsp; DBPATH&nbsp; PF-File&quot; &nbsp; echo &quot;Script exiting&quot; &nbsp; exit fi tmpfile=/tmp/disconnect.$$.txt export tmpfile2=/tmp/disconnect2.$$.txt cat $DBREG |grep -v DB| while read line do &nbsp; DBNAME=`echo $line|awk -F&quot; &quot; &#39;{print $1}&#39;` &nbsp; DBPATH=`echo $line|awk -F&quot; &quot; &#39;{print $2}&#39;` &nbsp; if [ ! -f $DBPATH/$DBNAME.db ] &nbsp; then &nbsp; &nbsp; echo &quot;DB name is not valid $DBPATH/$DBNAME&quot; &nbsp; &nbsp; cleanfiles &nbsp; &nbsp; exit &nbsp; fi &nbsp; echo &quot;Connections from $DBPATH/$DBNAME:&quot; &gt;&gt; $tmpfile &nbsp; $DLCPATH/_progres -b $DBPATH/$DBNAME -p disconnect.p -param &quot;$PARMS&quot; &gt;&gt; $tmpfile &nbsp; echo &gt;&gt; $tmpfile done cat $tmpfile fromtime=$SECONDS ans=n echo &quot;Do you want to disconnect the users above? y/n (Default is &#39;n&#39;)&quot; echo &quot;You have 4 seconds to respond...&quot; read ans if [ &quot;$ans&quot; = &quot;y&quot; -o &quot;$ans&quot; = &quot;Y&quot; ] then &nbsp; totime=$SECONDS &nbsp; if [ `expr $totime - $fromtime` -gt 4 ] &nbsp; then &nbsp; &nbsp; echo &quot;Timeout expired, exiting...&quot; &nbsp; &nbsp; cleanfiles &nbsp; &nbsp; exit &nbsp; fi &nbsp; cat $tmpfile2 | &nbsp; while read db usrno &nbsp; do &nbsp; &nbsp; echo $db $usrno &nbsp; &nbsp; $DLCPATH/proshut $db -C disconnect $usrno &nbsp; done fi cleanfiles disconnect.p define variable l_connect-name&nbsp; &nbsp;like _connect-name no-undo. define variable l_connect-usr&nbsp; &nbsp; like _connect-usr no-undo. define variable l_connect-pid&nbsp; &nbsp; like _connect-pid no-undo. define variable l_connect-device like _connect-device no-undo. define variable l_answer&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;as logical no-undo. assign l_connect-device = entry(1,session:parameter) &nbsp; &nbsp; &nbsp; &nbsp;l_connect-pid&nbsp; &nbsp; = integer(entry(2,session:parameter)) &nbsp; &nbsp; &nbsp; &nbsp;l_connect-name&nbsp; &nbsp;= entry(3,session:parameter) &nbsp; &nbsp; &nbsp; &nbsp;l_connect-usr&nbsp; &nbsp; = integer(entry(4,session:parameter)). define stream a. output stream a to value(os-getenv(&quot;tmpfile2&quot;)) append. for each _connect where _connect-usr &lt;&gt; ? &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; and _connect-name &lt;&gt; &quot;progress&quot; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; and _connect-name = (if l_connect-name = &quot;&quot; then &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; _connect-name &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;else &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; l_connect-name) &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; and _connect-usr&nbsp; = (if l_connect-usr = 0 then &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; _connect-usr &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;else &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; l_connect-usr) &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; and _connect-pid = (if l_connect-pid = 0 then &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;_connect-pid &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; else &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;l_connect-pid) &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; and _connect-device = (if l_connect-device = &quot;&quot; then &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;_connect-device &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; else &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;l_connect-device) &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; no-lock: &nbsp; &nbsp; display _connect-usr _connect-name format &quot;x(12)&quot; _connect-pid&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; _connect-device. &nbsp; &nbsp; put stream a unformatted pdbname(1) &quot; &quot; _connect-usr skip. end. output stream a close. quit." />
+<link rel="canonical" href="https://vemarahub.github.io/vrexploring/2020/03/25/shell-script-progress-disconnect-user.html" />
+<meta property="og:url" content="https://vemarahub.github.io/vrexploring/2020/03/25/shell-script-progress-disconnect-user.html" />
+<meta property="og:site_name" content="VR Exploring" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-03-25T06:30:00+00:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Shell Script - Progress Disconnect User" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Rajesh Nair"},"dateModified":"2020-03-25T06:30:00+00:00","datePublished":"2020-03-25T06:30:00+00:00","description":"Script : Disconnect user from database Script Name: disconnect.sh Script Function: &nbsp;Disconnect users from databases using &quot;proshut&quot; Required Files:&nbsp; 1.&nbsp;usr.registry - in the&nbsp;$HOME/bin path containing database details uder the below headers DB&nbsp; DBPATH&nbsp; PF-File 2. disconnect.p Script Usage: ./disconnect.sh [ -h help]&nbsp;[ -d devicename ]&nbsp;[ -p pid ]&nbsp;[ -n username ]&nbsp;[ -u usernumber ] Code: disconnect.sh #!/bin/bash STARTDIR=$HOME/bin DBREG=$STARTDIR/usr.registry DLC=/usr/dlc;export DLC DLCPATH=$DLC/bin PROMSGS=$DLC/promsgs;export PROMSGS PROTERMCAP=$DLC/protermcap;export PROTERMCAP TERM=vt100 PATH=$PATH:$DLCPATH;export PATH display_banner=no usage() { echo &quot;Syntax is: $0&quot; echo &quot;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;[ -h ] (Shows this help page)&quot; echo &quot;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;[ -d devicename ]&quot; echo &quot;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;[ -p pid ]&quot; echo &quot;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;[ -n username ]&quot; echo &quot;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;[ -u usernumber ]&quot; exit } cleanfiles() { rm -f $tmpfile 2&gt;/dev/null rm -f $tmpfile2 2&gt;/dev/null } if [ $# -eq 0 ] then &nbsp; usage fi devicename= pid= username= userid= while getopts &quot;:d:p:n:u:h:&quot; option do case $option in &nbsp; &nbsp;d) &nbsp; &nbsp;devicename=&quot;$OPTARG&quot; &nbsp; &nbsp;;; &nbsp; &nbsp;p) &nbsp; &nbsp;pid=&quot;$OPTARG&quot; &nbsp; &nbsp;expr $pid + 0 &gt; /dev/null 2&gt;&amp;1 &nbsp; &nbsp;if [ $? -ne 0 ] &nbsp; &nbsp;then &nbsp; &nbsp; &nbsp;echo &quot;PID should be numeric only...&quot; &nbsp; &nbsp; &nbsp;exit &nbsp; &nbsp;fi &nbsp; &nbsp;;; &nbsp; &nbsp;n) &nbsp; &nbsp;username=&quot;$OPTARG&quot; &nbsp; &nbsp;;; &nbsp; &nbsp;u) &nbsp; &nbsp;userid=&quot;$OPTARG&quot; &nbsp; &nbsp;expr $userid + 0 &gt; /dev/null 2&gt;&amp;1 &nbsp; &nbsp;if [ $? -ne 0 ] &nbsp; &nbsp;then &nbsp; &nbsp; &nbsp;echo &quot;User ID should be numeric only...&quot; &nbsp; &nbsp; &nbsp;exit &nbsp; &nbsp;fi &nbsp; &nbsp;;; &nbsp; &nbsp;h) &nbsp; &nbsp;usage &nbsp; &nbsp;;; &nbsp; &nbsp;*) &nbsp; &nbsp;usage &nbsp; &nbsp;;; esac done PARMS=&quot;$devicename,$pid,$username,$userid&quot; if [ &quot;$PARMS&quot; = &quot;,,,&quot; ] then &nbsp; usage fi cd $STARTDIR if [ ! -f $DBREG ] then &nbsp; echo &quot;$DBREG is missing. It should have the entry like below format. Under the same header&quot; &nbsp; echo &quot;DB&nbsp; DBPATH&nbsp; PF-File&quot; &nbsp; echo &quot;Script exiting&quot; &nbsp; exit fi tmpfile=/tmp/disconnect.$$.txt export tmpfile2=/tmp/disconnect2.$$.txt cat $DBREG |grep -v DB| while read line do &nbsp; DBNAME=`echo $line|awk -F&quot; &quot; &#39;{print $1}&#39;` &nbsp; DBPATH=`echo $line|awk -F&quot; &quot; &#39;{print $2}&#39;` &nbsp; if [ ! -f $DBPATH/$DBNAME.db ] &nbsp; then &nbsp; &nbsp; echo &quot;DB name is not valid $DBPATH/$DBNAME&quot; &nbsp; &nbsp; cleanfiles &nbsp; &nbsp; exit &nbsp; fi &nbsp; echo &quot;Connections from $DBPATH/$DBNAME:&quot; &gt;&gt; $tmpfile &nbsp; $DLCPATH/_progres -b $DBPATH/$DBNAME -p disconnect.p -param &quot;$PARMS&quot; &gt;&gt; $tmpfile &nbsp; echo &gt;&gt; $tmpfile done cat $tmpfile fromtime=$SECONDS ans=n echo &quot;Do you want to disconnect the users above? y/n (Default is &#39;n&#39;)&quot; echo &quot;You have 4 seconds to respond...&quot; read ans if [ &quot;$ans&quot; = &quot;y&quot; -o &quot;$ans&quot; = &quot;Y&quot; ] then &nbsp; totime=$SECONDS &nbsp; if [ `expr $totime - $fromtime` -gt 4 ] &nbsp; then &nbsp; &nbsp; echo &quot;Timeout expired, exiting...&quot; &nbsp; &nbsp; cleanfiles &nbsp; &nbsp; exit &nbsp; fi &nbsp; cat $tmpfile2 | &nbsp; while read db usrno &nbsp; do &nbsp; &nbsp; echo $db $usrno &nbsp; &nbsp; $DLCPATH/proshut $db -C disconnect $usrno &nbsp; done fi cleanfiles disconnect.p define variable l_connect-name&nbsp; &nbsp;like _connect-name no-undo. define variable l_connect-usr&nbsp; &nbsp; like _connect-usr no-undo. define variable l_connect-pid&nbsp; &nbsp; like _connect-pid no-undo. define variable l_connect-device like _connect-device no-undo. define variable l_answer&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;as logical no-undo. assign l_connect-device = entry(1,session:parameter) &nbsp; &nbsp; &nbsp; &nbsp;l_connect-pid&nbsp; &nbsp; = integer(entry(2,session:parameter)) &nbsp; &nbsp; &nbsp; &nbsp;l_connect-name&nbsp; &nbsp;= entry(3,session:parameter) &nbsp; &nbsp; &nbsp; &nbsp;l_connect-usr&nbsp; &nbsp; = integer(entry(4,session:parameter)). define stream a. output stream a to value(os-getenv(&quot;tmpfile2&quot;)) append. for each _connect where _connect-usr &lt;&gt; ? &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; and _connect-name &lt;&gt; &quot;progress&quot; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; and _connect-name = (if l_connect-name = &quot;&quot; then &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; _connect-name &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;else &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; l_connect-name) &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; and _connect-usr&nbsp; = (if l_connect-usr = 0 then &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; _connect-usr &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;else &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; l_connect-usr) &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; and _connect-pid = (if l_connect-pid = 0 then &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;_connect-pid &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; else &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;l_connect-pid) &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; and _connect-device = (if l_connect-device = &quot;&quot; then &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;_connect-device &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; else &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;l_connect-device) &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; no-lock: &nbsp; &nbsp; display _connect-usr _connect-name format &quot;x(12)&quot; _connect-pid&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; _connect-device. &nbsp; &nbsp; put stream a unformatted pdbname(1) &quot; &quot; _connect-usr skip. end. output stream a close. quit.","headline":"Shell Script - Progress Disconnect User","mainEntityOfPage":{"@type":"WebPage","@id":"https://vemarahub.github.io/vrexploring/2020/03/25/shell-script-progress-disconnect-user.html"},"url":"https://vemarahub.github.io/vrexploring/2020/03/25/shell-script-progress-disconnect-user.html"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/vrexploring/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://vemarahub.github.io/vrexploring/feed.xml" title="VR Exploring" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/vrexploring/">VR Exploring</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/vrexploring/about/">About</a><a class="page-link" href="/vrexploring/">Home</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">  Shell Script - Progress Disconnect User</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2020-03-25T06:30:00+00:00" itemprop="datePublished">Mar 25, 2020
+      </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">Rajesh Nair</span></span></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <div dir="ltr" style="text-align: left;" trbidi="on">
+<br />
+<b>Script : </b>Disconnect user from database<br />
+<br />
+<b>Script Name: </b>disconnect.sh<br />
+<br />
+<b>Script Function: </b>&nbsp;Disconnect users from databases using "proshut"<br />
+<br />
+<b>Required Files:&nbsp; </b>1.<b>&nbsp;</b>usr.registry - in the&nbsp;$HOME/bin path containing database details uder the below headers<br />
+DB&nbsp; DBPATH&nbsp; PF-File<br />
+2. disconnect.p<br />
+<br />
+<br />
+<b>Script Usage: </b>./disconnect.sh [ -h help]&nbsp;[ -d devicename ]&nbsp;[ -p pid ]&nbsp;[ -n username ]&nbsp;[ -u usernumber ]<br />
+<b><u><br /></u></b>
+<b><u>Code:</u></b><br />
+<b><u>disconnect.sh</u></b><br />
+<b><u><br /></u></b>
+<b><u></u></b><br />
+#!/bin/bash<br />
+<div>
+<div>
+STARTDIR=$HOME/bin</div>
+<div>
+DBREG=$STARTDIR/usr.registry</div>
+<div>
+DLC=/usr/dlc;export DLC</div>
+<div>
+DLCPATH=$DLC/bin</div>
+<div>
+PROMSGS=$DLC/promsgs;export PROMSGS</div>
+<div>
+PROTERMCAP=$DLC/protermcap;export PROTERMCAP</div>
+<div>
+TERM=vt100</div>
+<div>
+PATH=$PATH:$DLCPATH;export PATH</div>
+<div>
+display_banner=no</div>
+<div>
+<br /></div>
+<div>
+usage() {</div>
+<div>
+echo "Syntax is: $0"</div>
+<div>
+echo "&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;[ -h ] (Shows this help page)"</div>
+<div>
+echo "&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;[ -d devicename ]"</div>
+<div>
+echo "&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;[ -p pid ]"</div>
+<div>
+echo "&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;[ -n username ]"</div>
+<div>
+echo "&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;[ -u usernumber ]"</div>
+<div>
+exit</div>
+<div>
+}</div>
+<div>
+<br /></div>
+<div>
+cleanfiles() {</div>
+<div>
+rm -f $tmpfile 2&gt;/dev/null</div>
+<div>
+rm -f $tmpfile2 2&gt;/dev/null</div>
+<div>
+}</div>
+<div>
+<br /></div>
+<div>
+if [ $# -eq 0 ]</div>
+<div>
+then</div>
+<div>
+&nbsp; usage</div>
+<div>
+fi</div>
+<div>
+<br /></div>
+<div>
+devicename=</div>
+<div>
+pid=</div>
+<div>
+username=</div>
+<div>
+userid=</div>
+<div>
+<br /></div>
+<div>
+while getopts ":d:p:n:u:h:" option</div>
+<div>
+do</div>
+<div>
+case $option in</div>
+<div>
+&nbsp; &nbsp;d)</div>
+<div>
+&nbsp; &nbsp;devicename="$OPTARG"</div>
+<div>
+&nbsp; &nbsp;;;</div>
+<div>
+&nbsp; &nbsp;p)</div>
+<div>
+&nbsp; &nbsp;pid="$OPTARG"</div>
+<div>
+&nbsp; &nbsp;expr $pid + 0 &gt; /dev/null 2&gt;&amp;1</div>
+<div>
+&nbsp; &nbsp;if [ $? -ne 0 ]</div>
+<div>
+&nbsp; &nbsp;then</div>
+<div>
+&nbsp; &nbsp; &nbsp;echo "PID should be numeric only..."</div>
+<div>
+&nbsp; &nbsp; &nbsp;exit</div>
+<div>
+&nbsp; &nbsp;fi</div>
+<div>
+&nbsp; &nbsp;;;</div>
+<div>
+&nbsp; &nbsp;n)</div>
+<div>
+&nbsp; &nbsp;username="$OPTARG"</div>
+<div>
+&nbsp; &nbsp;;;</div>
+<div>
+&nbsp; &nbsp;u)</div>
+<div>
+&nbsp; &nbsp;userid="$OPTARG"</div>
+<div>
+&nbsp; &nbsp;expr $userid + 0 &gt; /dev/null 2&gt;&amp;1</div>
+<div>
+&nbsp; &nbsp;if [ $? -ne 0 ]</div>
+<div>
+&nbsp; &nbsp;then</div>
+<div>
+&nbsp; &nbsp; &nbsp;echo "User ID should be numeric only..."</div>
+<div>
+&nbsp; &nbsp; &nbsp;exit</div>
+<div>
+&nbsp; &nbsp;fi</div>
+<div>
+&nbsp; &nbsp;;;</div>
+<div>
+&nbsp; &nbsp;h)</div>
+<div>
+&nbsp; &nbsp;usage</div>
+<div>
+&nbsp; &nbsp;;;</div>
+<div>
+&nbsp; &nbsp;*)</div>
+<div>
+&nbsp; &nbsp;usage</div>
+<div>
+&nbsp; &nbsp;;;</div>
+<div>
+esac</div>
+<div>
+done</div>
+<div>
+<br /></div>
+<div>
+PARMS="$devicename,$pid,$username,$userid"</div>
+<div>
+<br /></div>
+<div>
+if [ "$PARMS" = ",,," ]</div>
+<div>
+then</div>
+<div>
+&nbsp; usage</div>
+<div>
+fi</div>
+<div>
+<br /></div>
+<div>
+cd $STARTDIR</div>
+<div>
+<br /></div>
+<div>
+if [ ! -f $DBREG ]</div>
+<div>
+then</div>
+<div>
+&nbsp; echo "$DBREG is missing. It should have the entry like below format. Under the same header"</div>
+<div>
+&nbsp; echo "DB&nbsp; DBPATH&nbsp; PF-File"</div>
+<div>
+&nbsp; echo "Script exiting"</div>
+<div>
+&nbsp; exit</div>
+<div>
+fi</div>
+<div>
+<br /></div>
+<div>
+tmpfile=/tmp/disconnect.$$.txt</div>
+<div>
+export tmpfile2=/tmp/disconnect2.$$.txt</div>
+<div>
+<br /></div>
+<div>
+cat $DBREG |grep -v DB|</div>
+<div>
+while read line</div>
+<div>
+do</div>
+<div>
+&nbsp; DBNAME=`echo $line|awk -F" " '{print $1}'`</div>
+<div>
+&nbsp; DBPATH=`echo $line|awk -F" " '{print $2}'`</div>
+<div>
+<br /></div>
+<div>
+&nbsp; if [ ! -f $DBPATH/$DBNAME.db ]</div>
+<div>
+&nbsp; then</div>
+<div>
+&nbsp; &nbsp; echo "DB name is not valid $DBPATH/$DBNAME"</div>
+<div>
+&nbsp; &nbsp; cleanfiles</div>
+<div>
+&nbsp; &nbsp; exit</div>
+<div>
+&nbsp; fi</div>
+<div>
+<br /></div>
+<div>
+&nbsp; echo "Connections from $DBPATH/$DBNAME:" &gt;&gt; $tmpfile</div>
+<div>
+&nbsp; $DLCPATH/_progres -b $DBPATH/$DBNAME -p disconnect.p -param "$PARMS" &gt;&gt; $tmpfile</div>
+<div>
+&nbsp; echo &gt;&gt; $tmpfile</div>
+<div>
+<br /></div>
+<div>
+done</div>
+<div>
+<br /></div>
+<div>
+cat $tmpfile</div>
+<div>
+<br /></div>
+<div>
+fromtime=$SECONDS</div>
+<div>
+ans=n</div>
+<div>
+echo "Do you want to disconnect the users above? y/n (Default is 'n')"</div>
+<div>
+echo "You have 4 seconds to respond..."</div>
+<div>
+read ans</div>
+<div>
+if [ "$ans" = "y" -o "$ans" = "Y" ]</div>
+<div>
+then</div>
+<div>
+&nbsp; totime=$SECONDS</div>
+<div>
+&nbsp; if [ `expr $totime - $fromtime` -gt 4 ]</div>
+<div>
+&nbsp; then</div>
+<div>
+&nbsp; &nbsp; echo "Timeout expired, exiting..."</div>
+<div>
+&nbsp; &nbsp; cleanfiles</div>
+<div>
+&nbsp; &nbsp; exit</div>
+<div>
+&nbsp; fi</div>
+<div>
+&nbsp; cat $tmpfile2 |</div>
+<div>
+&nbsp; while read db usrno</div>
+<div>
+&nbsp; do</div>
+<div>
+&nbsp; &nbsp; echo $db $usrno</div>
+<div>
+&nbsp; &nbsp; $DLCPATH/proshut $db -C disconnect $usrno</div>
+<div>
+&nbsp; done</div>
+<div>
+fi</div>
+<div>
+<br /></div>
+<div>
+cleanfiles</div>
+</div>
+<div>
+<br /></div>
+<div>
+<b><u>disconnect.p</u></b></div>
+<div>
+<b><u><br /></u></b></div>
+<div>
+<div>
+define variable l_connect-name&nbsp; &nbsp;like _connect-name no-undo.</div>
+<div>
+define variable l_connect-usr&nbsp; &nbsp; like _connect-usr no-undo.</div>
+<div>
+define variable l_connect-pid&nbsp; &nbsp; like _connect-pid no-undo.</div>
+<div>
+define variable l_connect-device like _connect-device no-undo.</div>
+<div>
+define variable l_answer&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;as logical no-undo.</div>
+<div>
+<br /></div>
+<div>
+assign l_connect-device = entry(1,session:parameter)</div>
+<div>
+&nbsp; &nbsp; &nbsp; &nbsp;l_connect-pid&nbsp; &nbsp; = integer(entry(2,session:parameter))</div>
+<div>
+&nbsp; &nbsp; &nbsp; &nbsp;l_connect-name&nbsp; &nbsp;= entry(3,session:parameter)</div>
+<div>
+&nbsp; &nbsp; &nbsp; &nbsp;l_connect-usr&nbsp; &nbsp; = integer(entry(4,session:parameter)).</div>
+<div>
+<br /></div>
+<div>
+define stream a.</div>
+<div>
+output stream a to value(os-getenv("tmpfile2")) append.</div>
+<div>
+<br /></div>
+<div>
+for each _connect where _connect-usr &lt;&gt; ?</div>
+<div>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; and _connect-name &lt;&gt; "progress"</div>
+<div>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; and _connect-name = (if l_connect-name = "" then</div>
+<div>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; _connect-name</div>
+<div>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;else</div>
+<div>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; l_connect-name)</div>
+<div>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; and _connect-usr&nbsp; = (if l_connect-usr = 0 then</div>
+<div>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; _connect-usr</div>
+<div>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;else</div>
+<div>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; l_connect-usr)</div>
+<div>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; and _connect-pid = (if l_connect-pid = 0 then</div>
+<div>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;_connect-pid</div>
+<div>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; else</div>
+<div>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;l_connect-pid)</div>
+<div>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; and _connect-device = (if l_connect-device = "" then</div>
+<div>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;_connect-device</div>
+<div>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; else</div>
+<div>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;l_connect-device)</div>
+<div>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; no-lock:</div>
+<div>
+&nbsp; &nbsp; display _connect-usr _connect-name format "x(12)" _connect-pid&nbsp;</div>
+<div>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; _connect-device.</div>
+<div>
+&nbsp; &nbsp; put stream a unformatted pdbname(1) " " _connect-usr skip.</div>
+<div>
+end.</div>
+<div>
+<br /></div>
+<div>
+output stream a close.</div>
+<div>
+quit.</div>
+<div style="text-decoration-line: underline;">
+<br /></div>
+</div>
+<div>
+<br /></div>
+</div>
+
+  </div><a class="u-url" href="/vrexploring/2020/03/25/shell-script-progress-disconnect-user.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/vrexploring/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">VR Exploring</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">VR Exploring</li><li><a class="u-email" href="mailto:vrexploring@gmail.com">vrexploring@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/vemarahub"><svg class="svg-icon"><use xlink:href="/vrexploring/assets/minima-social-icons.svg#github"></use></svg> <span class="username">vemarahub</span></a></li><li><a href="https://www.twitter.com/vrexploring"><svg class="svg-icon"><use xlink:href="/vrexploring/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">vrexploring</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>A space where i share my thoughts and experiences about technology , science, life, family and everything in between.</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>AWS Introduction | VR Exploring</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="AWS Introduction" />
+<meta name="author" content="Rajesh Nair" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Essential Characteristics: &nbsp;• On Demand Self-Service • Broad network access • Resource Pooling &nbsp;• Rapid Elasticity &nbsp;• Measured Service Deployment Model &nbsp;• Private Cloud • Community Cloud &nbsp;• Public Cloud &nbsp;• Hybrid Cloud Simple Storage Service(S3)&nbsp; Use case: &nbsp;• Backups • Media files • Log files &nbsp;• Web hosting &nbsp; Unlimited number of objects , objects from zero bytes to 5TB.  Containers are called buckets &nbsp; Access via API/HTTP aws s3api create-bucket - -bucket csrepo-testbucket - -region ap-south-1 aws s3api list-buckets &nbsp;S3 web hosting &nbsp;  put files in the bucket &nbsp; setup bucket policy from permission tab as: { &quot;Version&quot;: &quot;2012-10-17&quot;, &quot;Statement&quot;: [ { &quot;Effect&quot;: &quot;Allow&quot;, &quot;Principal&quot;: &quot;*&quot;, &quot;Action&quot;: &quot;s3:GetObject&quot;, &quot;Resource&quot;: &quot;arn:aws:s3:::[bucket-name]/*&quot; } ] } &nbsp; set up web hosting tab from properties tab and put index.html and error.html file names  Get the url by selecting web hosting menu and access through web browser &nbsp;Lambda &nbsp;Function as a service Use cases: • Simple tasks &nbsp;• Batch tasks &nbsp;• Chained tasks &nbsp;• Serverless architectures For tasks less than 5 mins execution &nbsp; ‘single’ functions of code &nbsp; Triggered by : API/HTTP Call or an AWS event &nbsp;For processing an image uploaded in s3 bucket 1 and putting it in bucket 2 by using a lambda function,follow the below steps : &nbsp; Create bucket1 and bucket2, upload the frame image to bucket1 which will be used for processing  Go to lambda and click on create function  Select author from scratch give function name, select runtime for function. &nbsp; Create a new execution role from IAM console link &nbsp; Choose lambda as service for the role &nbsp; Create policy and add the below policy json after providing input and output bucket names { &quot;Version&quot;: &quot;2012-10-17&quot;, &quot;Statement&quot;: [ { &quot;Effect&quot;: &quot;Allow&quot;, &quot;Action&quot;: [ &quot;logs:CreateLogGroup&quot;, &quot;logs:CreateLogStream&quot;, &quot;logs:PutLogEvents&quot; ], &quot;Resource&quot;: &quot;arn:aws:logs:*:*:*&quot; }, { &quot;Effect&quot;: &quot;Allow&quot;, &quot;Action&quot;: [ &quot;s3:GetObject&quot; ], &quot;Resource&quot;: &quot;arn:aws:s3:::[input-bucket-name]/*&quot; }, { &quot;Effect&quot;: &quot;Allow&quot;, &quot;Action&quot;: [ &quot;s3:PutObject&quot; ], &quot;Resource&quot;: &quot;arn:aws:s3:::[output-bucket-name]/*&quot; } ] } &nbsp; Create the function and add s3 bucket as trigger and provide the input bucket name and select event type as “all object create events” &nbsp; Add the below code as function code import boto3 import os" />
+<meta property="og:description" content="Essential Characteristics: &nbsp;• On Demand Self-Service • Broad network access • Resource Pooling &nbsp;• Rapid Elasticity &nbsp;• Measured Service Deployment Model &nbsp;• Private Cloud • Community Cloud &nbsp;• Public Cloud &nbsp;• Hybrid Cloud Simple Storage Service(S3)&nbsp; Use case: &nbsp;• Backups • Media files • Log files &nbsp;• Web hosting &nbsp; Unlimited number of objects , objects from zero bytes to 5TB.  Containers are called buckets &nbsp; Access via API/HTTP aws s3api create-bucket - -bucket csrepo-testbucket - -region ap-south-1 aws s3api list-buckets &nbsp;S3 web hosting &nbsp;  put files in the bucket &nbsp; setup bucket policy from permission tab as: { &quot;Version&quot;: &quot;2012-10-17&quot;, &quot;Statement&quot;: [ { &quot;Effect&quot;: &quot;Allow&quot;, &quot;Principal&quot;: &quot;*&quot;, &quot;Action&quot;: &quot;s3:GetObject&quot;, &quot;Resource&quot;: &quot;arn:aws:s3:::[bucket-name]/*&quot; } ] } &nbsp; set up web hosting tab from properties tab and put index.html and error.html file names  Get the url by selecting web hosting menu and access through web browser &nbsp;Lambda &nbsp;Function as a service Use cases: • Simple tasks &nbsp;• Batch tasks &nbsp;• Chained tasks &nbsp;• Serverless architectures For tasks less than 5 mins execution &nbsp; ‘single’ functions of code &nbsp; Triggered by : API/HTTP Call or an AWS event &nbsp;For processing an image uploaded in s3 bucket 1 and putting it in bucket 2 by using a lambda function,follow the below steps : &nbsp; Create bucket1 and bucket2, upload the frame image to bucket1 which will be used for processing  Go to lambda and click on create function  Select author from scratch give function name, select runtime for function. &nbsp; Create a new execution role from IAM console link &nbsp; Choose lambda as service for the role &nbsp; Create policy and add the below policy json after providing input and output bucket names { &quot;Version&quot;: &quot;2012-10-17&quot;, &quot;Statement&quot;: [ { &quot;Effect&quot;: &quot;Allow&quot;, &quot;Action&quot;: [ &quot;logs:CreateLogGroup&quot;, &quot;logs:CreateLogStream&quot;, &quot;logs:PutLogEvents&quot; ], &quot;Resource&quot;: &quot;arn:aws:logs:*:*:*&quot; }, { &quot;Effect&quot;: &quot;Allow&quot;, &quot;Action&quot;: [ &quot;s3:GetObject&quot; ], &quot;Resource&quot;: &quot;arn:aws:s3:::[input-bucket-name]/*&quot; }, { &quot;Effect&quot;: &quot;Allow&quot;, &quot;Action&quot;: [ &quot;s3:PutObject&quot; ], &quot;Resource&quot;: &quot;arn:aws:s3:::[output-bucket-name]/*&quot; } ] } &nbsp; Create the function and add s3 bucket as trigger and provide the input bucket name and select event type as “all object create events” &nbsp; Add the below code as function code import boto3 import os" />
+<link rel="canonical" href="https://vemarahub.github.io/vrexploring/2019/10/04/aws-introduction.html" />
+<meta property="og:url" content="https://vemarahub.github.io/vrexploring/2019/10/04/aws-introduction.html" />
+<meta property="og:site_name" content="VR Exploring" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2019-10-04T09:40:00+00:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="AWS Introduction" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Rajesh Nair"},"dateModified":"2019-10-04T09:40:00+00:00","datePublished":"2019-10-04T09:40:00+00:00","description":"Essential Characteristics: &nbsp;• On Demand Self-Service • Broad network access • Resource Pooling &nbsp;• Rapid Elasticity &nbsp;• Measured Service Deployment Model &nbsp;• Private Cloud • Community Cloud &nbsp;• Public Cloud &nbsp;• Hybrid Cloud Simple Storage Service(S3)&nbsp; Use case: &nbsp;• Backups • Media files • Log files &nbsp;• Web hosting &nbsp; Unlimited number of objects , objects from zero bytes to 5TB.  Containers are called buckets &nbsp; Access via API/HTTP aws s3api create-bucket - -bucket csrepo-testbucket - -region ap-south-1 aws s3api list-buckets &nbsp;S3 web hosting &nbsp;  put files in the bucket &nbsp; setup bucket policy from permission tab as: { &quot;Version&quot;: &quot;2012-10-17&quot;, &quot;Statement&quot;: [ { &quot;Effect&quot;: &quot;Allow&quot;, &quot;Principal&quot;: &quot;*&quot;, &quot;Action&quot;: &quot;s3:GetObject&quot;, &quot;Resource&quot;: &quot;arn:aws:s3:::[bucket-name]/*&quot; } ] } &nbsp; set up web hosting tab from properties tab and put index.html and error.html file names  Get the url by selecting web hosting menu and access through web browser &nbsp;Lambda &nbsp;Function as a service Use cases: • Simple tasks &nbsp;• Batch tasks &nbsp;• Chained tasks &nbsp;• Serverless architectures For tasks less than 5 mins execution &nbsp; ‘single’ functions of code &nbsp; Triggered by : API/HTTP Call or an AWS event &nbsp;For processing an image uploaded in s3 bucket 1 and putting it in bucket 2 by using a lambda function,follow the below steps : &nbsp; Create bucket1 and bucket2, upload the frame image to bucket1 which will be used for processing  Go to lambda and click on create function  Select author from scratch give function name, select runtime for function. &nbsp; Create a new execution role from IAM console link &nbsp; Choose lambda as service for the role &nbsp; Create policy and add the below policy json after providing input and output bucket names { &quot;Version&quot;: &quot;2012-10-17&quot;, &quot;Statement&quot;: [ { &quot;Effect&quot;: &quot;Allow&quot;, &quot;Action&quot;: [ &quot;logs:CreateLogGroup&quot;, &quot;logs:CreateLogStream&quot;, &quot;logs:PutLogEvents&quot; ], &quot;Resource&quot;: &quot;arn:aws:logs:*:*:*&quot; }, { &quot;Effect&quot;: &quot;Allow&quot;, &quot;Action&quot;: [ &quot;s3:GetObject&quot; ], &quot;Resource&quot;: &quot;arn:aws:s3:::[input-bucket-name]/*&quot; }, { &quot;Effect&quot;: &quot;Allow&quot;, &quot;Action&quot;: [ &quot;s3:PutObject&quot; ], &quot;Resource&quot;: &quot;arn:aws:s3:::[output-bucket-name]/*&quot; } ] } &nbsp; Create the function and add s3 bucket as trigger and provide the input bucket name and select event type as “all object create events” &nbsp; Add the below code as function code import boto3 import os","headline":"AWS Introduction","mainEntityOfPage":{"@type":"WebPage","@id":"https://vemarahub.github.io/vrexploring/2019/10/04/aws-introduction.html"},"url":"https://vemarahub.github.io/vrexploring/2019/10/04/aws-introduction.html"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/vrexploring/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://vemarahub.github.io/vrexploring/feed.xml" title="VR Exploring" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/vrexploring/">VR Exploring</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/vrexploring/about/">About</a><a class="page-link" href="/vrexploring/">Home</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">AWS Introduction</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2019-10-04T09:40:00+00:00" itemprop="datePublished">Oct 4, 2019
+      </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">Rajesh Nair</span></span></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <div dir="ltr" style="text-align: left;" trbidi="on">
+<b>Essential Characteristics:</b><br />
+&nbsp;• On Demand Self-Service<br />
+• Broad network access<br />
+• Resource Pooling<br />
+&nbsp;• Rapid Elasticity<br />
+&nbsp;• Measured Service
+Deployment Model<br />
+&nbsp;• Private Cloud<br />
+• Community Cloud<br />
+&nbsp;• Public Cloud<br />
+&nbsp;• Hybrid Cloud<br />
+<br />
+<br />
+<div class="separator" style="clear: both; text-align: center;">
+</div>
+<div class="separator" style="clear: both; text-align: center;">
+<a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgP_bIhLZE1UYDjpV3pdvK7K7KeC4xJ6krB-27u1EMf2h0fY8I0wgu-zQgMHcYCv1ahrbZsNSbB7MfBoXfwuQ7aNj74Ilus7rDgPR36hU_ie6RIvlxJUzuTZ3dB0DhwQH3dHTffXhjaTGo/s1600/c1.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="454" data-original-width="785" height="370" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgP_bIhLZE1UYDjpV3pdvK7K7KeC4xJ6krB-27u1EMf2h0fY8I0wgu-zQgMHcYCv1ahrbZsNSbB7MfBoXfwuQ7aNj74Ilus7rDgPR36hU_ie6RIvlxJUzuTZ3dB0DhwQH3dHTffXhjaTGo/s640/c1.png" width="640" /></a></div>
+<br />
+<br />
+<br />
+<b>Simple Storage Service(S3)&nbsp;</b><br />
+<br />
+Use case:<br />
+&nbsp;• Backups<br />
+• Media files<br />
+• Log files<br />
+&nbsp;• Web hosting<br />
+<br />
+&nbsp; Unlimited number of objects , objects from zero bytes to 5TB.<br />
+ Containers are called buckets<br />
+&nbsp; Access via API/HTTP<br />
+<br />
+<i>aws s3api create-bucket - -bucket csrepo-testbucket - -region ap-south-1</i><br />
+<i>aws s3api list-buckets</i><br />
+<br />
+<br />
+<b>&nbsp;S3 web hosting</b><br />
+&nbsp;  put files in the bucket<br />
+&nbsp; setup bucket policy from permission tab as:<br />
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Principal": "*",
+            "Action": "s3:GetObject",
+            "Resource": "arn:aws:s3:::[bucket-name]/*"
+        }
+    ]
+}<br />
+&nbsp; set up web hosting tab from properties tab and put index.html and error.html file names<br />
+ Get the url by selecting web hosting menu and access through web browser<br />
+<br />
+<b>&nbsp;Lambda</b><br />
+&nbsp;Function as a service<br />
+Use cases:<br />
+• Simple tasks<br />
+&nbsp;• Batch tasks<br />
+&nbsp;• Chained tasks<br />
+&nbsp;• Serverless architectures<br />
+<br />
+For tasks less than 5 mins execution<br />
+&nbsp; ‘single’ functions of code<br />
+&nbsp; Triggered by : API/HTTP Call or an AWS event<br />
+<br />
+&nbsp;For processing an image uploaded in s3 bucket 1 and putting it in bucket 2 by using a lambda function,follow the below steps :<br />
+&nbsp; Create bucket1 and bucket2, upload the frame image to bucket1 which will be used for processing
+ Go to lambda and click on create function<br />
+ Select author from scratch give function name, select runtime for function.<br />
+&nbsp; Create a new execution role from IAM console link<br />
+&nbsp; Choose lambda as service for the role<br />
+&nbsp; Create policy and add the below policy json after providing input and output bucket names<br />
+<br />
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+      ],
+      "Resource": "arn:aws:logs:*:*:*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "s3:GetObject"
+      ],
+      "Resource": "arn:aws:s3:::[input-bucket-name]/*" 
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "s3:PutObject"
+      ],
+      "Resource": "arn:aws:s3:::[output-bucket-name]/*" 
+    }
+  ]
+}<br />
+<br />
+&nbsp; Create the function and add s3 bucket as trigger and provide the input bucket name and select event type as “all object create events”<br />
+&nbsp; Add the below code as function code
+import boto3
+import os
+
+def lambda_handler(event, context):
+    
+    key =    event['Records'][0]['s3']['object']['key']
+    bucket_name = event['Records'][0]['s3']['bucket']['name']
+    
+    s3_client = boto3.client('s3')<br />
+&nbsp;#open object from s3
+    with open('/tmp/overlay.png', 'wb') as data:
+        s3_client.download_fileobj(bucket_name, 'overlay.png', data)<br />
+&nbsp;#open object from s3
+    with open('/tmp/filein', 'wb') as data:
+        s3_client.download_fileobj(bucket_name, key, data)
+    
+    os.system("convert -brightness-contrast -1x50 -scale 32x32 /tmp/filein /tmp/fileout")
+    os.system("convert -composite /tmp/fileout  /tmp/overlay.png  -scale 500x500 /tmp/out")<br />
+&nbsp;#save object to S3
+    with open('/tmp/out', 'rb') as data:
+        s3_client.upload_fileobj(data, os.environ['processed_bucket'], key)
+    
+    return<br />
+&nbsp; Add environment variable as output bucket name for key 'processed_bucket'.<br />
+ Save the function
+Now each time a new image is uploaded to s3 bucket the function will be executed which will process the image and add the frame to the image and save in bucket2
+Elastic Compute Cloud
+Virtual servers (IAAS)<br />
+<br />
+<b>&nbsp;Use cases&nbsp;</b><br />
+• Web servers<br />
+• Backend servers<br />
+• (Database servers)<br />
+&nbsp;• General purpose server<br />
+<br />
+<b>&nbsp;How it works:</b><br />
+ Pick your type and size<br />
+&nbsp; Pick your OS<br />
+&nbsp; Select storage<br />
+ Launch an instance<br />
+&nbsp; EBS storage,EFS storage,load balancing,auto scaling<br />
+<br />
+&nbsp;All the Services:<br />
+<b>Compute</b>:<br />
+EC2 – secure and resizable compute capacity<br />
+LightSail- Virtual private servers made easy<br />
+&nbsp;Elastic Container Service – service to run,stop,and manage docker containers on a cluster<br />
+Lambda-serverless compute service,event driven
+Batch-fully managed batch processing at any scale
+Elastic BeanStalk-service for deploying and scaling web applications and services.<br />
+<br />
+<b>&nbsp;Storage:&nbsp;</b><br />
+S3-Cloud object storage.5Gb for first year in free tier.<br />
+EFS-Elastic File System-Cloud file storage
+Glacier-Cloud archive service.Wait some hours for retrieval from archive<br />
+Storage Gateway-Integrate On premise storage infra<br />
+<br />
+<b>&nbsp;AWS cloud
+
+
+
+
+Database:</b><br />
+RDS-Relational Database Service-setup ,operate and scale a relational database in cloud.Includes Aurora
+Dynamo DB - cloud NoSQL database.<br />
+Mongo
+Elastic Cache – in memory data store and cache in the cloud<br />
+.Redis or Memcached
+Redshift- cloud data warehouse<br />
+<br />
+<b>&nbsp;Migration:&nbsp;</b><br />
+Migration Hub-Simplify and accelerate migration to AWS cloud.<br />
+Application Discovery Service- Plan app cloud migration projects
+Database Migration Service-migrate db to AWS cloud
+Server Migration Service-on premise workload transmitted to AWS
+Snowball – petabyte scale data transport to glacier.<br />
+&nbsp;Snowmobile-hexabyte of data
+
+Networking<br />
+<br />
+<b>&nbsp;Content Delivery:&nbsp;</b><br />
+VPC-Virtual Private Cloud-Private network in cloud(own subnets,routings &amp; security with  EC2 instances)<br />
+CloudFront-content distribution network(images,js etc from local content distributor)<br />
+Route53-DNS web service
+API Gateway-create,publilsh,maintain,monitor and secure APIs at any scale.Maps requests to APIs<br />
+&nbsp;Direct Connect-Dedicated network connection from your premise<br />
+<br />
+<b>AWS
+
+Developer Tools:</b><br />
+CodeStar-develop ,build and deploy.Like jenkin
+CodeCommit- like github
+CodeBuild
+CodeDeploy- Automates software deployments<br />
+CodePipeline- Continuous delivery service
+Cloud9-IDE like eclipse
+XRay-debug and analyze your microservice apps.<br />
+<br />
+<b>&nbsp;Management Tools :</b><br />
+CloudWatch-Monitoring Metric Service<br />
+CloudFormation-Model and provision all cloud infrastructure resource<br />
+CloudTrail-Track user activity and API usage
+Config-record and evaluate configs of AWS resources
+OpsWorks-Automate operations with chef and puppet
+ServiceCatalog-Create and manage catalogs of IT services
+SystemsManager-Gain operational insights and take action on AWS resources
+TrustedAdvisor-Optimizing usage of AWS
+ManagedService-Infra operations management for AWS
+
+Media Services
+Elastic Transcoder-media transcoder to churn media files to certain format
+Elemental-&gt;MediaConvert,MediaLive,MediaPackage,MediaStore,MediaTailor<br />
+<br />
+<b>&nbsp;Machine Learning:</b><br />
+SageMaker-build,train and deploy machine learning models at scale
+Comprehend-discover insights and relationships in text<br />
+DeepLens-deep learning enabled video camera
+Lex-conversational interface for your app
+Machine Learning-managed service for ML models and generating prediction
+Polly-turn text into speech using deep learning
+Rekognition-deep learning-based image and video analysis
+Transcribe-Speech recognition
+Translate-natural and fluent language translation<br />
+&nbsp;Analytics
+Athena-analyze data in S3 using standard SQL
+EMR-elastic map reduce-run and scale apache,Hadoop,spark,hbase,presto,hive etc<br />
+&nbsp;CloudSearch-Set up ,manage and scale a search solution<br />
+&nbsp;ElasticSearchService-fully managed reliable and scalable elastic search<br />
+Kinesis-easily collect,process,and analyze video and data stream in real time<br />
+&nbsp;Kinesis Video Streams-for processing video streams for analytics and machine learning<br />
+&nbsp;QuickSite-Business analytics service
+Data Pipeline-easily automate the movement and transformation of data<br />
+AWS Glue-simple , flexible and cost effective extract transform load<br />
+<br />
+<b>&nbsp;Security Identity &amp; Compliance:</b><br />
+ IAM-Identity and Access Management-securely controlling access to AWS services<br />
+Congnito-simple &amp; secure user sign up /sign in
+Guard Duty-Intelligent threat detection and continuous monitoring to protect<br />
+AWS account
+Inspector-automated security assessment service to help improve security and compliance.<br />
+Macie-machine learning powered security service.<br />
+&nbsp;Single Sign on – access to multiple AWS account and business apps.<br />
+&nbsp;Certificate Manager-Provision,manage and deploy SSL/TLS cert<br />
+CloudHSM- Hardware Security Module-Physical device used to store crypto material
+WAF &amp;Shield-monitor web request for amazon cloudfront distribution and restrict access to your content
+Artifact-On demand access to AWS compliance reports
+<br />
+<br />
+<b>Mobile Services:</b><br />
+Mobile Hub-
+PinPoint-
+AppSync-syncing data in backend<br />
+&nbsp;Device Farm
+Mobile Analytics- measures app usage and revenue<br />
+<br />
+<b>&nbsp;AR &amp;VR(Augmented Reality/Virtual Reality):</b><br />
+
+Sumerian
+
+Application Integration<br />
+&nbsp;Step Function- coordinate the components of distributed apps and microservice using visual workflow<br />
+Simple Notification Service-Pub/Sub message<br />
+Simple Queue Service-fully managed message queue<br />
+&nbsp;Simple workflow service-build,run and scale background jobs that have parallel or sequential steps
+
+Business Productivity<br />
+Alexa  for Business
+Amazon Chime – service for online meeting<br />
+WorkDocs-file collabrations and managements<br />
+WorkMail
+
+
+Customer Engagement
+Simple Email Service
+Amazon Connect
+
+Desktop and app streaming
+Workspace
+AppStream 2.0 Stream desktop apps<br />
+<br />
+<b>&nbsp;Internet of Things</b>&nbsp;:<br />
+AWS IoT
+IoT Device management
+Amazon<br />
+&nbsp;FreeRTOS<br />
+AWS Greengrass<br />
+<br />
+<b>&nbsp;Game development:</b>
+Gamelift<br />
+<br />
+<br />
+<b>&nbsp;Creating Windows EC2:</b><br />
+1. Go to EC2 option<br />
+2. Click on Launch instance<br />
+&nbsp;3. Select AMI<br />
+&nbsp;4. Choose instance type<br />
+5. Configure instance<br />
+&nbsp;6. Select storage<br />
+7. Add tags for associating EC2 instance<br />
+&nbsp;8. Create security rules<br />
+&nbsp;9. Click on launch and create a new key value pair and download pem file<br />
+10. Launch instance
+Default user : administrators
+
+Terminating:
+Running Instances - Actions-instance state- terminate<br />
+<br />
+<b>Creating Linux EC2:
+</b>Use putty gen to generate ppk file from pem and use in auth of putty
+Default user : ec2-user<br />
+<br />
+<b>&nbsp;Creating WordPress:</b>
+Go to EC2 and select launch instance
+Click on AWS marketplace<br />
+<br />
+&nbsp;<b>Why Use the Cloud:</b>
+
+Undifferentiated heavy lifting
+Cattle not pets, Fail Fast ,OpEx vs CapEx<br />
+&nbsp; <br />
+<b>Certificate Cloud:
+</b>Associate
+Professional
+Specialty</div>
+
+  </div><a class="u-url" href="/vrexploring/2019/10/04/aws-introduction.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/vrexploring/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">VR Exploring</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">VR Exploring</li><li><a class="u-email" href="mailto:vrexploring@gmail.com">vrexploring@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/vemarahub"><svg class="svg-icon"><use xlink:href="/vrexploring/assets/minima-social-icons.svg#github"></use></svg> <span class="username">vemarahub</span></a></li><li><a href="https://www.twitter.com/vrexploring"><svg class="svg-icon"><use xlink:href="/vrexploring/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">vrexploring</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>A space where i share my thoughts and experiences about technology , science, life, family and everything in between.</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>
