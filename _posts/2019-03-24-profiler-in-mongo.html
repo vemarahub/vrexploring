@@ -1,0 +1,245 @@
+---
+layout: post
+title: Profiler in Mongo
+date: '2019-03-24T00:21:00.000-07:00'
+author: Rajesh Nair
+tags:
+- Mongo
+- Profiling
+modified_time: '2020-03-11T11:01:12.676-07:00'
+thumbnail: https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiQGlBqtb8OVB3uJFX_4UTg1ye92kNL6CvkbQALVr5Y_5tzD0bRHEDjit-1_rDjRTFQpVE1pBcvbDyRyja98T_7t3QkGzfIYGvUnmRva1qqxUTaPdG1dX4wYdnJpZv0PXzNJ7k_aOxYZ4M/s72-c/ha.JPG
+blogger_id: tag:blogger.com,1999:blog-8827475125741824309.post-3830978758538895432
+blogger_orig_url: https://csrepo.blogspot.com/2019/03/profiler-in-mongo.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+Profiler can be used to setup logging on the mongo instance.<br />
+<br />
+<b>Events captured by the profiler:</b><br />
+*CRUD<br />
+*Administrative Operations<br />
+*Configuration Operations<br /><br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiQGlBqtb8OVB3uJFX_4UTg1ye92kNL6CvkbQALVr5Y_5tzD0bRHEDjit-1_rDjRTFQpVE1pBcvbDyRyja98T_7t3QkGzfIYGvUnmRva1qqxUTaPdG1dX4wYdnJpZv0PXzNJ7k_aOxYZ4M/s1600/ha.JPG" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="308" data-original-width="1024" height="192" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiQGlBqtb8OVB3uJFX_4UTg1ye92kNL6CvkbQALVr5Y_5tzD0bRHEDjit-1_rDjRTFQpVE1pBcvbDyRyja98T_7t3QkGzfIYGvUnmRva1qqxUTaPdG1dX4wYdnJpZv0PXzNJ7k_aOxYZ4M/s640/ha.JPG" width="640" /></a></div>
+<br />
+<br />
+If we check the profiling level method definition we can see how the profiling method is to be used.<br />
+<br />
+<b>&gt; db.setProfilingLevel</b><br />
+<i>function (level, options) {</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; if (level &lt; 0 || level &gt; 2) {</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; var errorText = "input level " + level + " is out of range [0..2]";</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; var errorObject = new Error(errorText);</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; errorObject['dbSetProfilingException'] = errorText;</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; throw errorObject;</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; }</i><br />
+<i><br /></i>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; var cmd = {profile: level};</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; if (isNumber(options)) {</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; cmd.slowms = options;</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; } else {</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; cmd = Object.extend(cmd, options);</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; }</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; return assert.commandWorked(this._dbCommand(cmd));</i><br />
+<i>&nbsp; &nbsp; }</i><br />
+<div>
+<br /></div>
+<div>
+db.commandHelp method can be used to know details about different methods used in mongo.For profile setup the details about the command can be found as below:</div>
+<div>
+<br /></div>
+<div>
+<div>
+<b>&gt; db.commandHelp("profile")</b></div>
+<div>
+<i>help for: profile controls the behaviour of the performance profiler, the fraction of eligible operations which are sampled for logging/profiling, and the threshold duration at which ops become eligible. See http://docs.mongodb.org/manual/reference/command/profile</i></div>
+<div>
+<br /></div>
+</div>
+<div>
+Setting up profiling on the databases as level 2 can be done as below:</div>
+<div>
+<div>
+<b>&gt; db.setProfilingLevel(2)</b></div>
+<div>
+<i>{ "was" : 0, "slowms" : 100, "sampleRate" : 1, "ok" : 1 }</i></div>
+</div>
+<div>
+<i><br /></i></div>
+<div>
+<i>or</i></div>
+<div>
+<i><br /></i></div>
+<div>
+<b>&gt; db.setProfilingLevel(1,3)</b></div>
+<div>
+<i>{ "was" : 2, "slowms" : 100, "sampleRate" : 1, "ok" : 1 }</i></div>
+<div>
+<br /></div>
+<div>
+The details about the profiling set can be seen by queryinig the system collection</div>
+<div>
+<div>
+<b>&gt; db.system.profile.find().sort({$natural:-1}).limit(1).pretty()</b></div>
+<div>
+<i>{</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "op" : "query",</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "ns" : "config.system.profile",</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "command" : {</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "find" : "system.profile",</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "filter" : {</i></div>
+<div>
+<i><br /></i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; },</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "lsid" : {</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "id" : UUID("f563a6c1-6877-447b-93c5-59ff4bf75308")</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; },</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "$db" : "config"</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; },</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "keysExamined" : 0,</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "docsExamined" : 1,</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "cursorExhausted" : true,</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "numYield" : 0,</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "nreturned" : 1,</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "locks" : {</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "Global" : {</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "acquireCount" : {</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "r" : NumberLong(1)</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; }</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; },</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "Database" : {</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "acquireCount" : {</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "r" : NumberLong(1)</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; }</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; },</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "Collection" : {</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "acquireCount" : {</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "r" : NumberLong(1)</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; }</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; }</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; },</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "responseLength" : 1191,</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "protocol" : "op_msg",</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "millis" : 0,</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "planSummary" : "COLLSCAN",</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "execStats" : {</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "stage" : "COLLSCAN",</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "nReturned" : 1,</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "executionTimeMillisEstimate" : 0,</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "works" : 3,</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "advanced" : 1,</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "needTime" : 1,</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "needYield" : 0,</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "saveState" : 0,</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "restoreState" : 0,</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "isEOF" : 1,</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "invalidates" : 0,</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "direction" : "forward",</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "docsExamined" : 1</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; },</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "ts" : ISODate("2019-03-23T15:37:27.842Z"),</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "client" : "127.0.0.1",</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "appName" : "MongoDB Shell",</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "allUsers" : [ ],</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "user" : ""</i></div>
+<div>
+<i>}</i></div>
+</div>
+<div>
+<br /></div>
+<div>
+We can also see the last set of operations on the database by querying the system collection&nbsp;</div>
+<div>
+<div>
+<b>&gt; db.system.profile.find({},{op:1}).sort({$natural:-1}).limit(4).pretty()</b></div>
+<div>
+<i>{ "op" : "query" }</i></div>
+<div>
+<i>{ "op" : "update" }</i></div>
+<div>
+<i>{ "op" : "query" }</i></div>
+<div>
+<i>{ "op" : "query" }</i></div>
+</div>
+<div>
+<br /></div>
+<div>
+We can also check details about the profiling using</div>
+<div>
+<div>
+<b>&gt;show profile</b></div>
+</div>
+<div>
+<br /></div>
+<div>
+To check what level of profiling is set on the instance we can use</div>
+<div>
+<div>
+<b>&gt; db.getProfilingStatus()</b></div>
+<div>
+<i>{ "was" : 2, "slowms" : 100, "sampleRate" : 1 }</i></div>
+<div>
+<br /></div>
+</div>
+<div>
+<span style="font-family: inherit;">In Profiling data will
+be writing from beginning again , once it reaches end in profile collection.It
+has no indexes also, to speed up write to profile collection.&nbsp;</span></div>
+</div>

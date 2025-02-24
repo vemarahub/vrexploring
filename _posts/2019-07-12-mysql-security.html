@@ -1,0 +1,440 @@
+---
+layout: post
+title: MySQL Security
+date: '2019-07-12T05:55:00.002-07:00'
+author: Rajesh Nair
+tags:
+modified_time: '2020-02-19T08:24:50.275-08:00'
+blogger_id: tag:blogger.com,1999:blog-8827475125741824309.post-5871964154132064738
+blogger_orig_url: https://csrepo.blogspot.com/2019/07/mysql-security.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<div class="sidenav">
+Security for a database could be at a physical level,network level,OS level,File System level or at User account level.The mysql.user table contains&nbsp; account identification tables,global privilege information,optional usage limitations etc.</div>
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<br />
+basic account info consists of:<br />
+host value(location from where user can login),user value(username for login) - two halves of primary key<br />
+Optional password value<br />
+<br />
+Host Property is classified by location specification options :<br />
+Named locations(localhost)<br />
+Specific IP address<br />
+Domain Name<br />
+Range of Ip address - network prefix format eg: 192.168.0.0/24 or wildcard ip address<br />
+<br />
+There can also be wildcard host values such as:<br />
+In IP address - '192.168.1.%' or '192.168.1._ _'<br />
+In domain name '%.xyz.%' or '_ _ _.xyz.com'<br />
+To specify any location - ('%')<br />
+<br />
+<b>Creating a new User</b><br />
+<br />
+mysql&gt; use mysql<br />
+<br />
+mysql&gt; CREATE USER 'test'@'localhost' IDENTIFIED BY 'pwd';<br />
+Query OK, 0 rows affected (0.01 sec)<br />
+<br />
+mysql&gt; select user, host,authentication_string from user where user='test';<br />
++-----------+-----------+-------------------------------------------+<br />
+| user&nbsp; &nbsp; &nbsp; | host&nbsp; &nbsp; &nbsp; | authentication_string&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;|<br />
++-----------+-----------+-------------------------------------------+<br />
+| test&nbsp; &nbsp; &nbsp; | localhost | *975B2CD4FF9AE554FE8AD33168FBFC326D2021DD |<br />
++-----------+-----------+-------------------------------------------+<br />
+<br />
+<b>User Privileges</b><br />
+It is used to grant or restrict access to resources managed by the database server and only applies to database server.<br />
+<br />
+The various scope hierarchy for user privileges are:<br />
+<br />
+<b>Global </b>- available anywhere within preview of DB server.<br />
+<b>Database</b> - only to a particular database<br />
+<b>Table</b> - assigned table by table basis<br />
+<b>Column </b>- access column wise<br />
+<b>Routine</b> - privilege for using/modifying/dropping stored procedures<br />
+<br />
+Privileges held in RAM when the user logs in to the particular scope.<br />
+<br />
+<b>Reviewing Privilege</b><br />
+<br />
+mysql&gt; show grants \G<br />
+*************************** 1. row ***************************<br />
+Grants for root@localhost: GRANT ALL PRIVILEGES ON *.* TO 'root'@'localhost' WITH GRANT OPTION<br />
+*************************** 2. row ***************************<br />
+Grants for root@localhost: GRANT PROXY ON ''@'' TO 'root'@'localhost' WITH GRANT OPTION<br />
+2 rows in set (0.00 sec)<br />
+<br />
+mysql&gt; SHOW GRANTS FOR 'joe'@'%' \G<br />
+*************************** 1. row ***************************<br />
+Grants for joe@%: GRANT USAGE ON *.* TO 'joe'@'%'<br />
+1 row in set (0.00 sec)<br />
+USAGE - no privileges but only login and see information schema dbs<br />
+<br />
+<br />
+The various Privilege Tables used are:<br />
+user<br />
+db<br />
+tables_priv<br />
+columns_priv<br />
+procs_priv<br />
+<br />
+<br />
+<br />
+<b>Global Privileges</b><br />
+Blanket Access to database system including mysql db.Privileges usually reserved for admin accounts.<br />
+Eg:<br />
+"Select","Insert","Update" and "Delete"<br />
+"Create","Alter" and "Drop" - for both db and tables<br />
+"File","Process","Shutdown" - Only global privelege<br />
+"Create User" Privilege<br />
+"Super" privelege - eg change password,<br />
+<br />
+<br />
+mysql&gt; GRANT SELECT ON *.*&nbsp; TO 'test'@'localhost';<br />
+Query OK, 0 rows affected (0.01 sec)<br />
+<br />
+mysql&gt; select * from user where user='test'\G<br />
+*************************** 1. row ***************************<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Host: localhost<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; User: test<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;Select_priv: Y<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;Insert_priv: N<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;Update_priv: N<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;Delete_priv: N<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;Create_priv: N<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;Drop_priv: N<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;Reload_priv: N<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;Shutdown_priv: N<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Process_priv: N<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;File_priv: N<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Grant_priv: N<br />
+&nbsp; &nbsp; &nbsp; &nbsp;References_priv: N<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Index_priv: N<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Alter_priv: N<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Show_db_priv: N<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Super_priv: N<br />
+&nbsp;Create_tmp_table_priv: N<br />
+&nbsp; &nbsp; &nbsp; Lock_tables_priv: N<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Execute_priv: N<br />
+&nbsp; &nbsp; &nbsp; &nbsp;Repl_slave_priv: N<br />
+&nbsp; &nbsp; &nbsp; Repl_client_priv: N<br />
+&nbsp; &nbsp; &nbsp; Create_view_priv: N<br />
+&nbsp; &nbsp; &nbsp; &nbsp; Show_view_priv: N<br />
+&nbsp; &nbsp;Create_routine_priv: N<br />
+&nbsp; &nbsp; Alter_routine_priv: N<br />
+&nbsp; &nbsp; &nbsp; Create_user_priv: N<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Event_priv: N<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Trigger_priv: N<br />
+Create_tablespace_priv: N<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ssl_type:<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ssl_cipher:<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;x509_issuer:<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; x509_subject:<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;max_questions: 0<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;max_updates: 0<br />
+&nbsp; &nbsp; &nbsp; &nbsp;max_connections: 0<br />
+&nbsp; max_user_connections: 0<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; plugin: mysql_native_password<br />
+&nbsp;authentication_string: *975B2CD4FF9AE554FE8AD33168FBFC326D2021DD<br />
+&nbsp; &nbsp; &nbsp; password_expired: N<br />
+&nbsp;password_last_changed: 2019-07-11 10:01:55<br />
+&nbsp; &nbsp; &nbsp;password_lifetime: NULL<br />
+&nbsp; &nbsp; &nbsp; &nbsp; account_locked: N<br />
+1 row in set (0.00 sec)<br />
+<br />
+mysql&gt; GRANT ALL ON *.*&nbsp; TO 'test'@'localhost';<br />
+Query OK, 0 rows affected (0.00 sec)<br />
+<br />
+mysql&gt; select * from user where user='test'\G<br />
+*************************** 1. row ***************************<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Host: localhost<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; User: test<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;Select_priv: Y<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;Insert_priv: Y<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;Update_priv: Y<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;Delete_priv: Y<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;Create_priv: Y<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;Drop_priv: Y<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;Reload_priv: Y<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;Shutdown_priv: Y<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Process_priv: Y<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;File_priv: Y<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Grant_priv: N<br />
+&nbsp; &nbsp; &nbsp; &nbsp;References_priv: Y<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Index_priv: Y<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Alter_priv: Y<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Show_db_priv: Y<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Super_priv: Y<br />
+&nbsp;Create_tmp_table_priv: Y<br />
+&nbsp; &nbsp; &nbsp; Lock_tables_priv: Y<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Execute_priv: Y<br />
+&nbsp; &nbsp; &nbsp; &nbsp;Repl_slave_priv: Y<br />
+&nbsp; &nbsp; &nbsp; Repl_client_priv: Y<br />
+&nbsp; &nbsp; &nbsp; Create_view_priv: Y<br />
+&nbsp; &nbsp; &nbsp; &nbsp; Show_view_priv: Y<br />
+&nbsp; &nbsp;Create_routine_priv: Y<br />
+&nbsp; &nbsp; Alter_routine_priv: Y<br />
+&nbsp; &nbsp; &nbsp; Create_user_priv: Y<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Event_priv: Y<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Trigger_priv: Y<br />
+Create_tablespace_priv: Y<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ssl_type:<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ssl_cipher:<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;x509_issuer:<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; x509_subject:<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;max_questions: 0<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;max_updates: 0<br />
+&nbsp; &nbsp; &nbsp; &nbsp;max_connections: 0<br />
+&nbsp; max_user_connections: 0<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; plugin: mysql_native_password<br />
+&nbsp;authentication_string: *975B2CD4FF9AE554FE8AD33168FBFC326D2021DD<br />
+&nbsp; &nbsp; &nbsp; password_expired: N<br />
+&nbsp;password_last_changed: 2019-07-11 10:01:55<br />
+&nbsp; &nbsp; &nbsp;password_lifetime: NULL<br />
+&nbsp; &nbsp; &nbsp; &nbsp; account_locked: N<br />
+1 row in set (0.00 sec)<br />
+<br />
+<br />
+<b>Database Privileges</b><br />
+Database privileges apply to all resources within a specific database.<br />
+"Create","Alter","Drop" for tables within the database.<br />
+"select","insert","update","delete"<br />
+"execute"<br />
+<br />
+mysql&gt; GRANT SELECT,INSERT ON maintpro.* TO 'joe'@'%';<br />
+Query OK, 0 rows affected (0.01 sec)<br />
+<br />
+mysql&gt; select * from db\G<br />
+*************************** 1. row ***************************<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;Host: localhost<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;Db: sys<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;User: mysql.sys<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Select_priv: N<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Insert_priv: N<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Update_priv: N<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Delete_priv: N<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Create_priv: N<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Drop_priv: N<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;Grant_priv: N<br />
+&nbsp; &nbsp; &nbsp; References_priv: N<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;Index_priv: N<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;Alter_priv: N<br />
+Create_tmp_table_priv: N<br />
+&nbsp; &nbsp; &nbsp;Lock_tables_priv: N<br />
+&nbsp; &nbsp; &nbsp;Create_view_priv: N<br />
+&nbsp; &nbsp; &nbsp; &nbsp;Show_view_priv: N<br />
+&nbsp; Create_routine_priv: N<br />
+&nbsp; &nbsp;Alter_routine_priv: N<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;Execute_priv: N<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;Event_priv: N<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;Trigger_priv: Y<br />
+*************************** 2. row ***************************<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;Host: %<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;Db: maintpro<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;User: joe<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Select_priv: Y<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Insert_priv: Y<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Update_priv: N<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Delete_priv: N<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Create_priv: N<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Drop_priv: N<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;Grant_priv: N<br />
+&nbsp; &nbsp; &nbsp; References_priv: N<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;Index_priv: N<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;Alter_priv: N<br />
+Create_tmp_table_priv: N<br />
+&nbsp; &nbsp; &nbsp;Lock_tables_priv: N<br />
+&nbsp; &nbsp; &nbsp;Create_view_priv: N<br />
+&nbsp; &nbsp; &nbsp; &nbsp;Show_view_priv: N<br />
+&nbsp; Create_routine_priv: N<br />
+&nbsp; &nbsp;Alter_routine_priv: N<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;Execute_priv: N<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;Event_priv: N<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;Trigger_priv: N<br />
+2 rows in set (0.00 sec)<br />
+<br />
+<br />
+<br />
+<b>Table Privileges</b><br />
+Used when account must not have access to all tables.<br />
+"Create","Alter","Drop" for a table<br />
+"select","insert","update","delete"<br />
+"create view" , "Trigger"<br />
+<br />
+mysql&gt; GRANT UPDATE,DELETE ON maintpro.userdetails to 'joe'@'%';<br />
+Query OK, 0 rows affected (0.01 sec)<br />
+<br />
+mysql&gt; select * from tables_priv\G<br />
+*************************** 1. row ***************************<br />
+&nbsp; &nbsp; &nbsp; &nbsp;Host: localhost<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;Db: sys<br />
+&nbsp; &nbsp; &nbsp; &nbsp;User: mysql.sys<br />
+&nbsp;Table_name: sys_config<br />
+&nbsp; &nbsp; Grantor: root@localhost<br />
+&nbsp; Timestamp: 2017-07-14 12:22:18<br />
+&nbsp;Table_priv: Select<br />
+Column_priv:<br />
+*************************** 2. row ***************************<br />
+&nbsp; &nbsp; &nbsp; &nbsp;Host: %<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;Db: maintpro<br />
+&nbsp; &nbsp; &nbsp; &nbsp;User: joe<br />
+&nbsp;Table_name: userdetails<br />
+&nbsp; &nbsp; Grantor: root@localhost<br />
+&nbsp; Timestamp: 0000-00-00 00:00:00<br />
+&nbsp;Table_priv: Update,Delete<br />
+Column_priv:<br />
+2 rows in set (0.00 sec)<br />
+<br />
+Set values in bit wise representation so faster for mysql to read access<br />
+<br />
+<b>Column Privileges</b><br />
+"select","insert","update"<br />
+"references"-use to perform some action<br />
+interaction with table privileges<br />
+<br />
+mysql&gt; GRANT SELECT (dbid,desc_id,info),INSERT(mail_flg,enddate),UPDATE(mail_flg,info) ON maintpro.alerts to 'joe'@'%';<br />
+Query OK, 0 rows affected (0.01 sec)<br />
+<br />
+mysql&gt; select * from columns_priv \G<br />
+*************************** 1. row ***************************<br />
+&nbsp; &nbsp; &nbsp; &nbsp;Host: %<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;Db: maintpro<br />
+&nbsp; &nbsp; &nbsp; &nbsp;User: joe<br />
+&nbsp;Table_name: alerts<br />
+Column_name: dbid<br />
+&nbsp; Timestamp: 0000-00-00 00:00:00<br />
+Column_priv: Select<br />
+*************************** 2. row ***************************<br />
+&nbsp; &nbsp; &nbsp; &nbsp;Host: %<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;Db: maintpro<br />
+&nbsp; &nbsp; &nbsp; &nbsp;User: joe<br />
+&nbsp;Table_name: alerts<br />
+Column_name: desc_id<br />
+&nbsp; Timestamp: 0000-00-00 00:00:00<br />
+Column_priv: Select<br />
+*************************** 3. row ***************************<br />
+&nbsp; &nbsp; &nbsp; &nbsp;Host: %<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;Db: maintpro<br />
+&nbsp; &nbsp; &nbsp; &nbsp;User: joe<br />
+&nbsp;Table_name: alerts<br />
+Column_name: info<br />
+&nbsp; Timestamp: 0000-00-00 00:00:00<br />
+Column_priv: Select,Update<br />
+*************************** 4. row ***************************<br />
+&nbsp; &nbsp; &nbsp; &nbsp;Host: %<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;Db: maintpro<br />
+&nbsp; &nbsp; &nbsp; &nbsp;User: joe<br />
+&nbsp;Table_name: alerts<br />
+Column_name: mail_flg<br />
+&nbsp; Timestamp: 0000-00-00 00:00:00<br />
+Column_priv: Insert,Update<br />
+*************************** 5. row ***************************<br />
+&nbsp; &nbsp; &nbsp; &nbsp;Host: %<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;Db: maintpro<br />
+&nbsp; &nbsp; &nbsp; &nbsp;User: joe<br />
+&nbsp;Table_name: alerts<br />
+Column_name: enddate<br />
+&nbsp; Timestamp: 0000-00-00 00:00:00<br />
+Column_priv: Insert<br />
+5 rows in set (0.00 sec)<br />
+<br />
+This adds a column in the tables_priv:<br />
+*************************** 3. row ***************************<br />
+&nbsp; &nbsp; &nbsp; &nbsp;Host: %<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;Db: maintpro<br />
+&nbsp; &nbsp; &nbsp; &nbsp;User: joe<br />
+&nbsp;Table_name: alerts<br />
+&nbsp; &nbsp; Grantor: root@localhost<br />
+&nbsp; Timestamp: 0000-00-00 00:00:00<br />
+&nbsp;Table_priv:<br />
+Column_priv: Select,Insert,Update<br />
+3 rows in set (0.00 sec)<br />
+<br />
+<b>Routine Privileges</b><br />
+"execute","alter routine","grant","create routine"<br />
+<br />
+mysql&gt; GRANT EXECUTE ON FUNCTION world.demo1 TO 'joe'@'%';<br />
+<br />
+<b>Revoking Privileges</b><br />
+mysql&gt; show grants for 'joe'@'%' \G<br />
+*************************** 1. row ***************************<br />
+Grants for joe@%: GRANT USAGE ON *.* TO 'joe'@'%'<br />
+*************************** 2. row ***************************<br />
+Grants for joe@%: GRANT SELECT, INSERT ON `maintpro`.* TO 'joe'@'%'<br />
+*************************** 3. row ***************************<br />
+Grants for joe@%: GRANT SELECT (desc_id, info, dbid), INSERT (enddate, mail_flg), UPDATE (mail_flg, info) ON `maintpro`.`alerts` TO 'joe'@'%'<br />
+*************************** 4. row ***************************<br />
+Grants for joe@%: GRANT UPDATE, DELETE ON `maintpro`.`userdetails` TO 'joe'@'%'<br />
+4 rows in set (0.00 sec)<br />
+<br />
+mysql&gt; REVOKE DELETE ON maintpro.userdetails FROM 'joe'@'%';<br />
+Query OK, 0 rows affected (0.00 sec)<br />
+<br />
+<b>Assigning &amp; Changing Passwords</b><br />
+Users can change thier own password using:<br />
+SET PASSWORD = PASSWORD('<string>')</string><br />
+<br />
+Administrators can change password for other accounts using:<br />
+SET PASSWORD&nbsp; FOR <acct> = PASSWORD('<string>')</string></acct><br />
+<br />
+UPDATE user SET password = PASSWORD('<string>') WHERE user = <user> and host=<host>;</host></user></string><br />
+FLUSH PRIVILEGES;<br />
+<br />
+<b>Limiting Activity By Account</b><br />
+max_user_connections limits no of simultaneous connection by an account.<br />
+<br />
+Account Limitations Possible:<br />
+No of select queries per hour<br />
+No of updates per hour<br />
+No of connections per hour<br />
+No of simultaneous connections<br />
+<br />
+GRANT USAGE ON *.* TO 'user'@'host' WITH MAX_QUERIES_PER_HOUR x MAX_UPDATES_PER_HOUR x MAX_CONNECTION_PER_HOUR x MAX_USER_CONNECTIONS x;<br />
+<br />
+<b>The Login Process</b><br />
+<b>First Test</b> - Client Host validation :Connection attempt packet includes IP address of machine from which the request was sent.Server tests whether there are any accounts whose host range includes this address.If not it returns the message:<br />
+Host <addr> is not allowed to connect to this MySQL server</addr><br />
+<br />
+<b>Second Test </b>- Full account validation :Server now attempts to locate an account that uses the name supplied whose host range includes the client host IP address.If account does not exist, it returns:<br />
+Access denied for user<account> (using password:NO)</account><br />
+<br />
+<b>Third Test</b> - Password Validation:Server hashes the supplied password.If password is incorrect:<br />
+Access denied for user<account> (using password:YES)</account><br />
+<br />
+<b>Additional Security Features</b><br />
+REQUIRE clause after IDENTIFIED BY<br />
+Options: SSL,X509,ISSUER,SUBJECT and CIPHER(NONE is default)<br />
+<br />
+Proxy Privileges : User has privileges of another user.<br />
+GRANT PROXY ON <otheruser> TO <targetuser></targetuser></otheruser><br />
+REQUIRE not allowed and WITH can only include GRANT OPTION<br />
+Requires an authentication plugin<br />
+<b><br /></b>
+<b>Privilege Persistence</b><br />
+mysql&gt; CREATE DATABASE test1;<br />
+Query OK, 1 row affected (0.01 sec)<br />
+<br />
+mysql&gt; GRANT SELECT ON test1.* TO 'joe'@'%';<br />
+Query OK, 0 rows affected (0.00 sec)<br />
+<br />
+mysql&gt; CREATE DATABASE test1;<br />
+Query OK, 1 row affected (0.01 sec)<br />
+<br />
+mysql&gt; GRANT SELECT ON test1.* TO 'joe'@'%';<br />
+Query OK, 0 rows affected (0.00 sec)<br />
+<br />
+mysql&gt; SHOW GRANTS FOR 'joe'@'%' \G&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; *************************** 1. row ***************************&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Grants for joe@%: GRANT SELECT ON `test1`.* TO 'joe'@'%'&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; **************************************************************&nbsp; &nbsp; <br />
+<br />
+mysql&gt; DROP DATABASE test1;<br />
+Query OK, 0 rows affected (0.00 sec)<br />
+<br />
+mysql&gt; SHOW GRANTS FOR 'joe'@'%' \G&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; *************************** 1. row ***************************&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Grants for joe@%: GRANT SELECT ON `test1`.* TO 'joe'@'%'&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; **************************************************************<br />
+<br />
+<b>Alternate Authentication</b><br />
+version 5.5 IDENTIFIED WITH <plugin> [AS '<string>']</string></plugin><br />
+<br />
+<b>Dropping a User Account</b><br />
+mysql&gt; DROP USER ''@'localhost';<br />
+Query OK, 0 rows affected (0.02 sec)</div>
+</div>

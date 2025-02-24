@@ -1,0 +1,181 @@
+---
+layout: post
+title: NameServer,AppServer,AdminServer,Webspeed Configuration and Commands
+date: '2017-12-14T02:07:00.000-08:00'
+author: Rajesh Nair
+tags:
+- start/stop/query brokers
+- ubroker
+- nsman
+- proadsv
+- wtbman
+- asbman
+modified_time: '2020-03-27T05:55:07.998-07:00'
+thumbnail: https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEixY3-7ujWmLlSj8dd90m0_6HMyOOlcKOBOPxqbzccANTa_T0dmPJDns49w5oIAo2aeJuyS4yAM1r5PPggU2ELWz6YsSLzb09epxMhZWR2vX6YvKTChOlSPP1loqCy5mAaIShiANzuwK7od/s72-c/qq.png
+blogger_id: tag:blogger.com,1999:blog-8827475125741824309.post-2110262871773813005
+blogger_orig_url: https://csrepo.blogspot.com/2017/12/nameserverappserveradminserverwebspeed.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<br />
+<br />
+Since we are done with the theoritical part of the various entities , lets see how we use them in a real work scenario for a progress DB environment.<br />
+<b><u><br /></u></b><b><u>Admin Server</u></b><br />
+<b><br /></b>Admin server properties is configured in the&nbsp;AdminServerplugins.properties file present in the &lt;openedge-install-dir&gt;/properties path.<br />
+<br />
+The default port of admin server is 20931.<br />
+<br />
+To start admin server , use<br />
+<br />
+<b>proadsv -start</b><br />
+<br />
+To start in a different port, use<br />
+<br />
+<b>proadsv -port &lt;portnumber&gt; -start</b><br />
+<b><br /></b><b><br /></b>To stop admin server use,<br />
+<br />
+<b>proadsv -stop</b><br />
+<b><br /></b>To query the admin server status, use<br />
+<b><br /></b><b>proadsv -query</b><br />
+<b><br /></b><b><br /></b><b><u><br /></u></b><b><u>NameServer</u></b><br />
+<br />
+We can configure nameserver instance using the ubroker,properties file.The different commands to start,stop,query nameserver are:<br />
+<br />
+To Stop:<br />
+<br />
+<b>nsman -name &lt;nameserver-name&gt; -stop</b><br />
+<br />
+To Start:<br />
+<br />
+<b>nsman -name &lt;nameserver-name&gt; -start</b><br />
+<b><br /></b><b><br /></b>To query<br />
+<br />
+<b>nsman -name &lt;nameserver-name&gt; -query</b><br />
+<br />
+<b><br /></b><u><b><br /></b></u><u><b>Configuring Appserver and Webspeed</b></u><br />
+<br />
+<br />
+The appserver and webspeed configuration is done in the ubroker.properties file,By default wsbroker1 and asbroker1 entries can be found as sample configuration for webspeed and appserver respectively.<br />
+<br />
+<br />
+The following would be how a configuration for a new webspeed will look like:<br />
+<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEixY3-7ujWmLlSj8dd90m0_6HMyOOlcKOBOPxqbzccANTa_T0dmPJDns49w5oIAo2aeJuyS4yAM1r5PPggU2ELWz6YsSLzb09epxMhZWR2vX6YvKTChOlSPP1loqCy5mAaIShiANzuwK7od/s1600/qq.png" imageanchor="1" style="clear: left; float: left; margin-bottom: 1em; margin-right: 1em;"><img border="0" height="393" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEixY3-7ujWmLlSj8dd90m0_6HMyOOlcKOBOPxqbzccANTa_T0dmPJDns49w5oIAo2aeJuyS4yAM1r5PPggU2ELWz6YsSLzb09epxMhZWR2vX6YvKTChOlSPP1loqCy5mAaIShiANzuwK7od/s640/qq.png" width="640" /></a></div>
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<b><br /></b>
+<b>Test Configuration</b><br />
+<br />
+[UBroker.WS.wsbroker_test1]<br />
+&nbsp; &nbsp; appserviceNameList=wsbroker_test1<br />
+&nbsp; &nbsp; brokerLogFile=$WRKDIR/wsbroker_test1.broker.log<br />
+&nbsp; &nbsp; controllingNameServer=NS1<br />
+&nbsp; &nbsp; description=A sample WebSpeed Transaction Server<br />
+&nbsp; &nbsp; environment=wsbroker_test1<br />
+&nbsp; &nbsp; #initialSrvrInstance=2<br />
+&nbsp; &nbsp; #maxSrvrInstance=5<br />
+&nbsp; &nbsp; #minSrvrInstance=2<br />
+&nbsp; &nbsp; groupName=sys<br />
+&nbsp; &nbsp; portNumber=3045<br />
+&nbsp; &nbsp; srvrMinPort=7702<br />
+&nbsp; &nbsp; srvrMaxPort=8802<br />
+&nbsp; &nbsp; srvrLogFile=$WRKDIR/wsbroker_test1.server.log<br />
+&nbsp; &nbsp; srvrStartupParam=-db "/usr/wrk/testdb/test1" -H "testServ" -S 1234 -U "wtbman" -P "wtbman" -T /tmp -p "web/objects/web-disp.p" -weblogerror -rx<br />
+&nbsp; &nbsp; uuid=62627235afbd9a53:2c59ad6a:12b127d0123:-8000<br />
+&nbsp; &nbsp; workDir=/home/rajesh<br />
+<div>
+<br /></div>
+<br />
+The following would be how a configuration of a new appserver will be:<br />
+<br />
+<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEizJgpGVd_WToiM4DfNJGbtxghayc76GsgNyIw_HumnJbZs9DBLQf3eZ_bjhAGjlbY7Dh2VgB3QNASAe1obbGNoM0kqlRexDHBlmCn0Jdu2ZOZpKonTlNkBqi79YlNQORfXtWhP93CpMxBr/s1600/qw.png" imageanchor="1" style="clear: left; float: left; margin-bottom: 1em; margin-right: 1em;"><img border="0" height="366" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEizJgpGVd_WToiM4DfNJGbtxghayc76GsgNyIw_HumnJbZs9DBLQf3eZ_bjhAGjlbY7Dh2VgB3QNASAe1obbGNoM0kqlRexDHBlmCn0Jdu2ZOZpKonTlNkBqi79YlNQORfXtWhP93CpMxBr/s640/qw.png" width="640" /></a></div>
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<b>Test Configuration</b><br />
+[UBroker.AS.asbroker_test1]<br />
+&nbsp; &nbsp; appserviceNameList=asbroker_test1<br />
+&nbsp; &nbsp; brkrDebuggerKeyAlias=default_server<br />
+&nbsp; &nbsp; brokerLogFile=$WRKDIR/asbroker_test1.broker.log<br />
+&nbsp; &nbsp; controllingNameServer=NS1<br />
+&nbsp; &nbsp; environment=asbroker_test1<br />
+&nbsp; &nbsp; keyAlias=default_server<br />
+&nbsp; &nbsp; mqBrokerLogFile=$WRKDIR/asbroker_test1.mqbroker.log<br />
+&nbsp; &nbsp; mqServerLogFile=$WRKDIR/asbroker_test1.mqserver.log<br />
+&nbsp; &nbsp; portNumber=3195<br />
+&nbsp; &nbsp; srvrLogFile=$WRKDIR/asbroker_test1.server.log<br />
+&nbsp; &nbsp; srvrStartupParam=-db "/usr/wrk/testdb/test1" -H "testServ" -S 1234 -U "asbman" -P "asbman" -T /tmp<br />
+&nbsp; &nbsp; uuid=6271124634d7b4eb:-267c7794:12b127aa471:-7cb3<br />
+<div>
+<br /></div>
+Once configuration done, you need to start admin Server, web speed and app Server.<br />
+<br />
+Admin Server Start/Stop/Query<br />
+<br />
+<b>/usr/dlc/bin/proadsv –start/stop/q</b><span class="Apple-tab-span" style="white-space: pre;"><b> </b> </span><br />
+<br />
+App Server Start/Stop/Query<br />
+<br />
+<b>asbman –i &lt;appServer-broker-name&gt; -start/stop/q</b><br />
+<br />
+Web speed Start/Stop/Query<br />
+<br />
+<b>wtbman –i &lt;webspeed-broker-name&gt; -start/stop/q</b><br />
+<br />
+Checking status of naming Server<br />
+<br />
+<b>nsman –i &nbsp;NS1 &nbsp;-q</b><br />
+<b><br /></b>
+Check working directory of particular broker<br />
+<br />
+<b>asconfig -name <broker-name> -v [ -f <propfile> ]</propfile></broker-name></b><br />
+<b><br /></b>
+<b>wsconfig -i wsbroker_test1 -v</b><br />
+<b><br /></b>
+<span style="background: rgb(248 , 248 , 248); border: 0px; font-family: &quot;arial&quot; , &quot;helvetica&quot; , sans-serif; font-size: 13px; line-height: 1.6; margin: 0px; outline: 0px; padding: 0px; vertical-align: baseline;"><b>ubconfig -f ubroker.properties</b></span><br />
+<div>
+<br /></div>
+<br /></div>

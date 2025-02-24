@@ -1,0 +1,157 @@
+---
+layout: post
+title: Bootstrap in Angular
+date: '2020-04-09T23:04:00.003-07:00'
+author: Rajesh Nair
+tags:
+- bootstrap
+- UI
+- angular
+modified_time: '2020-04-09T23:04:44.411-07:00'
+blogger_id: tag:blogger.com,1999:blog-8827475125741824309.post-6086806052835600218
+blogger_orig_url: https://csrepo.blogspot.com/2020/04/bootstrap-in-angular.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<br />
+To implement bootstrap in an angular application after creating it with ng new command , follow the below steps:<br />
+<br />
+<b>1. </b>Open command prompt and cd to the project directory and run&nbsp; below commands<br />
+<br />
+<div class="MsoNormal">
+<br /></div>
+<div class="MsoNormal">
+npm install jquery –save<o:p></o:p></div>
+<div class="MsoNormal">
+npm install popper.js – save<o:p></o:p></div>
+<div class="MsoNormal">
+npm install bootstrap –save<o:p></o:p></div>
+<div class="MsoNormal">
+npm install font-awesome –save<o:p></o:p></div>
+<br /><br />
+<b>2.</b>&nbsp;Open project folder in visual studio and in the angular.json file of the project add the below styles and scripts:<br />
+<div class="MsoNormal">
+&nbsp; &nbsp; "styles": [<o:p></o:p></div>
+<div class="MsoNormal">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+"src/styles.scss",<o:p></o:p></div>
+<div class="MsoNormal">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+"node_modules/bootstrap/dist/css/bootstrap.css",<o:p></o:p></div>
+<div class="MsoNormal">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+"node_modules/font-awesome/css/font-awesome.css"<o:p></o:p></div>
+<div class="MsoNormal">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ],<o:p></o:p></div>
+<div class="MsoNormal">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+"scripts": [<o:p></o:p></div>
+<div class="MsoNormal">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+"node_modules/jquery/dist/jquery.js",<o:p></o:p></div>
+<div class="MsoNormal">
+&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"node_modules/popper.js/dist/umd/popper.js",<o:p></o:p></div>
+<div class="MsoNormal">
+<br /></div>
+<div class="MsoNormal">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+"node_modules/bootstrap/dist/js/bootstrap.js"<o:p></o:p></div>
+<br />
+<div class="MsoNormal">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ]<o:p></o:p></div>
+<div class="MsoNormal">
+<br /></div>
+<div class="MsoNormal">
+<b>3. </b>To add a nav bar with dashboard and about as two menu options and a search bar, add the below code in app.component.html</div>
+<div style="background-color: #1e1e1e; color: #d4d4d4; font-family: Consolas, &quot;Courier New&quot;, monospace; font-size: 14px; line-height: 19px; white-space: pre;">
+<div>
+<span style="color: grey;">&lt;</span><span style="color: #569cd6;">nav</span>&nbsp;<span style="color: #9cdcfe;">class</span>=<span style="color: #ce9178;">"navbar&nbsp;navbar-expand-sm&nbsp;bg-success&nbsp;navbar-dark"</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;<span style="color: grey;">&lt;</span><span style="color: #569cd6;">a</span>&nbsp;<span style="color: #9cdcfe;">class</span>=<span style="color: #ce9178;">"navbar-brand"</span>&nbsp;<span style="color: #9cdcfe;">href</span>=<span style="color: #ce9178;">"#"</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Angular&nbsp;Task&nbsp;Manager</div>
+<div>
+&nbsp;&nbsp;<span style="color: grey;">&lt;/</span><span style="color: #569cd6;">a</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;<span style="color: grey;">&lt;</span><span style="color: #569cd6;">button</span>&nbsp;<span style="color: #9cdcfe;">class</span>=<span style="color: #ce9178;">"navbar-toggler"</span>&nbsp;<span style="color: #9cdcfe;">type</span>=<span style="color: #ce9178;">"button"</span>&nbsp;<span style="color: #9cdcfe;">data-toggle</span>=<span style="color: #ce9178;">"collapse"</span>&nbsp;<span style="color: #9cdcfe;">data-target</span>=<span style="color: #ce9178;">"#mynav"</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;</span><span style="color: #569cd6;">span</span>&nbsp;<span style="color: #9cdcfe;">class</span>=<span style="color: #ce9178;">"navbar-toggler-icon"</span><span style="color: grey;">&gt;&lt;/</span><span style="color: #569cd6;">span</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;<span style="color: grey;">&lt;/</span><span style="color: #569cd6;">button</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;<span style="color: grey;">&lt;</span><span style="color: #569cd6;">div</span>&nbsp;<span style="color: #9cdcfe;">class</span>=<span style="color: #ce9178;">"collapse&nbsp;navbar-collapse"</span>&nbsp;<span style="color: #9cdcfe;">id</span>=<span style="color: #ce9178;">"mynav"</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;</span><span style="color: #569cd6;">ul</span>&nbsp;<span style="color: #9cdcfe;">class</span>=<span style="color: #ce9178;">"navbar-nav&nbsp;mr-auto"</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;</span><span style="color: #569cd6;">li</span>&nbsp;<span style="color: #9cdcfe;">class</span>=<span style="color: #ce9178;">"nav-item"</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;</span><span style="color: #569cd6;">a</span>&nbsp;<span style="color: #9cdcfe;">class</span>=<span style="color: #ce9178;">"nav-link"</span>&nbsp;<span style="color: #9cdcfe;">routerLink</span>=<span style="color: #ce9178;">"Dashboard"</span><span style="color: grey;">&gt;</span>Dashboard<span style="color: grey;">&lt;/</span><span style="color: #569cd6;">a</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;/</span><span style="color: #569cd6;">li</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;</span><span style="color: #569cd6;">li</span>&nbsp;<span style="color: #9cdcfe;">class</span>=<span style="color: #ce9178;">"nav-item"</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;</span><span style="color: #569cd6;">a</span>&nbsp;<span style="color: #9cdcfe;">class</span>=<span style="color: #ce9178;">"nav-link"</span>&nbsp;<span style="color: #9cdcfe;">routerLink</span>=<span style="color: #ce9178;">"About"</span><span style="color: grey;">&gt;</span>About<span style="color: grey;">&lt;/</span><span style="color: #569cd6;">a</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;/</span><span style="color: #569cd6;">li</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;/</span><span style="color: #569cd6;">ul</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;</span><span style="color: #569cd6;">form</span>&nbsp;<span style="color: #9cdcfe;">class</span>=<span style="color: #ce9178;">"form-inline&nbsp;my-2&nbsp;my-lg-0"</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;</span><span style="color: #569cd6;">div</span>&nbsp;<span style="color: #9cdcfe;">class</span>=<span style="color: #ce9178;">"input-group"</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;</span><span style="color: #569cd6;">div</span>&nbsp;<span style="color: #9cdcfe;">class</span>=<span style="color: #ce9178;">"input-group-prepend"</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;</span><span style="color: #569cd6;">span</span>&nbsp;<span style="color: #9cdcfe;">class</span>=<span style="color: #ce9178;">"input-group-text"</span>&nbsp;<span style="color: #9cdcfe;">id</span>=<span style="color: #ce9178;">"search"</span><span style="color: grey;">&gt;&lt;</span><span style="color: #569cd6;">i</span>&nbsp;<span style="color: #9cdcfe;">class</span>=<span style="color: #ce9178;">"fa&nbsp;fa-search"</span><span style="color: grey;">&gt;&lt;/</span><span style="color: #569cd6;">i</span><span style="color: grey;">&gt;&lt;/</span><span style="color: #569cd6;">span</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;/</span><span style="color: #569cd6;">div</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;</span><span style="color: #569cd6;">input</span>&nbsp;<span style="color: #9cdcfe;">type</span>=<span style="color: #ce9178;">"text"</span>&nbsp;<span style="color: #9cdcfe;">class</span>=<span style="color: #ce9178;">"form-control"</span>&nbsp;<span style="color: #9cdcfe;">placeholder</span>=<span style="color: #ce9178;">"Search"</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;/</span><span style="color: #569cd6;">div</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;</span><span style="color: #569cd6;">button</span>&nbsp;<span style="color: #9cdcfe;">class</span>=<span style="color: #ce9178;">"btn&nbsp;btn-warning&nbsp;my2-&nbsp;my-sm-0"</span>&nbsp;<span style="color: #9cdcfe;">type</span>=<span style="color: #ce9178;">"button"</span><span style="color: grey;">&gt;</span>Search<span style="color: grey;">&lt;/</span><span style="color: #569cd6;">button</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;/</span><span style="color: #569cd6;">form</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;<span style="color: grey;">&lt;/</span><span style="color: #569cd6;">div</span><span style="color: grey;">&gt;</span></div>
+<div>
+<span style="color: grey;">&lt;/</span><span style="color: #569cd6;">nav</span><span style="color: grey;">&gt;</span></div>
+<br /><br /></div>
+<br />
+<b>4. </b>Create a component for each dashboard and about using command prompt and running below commands:<br />
+<div class="MsoNormal">
+ng g component dashboard<o:p></o:p></div>
+<div class="MsoNormal">
+ng g component about<o:p></o:p></div>
+<div class="MsoNormal">
+<br /></div>
+<div class="MsoNormal">
+This will create folders dashboard and about inside your main project folder with all related files for angular.eg:</div>
+<div class="MsoNormal">
+dashboard.component.html</div>
+<div class="MsoNormal">
+dashboard.component.scss</div>
+<div class="MsoNormal">
+dashboard.component.spec.ts</div>
+<div class="MsoNormal">
+dashboard.component.ts</div>
+<div class="MsoNormal">
+<br /></div>
+<div class="MsoNormal">
+<b>5. </b>Open dashboard.component.ts and the name given for selector field in @Component tag can be edited and used in our app.component.html file to add that component to our app.</div>
+<div class="MsoNormal">
+For eg:&nbsp;app-dashboard</div>
+<div class="MsoNormal">
+This can be used in app.component .html as:</div>
+<div class="MsoNormal">
+<div>
+<app-dashboard></app-dashboard></div>
+</div>
+<div class="MsoNormal">
+<br /></div>
+<div class="MsoNormal">
+<br /></div>
+<br />
+<br /></div>

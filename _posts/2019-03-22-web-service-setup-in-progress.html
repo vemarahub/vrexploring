@@ -1,0 +1,145 @@
+---
+layout: post
+title: Web Service Setup in Progress
+date: '2019-03-22T04:55:00.003-07:00'
+author: Rajesh Nair
+tags:
+- progress
+- openedge
+- Web Service
+modified_time: '2020-03-11T12:22:49.268-07:00'
+thumbnail: https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEifD330wjaJ78QudDo3CIAXJPCUAIXplfEHBhajP2V427VZb6QwA6XdI0TwsdrxisFKIcnKZcfFxO19dNrfXiFFHhpAqAXt9W4X5smkoIOmfztZZEnDbdY4JBORZ7XEonaMa03LH8gDfVA/s72-c/aq.png
+blogger_id: tag:blogger.com,1999:blog-8827475125741824309.post-1501438986836971617
+blogger_orig_url: https://csrepo.blogspot.com/2019/03/web-service-setup-in-progress.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<div class="sidenav">
+Following are the steps to follow to setup web service in a progress environment:</div>
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<br />
+1. First we would require a tomcat to deploy web service application, so copy or install apache tomcat for path say,&nbsp;<span style="font-family: &quot;calibri&quot; , sans-serif; font-size: 11pt;">(/usr/local/apache-tomcat-7.0.50).</span><br />
+<span style="font-family: &quot;calibri&quot; , sans-serif; font-size: 11pt;"><br /></span>
+<span style="font-family: &quot;calibri&quot; , sans-serif; font-size: 11pt;">2.&nbsp;</span><span style="text-indent: -0.25in;"><span style="font-size: 7pt; font-stretch: normal; font-variant-east-asian: normal; font-variant-numeric: normal; line-height: normal;">&nbsp;&nbsp;</span></span><span style="text-indent: -0.25in;">Copy /usr/dlc/servlets/wsa folder from progress installation path to</span><span style="text-indent: -0.25in;">&nbsp; </span><span style="text-indent: -0.25in;">/usr/local/apache-tomcat-7.0.50/webapps</span><br />
+<span style="text-indent: -0.25in;"><br /></span>
+<span style="text-indent: -0.25in;">3. Edit</span><span style="font-size: 7pt; font-stretch: normal; font-variant-east-asian: normal; font-variant-numeric: normal; line-height: normal; text-indent: -0.25in;">&nbsp;</span><span style="text-indent: -0.25in;">the wsa entry in ubroker.properties by
+mentioning correct ip/port for wsaUrl entry.</span><br />
+<span style="text-indent: -0.25in;"><br /></span>
+<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEifD330wjaJ78QudDo3CIAXJPCUAIXplfEHBhajP2V427VZb6QwA6XdI0TwsdrxisFKIcnKZcfFxO19dNrfXiFFHhpAqAXt9W4X5smkoIOmfztZZEnDbdY4JBORZ7XEonaMa03LH8gDfVA/s1600/aq.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="912" data-original-width="727" height="640" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEifD330wjaJ78QudDo3CIAXJPCUAIXplfEHBhajP2V427VZb6QwA6XdI0TwsdrxisFKIcnKZcfFxO19dNrfXiFFHhpAqAXt9W4X5smkoIOmfztZZEnDbdY4JBORZ7XEonaMa03LH8gDfVA/s640/aq.png" width="510" /></a></div>
+<span style="text-indent: -0.25in;"><br /></span>
+<span style="text-indent: -0.25in;"><br /></span>
+<span style="text-indent: -0.25in;">3.1</span><span style="font-size: 7pt; font-stretch: normal; font-variant-east-asian: normal; font-variant-numeric: normal; line-height: normal; text-indent: -0.25in;">&nbsp;</span><span style="text-indent: -0.25in;">Edit setclasspath.sh to point to correct java
+paths JRE_HOME=/usr/jdk/jdk1.8.0_60/jre</span><br />
+<div class="MsoListParagraphCxSpFirst" style="mso-list: l0 level2 lfo1; text-indent: -.25in;">
+<o:p></o:p></div>
+<div class="MsoListParagraphCxSpMiddle">
+<br /></div>
+<div class="MsoListParagraphCxSpMiddle" style="mso-list: l0 level2 lfo1; text-indent: -.25in;">
+<!--[if !supportLists]-->1&nbsp; &nbsp; 3 .2<span style="font-size: 7pt; font-stretch: normal; font-variant-east-asian: normal; font-variant-numeric: normal; line-height: normal;">&nbsp;&nbsp;
+</span><!--[endif]-->Edit /usr/local/apache-tomcat-7.0.50/webapps/wsa/WEB-INF/web.xml
+and comment <o:p></o:p></div>
+<div class="MsoListParagraphCxSpMiddle">
+<br /></div>
+<div class="MsoListParagraphCxSpMiddle">
+&lt;security-constraint&gt;&nbsp; tag<o:p></o:p></div>
+<div class="MsoListParagraphCxSpMiddle">
+<br /></div>
+<div class="MsoListParagraphCxSpMiddle">
+<o:p>4.</o:p><span style="font-size: 7pt; font-stretch: normal; font-variant-east-asian: normal; font-variant-numeric: normal; line-height: normal; text-indent: -0.25in;">&nbsp;</span><span style="text-indent: -0.25in;">Start the apache tomcat server by below command:</span></div>
+<div class="MsoListParagraphCxSpMiddle" style="mso-list: l0 level1 lfo1; text-indent: -.25in;">
+<o:p></o:p></div>
+<div class="MsoListParagraphCxSpMiddle">
+cd /usr/local/apache-tomcat-7.0.50<o:p></o:p></div>
+<div class="MsoListParagraphCxSpMiddle">
+./bin/startup.sh<o:p></o:p></div>
+<div class="MsoListParagraphCxSpMiddle">
+<br /></div>
+<div class="MsoListParagraphCxSpMiddle" style="text-indent: 0px;">
+<span style="font-stretch: normal; font-variant-east-asian: normal; font-variant-numeric: normal; line-height: normal; text-indent: -0.25in;">5.</span><span style="font-size: 7pt; font-stretch: normal; font-variant-east-asian: normal; font-variant-numeric: normal; line-height: normal; text-indent: -0.25in;">&nbsp; &nbsp;</span><span style="text-indent: -0.25in;">Create a .wsm file for</span></div>
+<div class="MsoListParagraphCxSpMiddle" style="text-indent: 0px;">
+<span style="font-size: 7pt; font-stretch: normal; font-variant-east-asian: normal; font-variant-numeric: normal; line-height: normal; text-indent: -0.25in;"><br /></span></div>
+<div class="MsoListParagraphCxSpMiddle" style="text-indent: 0px;">
+<span style="font-size: 7pt; font-stretch: normal; font-variant-east-asian: normal; font-variant-numeric: normal; line-height: normal; text-indent: -0.25in;">&nbsp;</span><span style="text-indent: -0.25in;">6. p</span><span style="text-indent: -0.25in;">articular webservice required to be deployed .</span></div>
+<div class="MsoListParagraphCxSpMiddle" style="mso-list: l0 level1 lfo1; text-indent: -.25in;">
+<o:p></o:p></div>
+<div class="MsoListParagraphCxSpMiddle">
+Eg: /emc/reale/apps/pseudo/input/WebServiceConfig/WSCRMultiComment.wsm
+(10.22.3.120)<o:p></o:p></div>
+<div class="MsoListParagraphCxSpMiddle">
+<br /></div>
+<div class="MsoListParagraphCxSpMiddle">
+<o:p>&nbsp;7.</o:p><span style="font-size: 7pt; font-stretch: normal; font-variant-east-asian: normal; font-variant-numeric: normal; line-height: normal; text-indent: -0.25in;">&nbsp;</span><span style="text-indent: -0.25in;">Edit wsm file to mention the following entry as
+per the specific environment:</span></div>
+<div class="MsoListParagraphCxSpMiddle" style="mso-list: l0 level1 lfo1; text-indent: -.25in;">
+<o:p></o:p></div>
+<div class="MsoListParagraphCxSpMiddle">
+&lt;SoapEndpointURL&gt;<span class="MsoHyperlink">http://{serverip}:
+{tomcat</span> port}/wsa/wsa1&lt;/SoapEndpointURL&gt;<o:p></o:p></div>
+<div class="MsoListParagraphCxSpMiddle">
+&lt;Service&gt;{appserver name}&lt;/Service&gt;
+<o:p></o:p></div>
+<div class="MsoListParagraphCxSpMiddle">
+&lt;AppserverURL&gt;AppServerDC://{serverip}:
+{appserver port}&lt;/AppserverURL&gt;<o:p></o:p></div>
+<div class="MsoListParagraphCxSpMiddle">
+<br /></div>
+<div class="MsoListParagraphCxSpMiddle">
+<o:p>&nbsp;8.</o:p><span style="text-indent: -0.25in;">Deploy the required webservice by using below
+command:</span></div>
+<div class="MsoListParagraphCxSpMiddle" style="mso-list: l0 level1 lfo1; text-indent: -.25in;">
+<o:p></o:p></div>
+<div class="MsoListParagraphCxSpMiddle">
+<br /></div>
+<div class="MsoListParagraphCxSpMiddle" style="margin-bottom: 10.0pt; margin-left: 0in; margin-right: -1.0in; margin-top: 0in; mso-add-space: auto; text-indent: .25in;">
+wsaman
+-name wsa1 -wsm /emc/reale/apps/pseudo/input/WebServiceConfig/WSCRMultiComment.wsm
+–deploy<o:p></o:p></div>
+<div class="MsoListParagraphCxSpMiddle" style="margin-bottom: 10.0pt; margin-left: 0in; margin-right: -1.0in; margin-top: 0in; mso-add-space: auto;">
+<o:p>&nbsp;9.&nbsp;</o:p><span style="text-indent: -0.25in;">Enable the webservice using the below command:</span></div>
+<div class="MsoListParagraphCxSpLast" style="margin-right: -1.0in; mso-add-space: auto; mso-list: l0 level1 lfo1; text-indent: -.25in;">
+<o:p></o:p></div>
+<div class="MsoNormal" style="margin-bottom: 10.0pt; margin-left: .25in; margin-right: -1.0in; margin-top: 0in;">
+wsaman -name wsa1 -enable -appname WSCRMultiComment</div>
+<div class="MsoNormal" style="margin-bottom: 10.0pt; margin-left: .25in; margin-right: -1.0in; margin-top: 0in;">
+<span style="text-indent: -24px;">10.We can list the deployed services to check if our service is deployed and enabled by using the below command:</span></div>
+<div class="MsoNormal" style="margin-bottom: 10.0pt; margin-left: .25in; margin-right: -1.0in; margin-top: 0in;">
+wsaman -name wsa1 -wsm
+/emc/reale/apps/pseudo/input/WebServiceConfig/WSCRMultiComment.wsm –list</div>
+<div class="MsoListParagraphCxSpMiddle" style="margin-right: -1.0in; mso-add-space: auto;">
+<o:p></o:p></div>
+<div class="MsoListParagraphCxSpMiddle" style="margin-right: -1.0in; mso-add-space: auto;">
+<br /></div>
+<div class="MsoListParagraphCxSpMiddle" style="margin-right: -1.0in; mso-add-space: auto;">
+<o:p>11.</o:p><span style="font-size: 7pt; font-stretch: normal; font-variant-east-asian: normal; font-variant-numeric: normal; line-height: normal; text-indent: -0.25in;">&nbsp; &nbsp; &nbsp;</span><span style="text-indent: -0.25in;">Check if the service url is working by accessing
+the below ip in browser:</span></div>
+<div class="MsoListParagraphCxSpMiddle" style="margin-right: -1.0in; mso-add-space: auto; mso-list: l0 level1 lfo1; text-indent: -.25in;">
+<o:p></o:p></div>
+<div class="MsoListParagraphCxSpMiddle" style="margin-right: -1.0in; mso-add-space: auto;">
+<br /></div>
+<div class="MsoListParagraphCxSpMiddle">
+<span class="MsoHyperlink">http://{serverip}: {tomcat</span> port}/wsa/wsa1 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;[default tomcat port =8080]</div>
+<div class="MsoListParagraphCxSpMiddle">
+<span style="font-size: 7pt; font-stretch: normal; font-variant-east-asian: normal; font-variant-numeric: normal; line-height: normal; text-indent: -0.25in;"><br /></span></div>
+<div class="MsoListParagraphCxSpMiddle">
+<span style="font-size: 7pt; font-stretch: normal; font-variant-east-asian: normal; font-variant-numeric: normal; line-height: normal; text-indent: -0.25in;">&nbsp;&nbsp;</span><span style="text-indent: -0.25in;">12.For the given example webservice testing can be
+done by using below soap url:</span></div>
+<div class="MsoListParagraphCxSpMiddle" style="mso-list: l0 level1 lfo1; text-indent: -.25in;">
+<o:p></o:p></div>
+<div class="MsoListParagraphCxSpMiddle">
+http://<hostname>:8080/wsa/wsa1/wsdl?targetURI=urn:WSCRMultiComment<span style="color: #1f497d;"><o:p></o:p></span></hostname></div>
+<div class="MsoListParagraphCxSpLast">
+<br /></div>
+<div class="separator" style="clear: both; text-align: center;">
+<br /></div>
+<div class="separator" style="clear: both; text-align: center;">
+</div>
+<span style="text-indent: -0.25in;"><br /></span>
+<br />
+<div class="MsoListParagraph" style="mso-list: l0 level1 lfo1; text-indent: -.25in;">
+<o:p></o:p></div>
+<div class="MsoListParagraph" style="mso-list: l0 level1 lfo1; text-indent: -.25in;">
+<o:p></o:p></div>
+</div>
+</div>

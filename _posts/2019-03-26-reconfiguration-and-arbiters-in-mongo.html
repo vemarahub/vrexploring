@@ -1,0 +1,354 @@
+---
+layout: post
+title: Arbiters,Oplog,Write Concern in Mongo Replication
+date: '2019-03-26T01:06:00.001-07:00'
+author: Rajesh Nair
+tags:
+- write concern
+- Mongo
+- replication
+- oplog
+modified_time: '2020-03-31T22:20:38.118-07:00'
+blogger_id: tag:blogger.com,1999:blog-8827475125741824309.post-3767992915412638058
+blogger_orig_url: https://csrepo.blogspot.com/2019/03/reconfiguration-and-arbiters-in-mongo.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<h3 style="text-align: left;">
+<b><br /></b></h3>
+<h3 style="text-align: left;">
+<b>Read Preference</b></h3>
+a.k.a “slaveOk”.<br />
+In shell - rs.slaveOk()<br />
+In driver – read preference<br />
+Secondary can have potentially stale data due to lag in write from primary to secondary.<br />
+Read Preference Options:<br />
+•<span style="white-space: pre;"> </span>Primary(default)<br />
+•<span style="white-space: pre;"> </span>Primary Preferred – if cant find primary, take from secondary<br />
+•<span style="white-space: pre;"> </span>Secondary – read from secondary<br />
+•<span style="white-space: pre;"> </span>Secondary Preferred - if cant find secondary, take from primary<br />
+<br />
+•<span style="white-space: pre;"> </span>Nearest – go to nearest n/w latency member in the set<br />
+<div>
+<br /></div>
+<div>
+<h3 style="text-align: left;">
+<b>Re configuring a Replica Set</b></h3>
+</div>
+<div>
+Reconfiguration of the replica set can be done to change any of the properties in any or all the members of the replica set.Follow the below steps to change the priority of the third member in the replica set from master.<br />
+<br />
+<b>1. Set the rs.config() value to variable cfg</b><br />
+&gt;cfg = rs.config()<br />
+<br />
+<b>2.Change the value of the priority parameter in the cfg variable</b><br />
+&gt;cfg.members[2].priority=2</div>
+<div>
+<br /></div>
+<div>
+<b>3.Change the configuration to newly set priority value by reconfiguring.</b></div>
+<div>
+&gt; rs.reconfig(cfg)</div>
+<div>
+<br /></div>
+<div>
+<b>4. Confirm that the value has changed by checking the rs.config()</b></div>
+<div>
+&gt;rs.config()</div>
+<div style="text-align: left;">
+<br /></div>
+<div style="text-align: left;">
+For Priority option the default for all the members would be 1.If we don't want a particular member to ever become a primary, we can set its priority to 0.</div>
+<h3 style="text-align: left;">
+<br />Arbiters</h3>
+<div>
+Arbiters are the members in the replica set which wont have any data stored in them but would only be used to participate in election in case of any automatic failover situation in the replica set and a new primary has to be elected.The arbiter would be used to take majority in the voting to select one of the secondary to be elected as the new primary.</div>
+<div>
+<br /></div>
+<div>
+We can make any of the members in the replica set as an arbiter by setting the arbiterOnly as true in &lt;options&gt; of members of the replication configuration.</div>
+<div>
+<br /></div>
+<div>
+i.e to make the first member as arbiter we can reconfigure the replica set as:</div>
+<div>
+&nbsp;cfg = rs.config()</div>
+<div>
+cfg.members[0].arbiterOnly=true</div>
+<div>
+rs.reconfig(cfg)</div>
+<div>
+<br /></div>
+<div>
+<br /></div>
+<div>
+<h3 style="text-align: left;">
+&nbsp;Hidden Option , Slave Delay and Voting Option</h3>
+<div>
+<span style="font-family: inherit;">Hidden : If it is set true clients can't see that particular server/member.</span></div>
+<div>
+<br /></div>
+<div>
+Slave Delay&lt;seconds&gt; : If we mention a value for slave delay, the secondaries can never be fresher than delayed time in slave delay parameter.eg to delay a secondary by 8 hours we can use slave delay.(copy
+of primary which is 8hrs old).</div>
+<div class="MsoNormal">
+<o:p></o:p></div>
+<div>
+To Set slave delay:</div>
+<div>
+<div>
+var cfg = rs.conf()</div>
+<div>
+cfg.members[2].priority = 0 // without making priority 0, we cant make slave delay</div>
+<div>
+cfg.members[2].hidden = true;</div>
+<div>
+cfg.members[2].slaveDelay = 100;</div>
+<div>
+rs.reconfig(cfg)</div>
+</div>
+<div>
+<br /></div>
+<div>
+Voting: It should not be used generally.The parameter is votes:&lt;n&gt;.For example if we have only two members in the replica set, we can set votes 0 and 1 for each of the member to make one of it primary.</div>
+<div>
+<br /></div>
+<div>
+To Check the ip and port of the current member connected in the replica set , we can use:</div>
+<div>
+<div>
+&gt; db.isMaster().me</div>
+<div>
+<i>localhost:27001</i></div>
+</div>
+<div>
+<br /></div>
+<h3 style="text-align: left;">
+Connect to Other Members from Current</h3>
+<div>
+<div>
+Normally one specifies the server on the mongo shell command line.&nbsp;&nbsp;</div>
+<div>
+Additional connections may be opened</div>
+<div>
+&nbsp; &nbsp; var x = new Mongo('host[:port]');</div>
+<div>
+&nbsp; &nbsp; var mydb = x.getDB('mydb');</div>
+<div>
+&nbsp; or&nbsp; &nbsp; var mydb = connect('host[:port]/mydb');</div>
+<div>
+<br /></div>
+<div>
+rs0:PRIMARY&gt; var slave1 = new Mongo('127.0.0.1:27028')</div>
+<div>
+rs0:PRIMARY&gt; slave1</div>
+<div>
+connection to 127.0.0.1:27028</div>
+<div>
+rs0:PRIMARY&gt; var slave1_test = slave1.getDB('test')</div>
+<div>
+rs0:PRIMARY&gt; slave1_test</div>
+<div>
+<i>test</i></div>
+<div>
+rs0:PRIMARY&gt; slave1_test.getMongo()</div>
+<div>
+<i>connection to 127.0.0.1:27028</i></div>
+<div>
+rs0:PRIMARY&gt; slave1_test.getMongo().setSlaveOk()</div>
+<div>
+rs0:PRIMARY&gt; db.isMaster().me</div>
+<div>
+<i>127.0.0.1:27027</i></div>
+<div>
+rs0:PRIMARY&gt; slave1_test.isMaster().me</div>
+<div>
+<i>127.0.0.1:27028</i></div>
+<div>
+<br /></div>
+<div>
+rs0:PRIMARY&gt;db.foo.count()</div>
+<div>
+<i>10</i></div>
+<div>
+rs0:PRIMARY&gt; slave1_test.foo.count()</div>
+<div>
+<i>10</i></div>
+<div>
+rs0:PRIMARY&gt; ( new Mongo ( ‘ localhost:27029’)).getDB(‘test’).foo.count()</div>
+<div>
+<i>10</i></div>
+</div>
+<div>
+<br /></div>
+<h3 style="text-align: left;">
+</h3>
+<h3 style="text-align: left;">
+<b>oplog.rs</b></h3>
+<div class="MsoNormal">
+capped collection<o:p></o:p></div>
+<br />
+<div class="MsoNormal">
+Replication window (hrs) is proportional to the system load.<o:p></o:p></div>
+<div class="MsoNormal">
+<br /></div>
+<div class="MsoNormal">
+<b>Querying the oplog after connected to a replica set:</b></div>
+<div class="MsoNormal">
+use local</div>
+<div class="MsoNormal">
+db.oplog.rs.find()</div>
+<div>
+<br /></div>
+<div>
+<div>
+<b>Storing oplog stats as a variable called stats:</b></div>
+<div>
+var stats = db.oplog.rs.stats()</div>
+</div>
+<div>
+<br /></div>
+<div>
+<div>
+<b>Verifying that this collection is capped (it will grow to a pre-configured size before it starts to overwrite the oldest entries with newer ones):</b></div>
+<div>
+stats.capped</div>
+<div>
+<br /></div>
+<div>
+<b>Getting current size of the oplog:</b></div>
+<div>
+stats.size</div>
+<div>
+<br /></div>
+<div>
+<b>Getting size limit of the oplog(MB):</b></div>
+<div>
+stats.maxSize</div>
+<div>
+<br /></div>
+<div>
+<b>Getting current oplog data (including first and last event times, and configured oplog size):</b></div>
+<div>
+rs.printReplicationInfo()</div>
+<div>
+<br /></div>
+<div>
+<b>Query the oplog, filtering out the heartbeats ("periodic noop") and only returning the latest entry:</b></div>
+<div>
+use local</div>
+<div>
+db.oplog.rs.find( { "o.msg": { $ne: "periodic noop" } } ).sort( { $natural: -1 } ).limit(1).pretty()</div>
+</div>
+<div>
+<br /></div>
+<div class="MsoNormal">
+<br /></div>
+<h3 style="text-align: left;">
+To Check OpLog File</h3>
+<div>
+<div>
+rs0:PRIMARY&gt; use local</div>
+<div>
+switched to db local</div>
+<div>
+rs0:PRIMARY&gt; db.oplog.rs.count()</div>
+<div>
+<i>2675</i></div>
+<div>
+rs0:PRIMARY&gt; db.oplog.rs.find().sort({$natural:-1}).limit(5)</div>
+<div>
+<i>{ "ts" : Timestamp(1524229404, 1), "t" : NumberLong(1), "h" : NumberLong("6049716497373799162"), "v" : 2, "op" : "n", "ns" : "", "wall" : ISODate("2018-04-20T13:03:24.340Z"), "o" : { "msg" : "periodic noop" } }</i></div>
+<div>
+<i>{ "ts" : Timestamp(1524229394, 1), "t" : NumberLong(1), "h" : NumberLong("8344516662818844751"), "v" : 2, "op" : "n", "ns" : "", "wall" : ISODate("2018-04-20T13:03:14.340Z"), "o" : { "msg" : "periodic noop" } }</i></div>
+<div>
+<i>{ "ts" : Timestamp(1524229384, 1), "t" : NumberLong(1), "h" : NumberLong("5995052780562034224"), "v" : 2, "op" : "n", "ns" : "", "wall" : ISODate("2018-04-20T13:03:04.339Z"), "o" : { "msg" : "periodic noop" } }</i></div>
+<div>
+<i>{ "ts" : Timestamp(1524229374, 1), "t" : NumberLong(1), "h" : NumberLong("-3377659627261735526"), "v" : 2, "op" : "n", "ns" : "", "wall" : ISODate("2018-04-20T13:02:54.339Z"), "o" : { "msg" : "periodic noop" } }</i></div>
+<div>
+<br /></div>
+</div>
+<h3 style="text-align: left;">
+Write Concern Principles</h3>
+<div>
+<div>
+<b>Write Concern</b> – tracking durability of inserted data</div>
+<div>
+0 – don’t wait for acknowledgement</div>
+<div>
+1(default) – wait for acknowledgement from primary only</div>
+<div>
+&gt;=2 wait for acknowledgemnt from primary and one or more secondaries</div>
+<div>
+“majority” – wait for acknowledgement from a majority of replica set members</div>
+<div>
+<br /></div>
+<div>
+<b>Write concern options:</b></div>
+<div>
+wtimeout - <int> - the time to wait for the requested write concern before marking the operation as failed.</int></div>
+<div>
+j &lt; true|false&gt; - requires the node to commit the write operation to the on disk journal before returning an acknowledgement.</div>
+</div>
+<div>
+<br /></div>
+<div>
+<br /></div>
+<div>
+<div>
+1.<span style="white-space: pre;"> </span>Write is truly committed upon application @ a majority of the set.</div>
+<div>
+2.<span style="white-space: pre;"> </span>We can get acknowledgement of this.</div>
+<div>
+Write with return acknowledgement:</div>
+<div>
+db.foo.insert({x:10})</div>
+<div>
+db.getLastError({w:’majority’,wtimeout:8000})&nbsp; (w:1,w:all,w:majority)</div>
+<div>
+<br /></div>
+<div>
+<br /></div>
+<div>
+•<span style="white-space: pre;"> </span>&nbsp; No call to getLastError&nbsp; - eg: page view counter,logging</div>
+<div>
+•<span style="white-space: pre;"> </span>w:1 –eg: dupkey violation info after insert,cache data</div>
+<div>
+•<span style="white-space: pre;"> </span>w: ‘majority’</div>
+<div>
+•<span style="white-space: pre;"> </span>w:3 (all) – eg bulk import(flow control)</div>
+<div>
+•<span style="white-space: pre;"> </span>w:tag – when data inserted to two data centers</div>
+<div>
+<br /></div>
+<div>
+•<span style="white-space: pre;"> </span>variation : “ call every N”</div>
+<div>
+<br /></div>
+<div>
+for ( i = 0; I &lt; N ; i++){</div>
+<div>
+db.foo.insert(arr[i]);</div>
+<div>
+if(I % 500 == 0 || I == N -1)</div>
+<div>
+getLastError({w:3 })</div>
+<div>
+else</div>
+<div>
+getLastError({w:1 })</div>
+<div>
+}</div>
+<div>
+<br /></div>
+<div>
+<br /></div>
+<div>
+wtimeout:</div>
+<div>
+In case of lagging. – we don’t know if data is written.Also it will slow down as per time provided for timeout.No of client connections pile up.</div>
+</div>
+<div>
+<br /></div>
+<br /></div>
+</div>

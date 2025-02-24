@@ -1,0 +1,123 @@
+---
+layout: post
+title: NDB Cluster
+date: '2019-03-11T21:24:00.000-07:00'
+author: Rajesh Nair
+tags:
+- MySQL
+- MySQL NDB Cluster
+modified_time: '2019-03-12T04:38:44.121-07:00'
+blogger_id: tag:blogger.com,1999:blog-8827475125741824309.post-3970647776737071164
+blogger_orig_url: https://csrepo.blogspot.com/2019/03/ndb-cluster.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<br />
+NDB Cluster or Next DB Cluster in MySQL is cluster management in MySQL where multiple data nodes with multiple servers can be configured for setting up synchronous replica systems for critical databases.<br />
+<br />
+Follow below steps to setup and use NDB cluster in MySQL databases:<br />
+<br />
+1. Download rpm for mysql-cluster-community.x86_64 from web and install the rpm<br />
+<b>rpm -ivh mysql-cluster-community.x86_64</b><br />
+<b><br /></b>
+2.Edit the yum.repos.d to enable 7.6 version of mysql-cluster<br />
+<b>vi&nbsp;/etc/yum.repos.d/mysql-community-server.repo</b><br />
+<b><br /></b>
+3.Install the dependencies of cluster package using yum install in all the servers intended for cluster management and also remove mysql-community installs if any since they will conflict with mysql-cluster installation<br />
+<b>yum install epel-release</b><br />
+<b>yum install perl*</b><br />
+<b>yum remove mysql-community*</b><br />
+<b>yum install mysql-cluster*</b><br />
+<b><br /></b>
+Select one of the server as the management server for cluster and configure it as below:<br />
+<b><br /></b>
+4.Create a mysql-cluster folder in /var/lib/mysql-cluster<br />
+<b>mkdir /var/lib/mysql-cluster</b><br />
+<b><br /></b>
+5.Edit config.ini file and enter ndb entries<br />
+<br />
+<b>[ndbd default]</b><br />
+<b>#Options affecting ndbd processes on all data nodes:</b><br />
+<b>NoOfReplicas=2&nbsp; &nbsp;#No. of replicas</b><br />
+<b>DataMemory=256M&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;#Memory allocated for data storage#</b><br />
+<b>IndexMemory=128M&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;#Memory allocated for index storage</b><br />
+<b>datadir=/var/lib/mysql-cluster&nbsp; #Directory for log files</b><br />
+<b><br /></b>
+<b>[ndb_mgmd]</b><br />
+<b>#Management Options for the processes</b><br />
+<b>HostName=mgmt&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;#Hostname of the manager</b><br />
+<b><br /></b>
+<b>[ndb_mgmd default]</b><br />
+<b>#Directory for MGM node log files</b><br />
+<b>datadir=/var/lib/mysql-cluster</b><br />
+<b><br /></b>
+<b>[ndbd]</b><br />
+<b><br /></b>
+<b>hostname=db01</b><br />
+<b>#Hostname of the 1st datanode</b><br />
+<b><br /></b>
+<b>[ndbd]</b><br />
+<b><br /></b>
+<b>hostname=db02</b><br />
+<b>&nbsp;#Hostname of the 2nd datanode</b><br />
+<b><br /></b>
+<b>[mysqld]</b><br />
+<b><br /></b>
+<b>#SQL node options</b><br />
+<b>hostname=db01</b><br />
+<b><br /></b>
+<b>[mysqld]</b><br />
+<b><br /></b>
+<b>#SQL node options</b><br />
+<b>hostname=db02</b><br />
+<div>
+<br /></div>
+<div>
+<br /></div>
+6. Start the management deamon using the below commands<br />
+<b>ndb_mgmd --config-file=/var/lib/mysql-cluster/config.ini</b><br />
+<br />
+7.Open ndb console and check the current status for all nodes as below:<br />
+<b>root@mgmt mysql-cluster]# ndb_mgm</b><br />
+<b>-- NDB Cluster -- Management Client --</b><br />
+<b>ndb_mgm&gt; show</b><br />
+<b>Connected to Management Server at: localhost:1186</b><br />
+<b>Cluster Configuration</b><br />
+<b>---------------------</b><br />
+<b>[ndbd(NDB)]<span style="white-space: pre;"> </span>2 node(s)</b><br />
+<b>id=2 (not connected, accepting connect from db01)</b><br />
+<b>id=3 (not connected, accepting connect from db02)</b><br />
+<b><br /></b>
+<b>[ndb_mgmd(MGM)]<span style="white-space: pre;"> </span>1 node(s)</b><br />
+<b>id=1<span style="white-space: pre;"> </span>@192.168.197.129&nbsp; (mysql-5.7.25 ndb-7.6.9)</b><br />
+<b><br /></b>
+<b>[mysqld(API)]<span style="white-space: pre;"> </span>2 node(s)</b><br />
+<b>id=4 (not connected, accepting connect from db01)</b><br />
+<b>id=5 (not connected, accepting connect from db02)</b><br />
+<div>
+<br /></div>
+<div>
+Follow the below steps in data nodes and server nodes other than management server in the ndb cluster to configure the nodes and establish connection</div>
+<div>
+<br /></div>
+8. Edit&nbsp;/etc/my.cnf&nbsp; and add the below entry<br />
+<b>ndbcluster</b><br />
+<b>ndb-connectstring=clusterm</b><br />
+<b>default_storage_engine=ndbcluster #Default storage engine</b><br />
+<b><br /></b>
+<b>[mysql_cluster]</b><br />
+<b>ndb-connectstring=clusterm</b><br />
+<b><br /></b>
+9. Create mysql-cluster directory in /var/lib<br />
+<b>mkdir /var/lib/mysql-cluster</b><br />
+<br />
+10.Start mysqld in all the nodes including the management server<br />
+<b>systemctl start mysqld</b><br />
+<b><br /></b>
+11.Start the ndb deamon in all the nodes except management server<br />
+<b>ndbd</b><br />
+<br />
+12.Repeat step 7 in management server to check if all the nodes are in connected status now.<br />
+<br />
+13.Now we can test if the cluster is working properly by creating a database,table and inserting data in one of the nodes and check if its getting synchronously replicated to other nodes.<br />
+<br /></div>

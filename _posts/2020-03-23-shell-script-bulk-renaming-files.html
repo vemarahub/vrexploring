@@ -1,0 +1,65 @@
+---
+layout: post
+title: Shell Script - Bulk Renaming Files
+date: '2020-03-23T22:58:00.003-07:00'
+author: Rajesh Nair
+tags:
+- linux
+- file commands
+- shell scripting
+modified_time: '2020-03-24T02:58:11.452-07:00'
+blogger_id: tag:blogger.com,1999:blog-8827475125741824309.post-7430980186479518417
+blogger_orig_url: https://csrepo.blogspot.com/2020/03/shell-script-bulk-renaming-files.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<br />
+<b>Script : </b>Bulk-Renaming Files<br />
+<br />
+<b>Script Name:</b> bulkrename.sh<br />
+<br />
+<b>Script Function: </b>It takes two arguments for the text to match and replace, and a list of arguments specifying the files you want to rename.<br />
+<br />
+<b>Script Usage: ./</b>bulkrename.sh -f find -r replace FILES_TO_RENAME*<br />
+<br />
+<b><u>Code:</u></b><br />
+<br />
+#!/bin/bash<br />
+# bulkrename--Renames specified files by replacing text in the filename<br />
+<br />
+printHelp()<br />
+{<br />
+echo "Usage: $0 -f find -r replace FILES_TO_RENAME*"<br />
+echo -e "\t-f The text to find in the filename"<br />
+echo -e "\t-r The replacement text for the new filename"<br />
+exit 1<br />
+}<br />
+<br />
+while getopts "f:r:" opt<br />
+do<br />
+case "$opt" in<br />
+r ) replace="$OPTARG" ;;<br />
+f ) match="$OPTARG" ;;<br />
+? ) printHelp ;;<br />
+esac<br />
+<br />
+done<br />
+<br />
+shift $(( $OPTIND - 1 ))<br />
+<br />
+if [ -z $replace ] || [ -z $match ]<br />
+then<br />
+echo "You need to supply a string to find and a string to replace";<br />
+printHelp<br />
+fi<br />
+<br />
+for i in $@<br />
+do<br />
+newname=$(echo $i | sed "s/$match/$replace/")<br />
+mv $i $newname<br />
+&amp;&amp; echo "Renamed file $i to $newname"<br />
+done
+
+<br />
+<br />
+<br /></div>

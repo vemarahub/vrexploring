@@ -1,0 +1,399 @@
+---
+layout: post
+title: "  Shell Script - Progress Disconnect User"
+date: '2020-03-24T23:30:00.000-07:00'
+author: Rajesh Nair
+tags:
+- database user disconnect
+- progress
+- shell scripting
+modified_time: '2020-03-24T23:30:08.851-07:00'
+blogger_id: tag:blogger.com,1999:blog-8827475125741824309.post-949625193093760683
+blogger_orig_url: https://csrepo.blogspot.com/2020/03/shell-script-progress-disconnect-user.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<br />
+<b>Script : </b>Disconnect user from database<br />
+<br />
+<b>Script Name: </b>disconnect.sh<br />
+<br />
+<b>Script Function: </b>&nbsp;Disconnect users from databases using "proshut"<br />
+<br />
+<b>Required Files:&nbsp; </b>1.<b>&nbsp;</b>usr.registry - in the&nbsp;$HOME/bin path containing database details uder the below headers<br />
+DB&nbsp; DBPATH&nbsp; PF-File<br />
+2. disconnect.p<br />
+<br />
+<br />
+<b>Script Usage: </b>./disconnect.sh [ -h help]&nbsp;[ -d devicename ]&nbsp;[ -p pid ]&nbsp;[ -n username ]&nbsp;[ -u usernumber ]<br />
+<b><u><br /></u></b>
+<b><u>Code:</u></b><br />
+<b><u>disconnect.sh</u></b><br />
+<b><u><br /></u></b>
+<b><u></u></b><br />
+#!/bin/bash<br />
+<div>
+<div>
+STARTDIR=$HOME/bin</div>
+<div>
+DBREG=$STARTDIR/usr.registry</div>
+<div>
+DLC=/usr/dlc;export DLC</div>
+<div>
+DLCPATH=$DLC/bin</div>
+<div>
+PROMSGS=$DLC/promsgs;export PROMSGS</div>
+<div>
+PROTERMCAP=$DLC/protermcap;export PROTERMCAP</div>
+<div>
+TERM=vt100</div>
+<div>
+PATH=$PATH:$DLCPATH;export PATH</div>
+<div>
+display_banner=no</div>
+<div>
+<br /></div>
+<div>
+usage() {</div>
+<div>
+echo "Syntax is: $0"</div>
+<div>
+echo "&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;[ -h ] (Shows this help page)"</div>
+<div>
+echo "&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;[ -d devicename ]"</div>
+<div>
+echo "&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;[ -p pid ]"</div>
+<div>
+echo "&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;[ -n username ]"</div>
+<div>
+echo "&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;[ -u usernumber ]"</div>
+<div>
+exit</div>
+<div>
+}</div>
+<div>
+<br /></div>
+<div>
+cleanfiles() {</div>
+<div>
+rm -f $tmpfile 2&gt;/dev/null</div>
+<div>
+rm -f $tmpfile2 2&gt;/dev/null</div>
+<div>
+}</div>
+<div>
+<br /></div>
+<div>
+if [ $# -eq 0 ]</div>
+<div>
+then</div>
+<div>
+&nbsp; usage</div>
+<div>
+fi</div>
+<div>
+<br /></div>
+<div>
+devicename=</div>
+<div>
+pid=</div>
+<div>
+username=</div>
+<div>
+userid=</div>
+<div>
+<br /></div>
+<div>
+while getopts ":d:p:n:u:h:" option</div>
+<div>
+do</div>
+<div>
+case $option in</div>
+<div>
+&nbsp; &nbsp;d)</div>
+<div>
+&nbsp; &nbsp;devicename="$OPTARG"</div>
+<div>
+&nbsp; &nbsp;;;</div>
+<div>
+&nbsp; &nbsp;p)</div>
+<div>
+&nbsp; &nbsp;pid="$OPTARG"</div>
+<div>
+&nbsp; &nbsp;expr $pid + 0 &gt; /dev/null 2&gt;&amp;1</div>
+<div>
+&nbsp; &nbsp;if [ $? -ne 0 ]</div>
+<div>
+&nbsp; &nbsp;then</div>
+<div>
+&nbsp; &nbsp; &nbsp;echo "PID should be numeric only..."</div>
+<div>
+&nbsp; &nbsp; &nbsp;exit</div>
+<div>
+&nbsp; &nbsp;fi</div>
+<div>
+&nbsp; &nbsp;;;</div>
+<div>
+&nbsp; &nbsp;n)</div>
+<div>
+&nbsp; &nbsp;username="$OPTARG"</div>
+<div>
+&nbsp; &nbsp;;;</div>
+<div>
+&nbsp; &nbsp;u)</div>
+<div>
+&nbsp; &nbsp;userid="$OPTARG"</div>
+<div>
+&nbsp; &nbsp;expr $userid + 0 &gt; /dev/null 2&gt;&amp;1</div>
+<div>
+&nbsp; &nbsp;if [ $? -ne 0 ]</div>
+<div>
+&nbsp; &nbsp;then</div>
+<div>
+&nbsp; &nbsp; &nbsp;echo "User ID should be numeric only..."</div>
+<div>
+&nbsp; &nbsp; &nbsp;exit</div>
+<div>
+&nbsp; &nbsp;fi</div>
+<div>
+&nbsp; &nbsp;;;</div>
+<div>
+&nbsp; &nbsp;h)</div>
+<div>
+&nbsp; &nbsp;usage</div>
+<div>
+&nbsp; &nbsp;;;</div>
+<div>
+&nbsp; &nbsp;*)</div>
+<div>
+&nbsp; &nbsp;usage</div>
+<div>
+&nbsp; &nbsp;;;</div>
+<div>
+esac</div>
+<div>
+done</div>
+<div>
+<br /></div>
+<div>
+PARMS="$devicename,$pid,$username,$userid"</div>
+<div>
+<br /></div>
+<div>
+if [ "$PARMS" = ",,," ]</div>
+<div>
+then</div>
+<div>
+&nbsp; usage</div>
+<div>
+fi</div>
+<div>
+<br /></div>
+<div>
+cd $STARTDIR</div>
+<div>
+<br /></div>
+<div>
+if [ ! -f $DBREG ]</div>
+<div>
+then</div>
+<div>
+&nbsp; echo "$DBREG is missing. It should have the entry like below format. Under the same header"</div>
+<div>
+&nbsp; echo "DB&nbsp; DBPATH&nbsp; PF-File"</div>
+<div>
+&nbsp; echo "Script exiting"</div>
+<div>
+&nbsp; exit</div>
+<div>
+fi</div>
+<div>
+<br /></div>
+<div>
+tmpfile=/tmp/disconnect.$$.txt</div>
+<div>
+export tmpfile2=/tmp/disconnect2.$$.txt</div>
+<div>
+<br /></div>
+<div>
+cat $DBREG |grep -v DB|</div>
+<div>
+while read line</div>
+<div>
+do</div>
+<div>
+&nbsp; DBNAME=`echo $line|awk -F" " '{print $1}'`</div>
+<div>
+&nbsp; DBPATH=`echo $line|awk -F" " '{print $2}'`</div>
+<div>
+<br /></div>
+<div>
+&nbsp; if [ ! -f $DBPATH/$DBNAME.db ]</div>
+<div>
+&nbsp; then</div>
+<div>
+&nbsp; &nbsp; echo "DB name is not valid $DBPATH/$DBNAME"</div>
+<div>
+&nbsp; &nbsp; cleanfiles</div>
+<div>
+&nbsp; &nbsp; exit</div>
+<div>
+&nbsp; fi</div>
+<div>
+<br /></div>
+<div>
+&nbsp; echo "Connections from $DBPATH/$DBNAME:" &gt;&gt; $tmpfile</div>
+<div>
+&nbsp; $DLCPATH/_progres -b $DBPATH/$DBNAME -p disconnect.p -param "$PARMS" &gt;&gt; $tmpfile</div>
+<div>
+&nbsp; echo &gt;&gt; $tmpfile</div>
+<div>
+<br /></div>
+<div>
+done</div>
+<div>
+<br /></div>
+<div>
+cat $tmpfile</div>
+<div>
+<br /></div>
+<div>
+fromtime=$SECONDS</div>
+<div>
+ans=n</div>
+<div>
+echo "Do you want to disconnect the users above? y/n (Default is 'n')"</div>
+<div>
+echo "You have 4 seconds to respond..."</div>
+<div>
+read ans</div>
+<div>
+if [ "$ans" = "y" -o "$ans" = "Y" ]</div>
+<div>
+then</div>
+<div>
+&nbsp; totime=$SECONDS</div>
+<div>
+&nbsp; if [ `expr $totime - $fromtime` -gt 4 ]</div>
+<div>
+&nbsp; then</div>
+<div>
+&nbsp; &nbsp; echo "Timeout expired, exiting..."</div>
+<div>
+&nbsp; &nbsp; cleanfiles</div>
+<div>
+&nbsp; &nbsp; exit</div>
+<div>
+&nbsp; fi</div>
+<div>
+&nbsp; cat $tmpfile2 |</div>
+<div>
+&nbsp; while read db usrno</div>
+<div>
+&nbsp; do</div>
+<div>
+&nbsp; &nbsp; echo $db $usrno</div>
+<div>
+&nbsp; &nbsp; $DLCPATH/proshut $db -C disconnect $usrno</div>
+<div>
+&nbsp; done</div>
+<div>
+fi</div>
+<div>
+<br /></div>
+<div>
+cleanfiles</div>
+</div>
+<div>
+<br /></div>
+<div>
+<b><u>disconnect.p</u></b></div>
+<div>
+<b><u><br /></u></b></div>
+<div>
+<div>
+define variable l_connect-name&nbsp; &nbsp;like _connect-name no-undo.</div>
+<div>
+define variable l_connect-usr&nbsp; &nbsp; like _connect-usr no-undo.</div>
+<div>
+define variable l_connect-pid&nbsp; &nbsp; like _connect-pid no-undo.</div>
+<div>
+define variable l_connect-device like _connect-device no-undo.</div>
+<div>
+define variable l_answer&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;as logical no-undo.</div>
+<div>
+<br /></div>
+<div>
+assign l_connect-device = entry(1,session:parameter)</div>
+<div>
+&nbsp; &nbsp; &nbsp; &nbsp;l_connect-pid&nbsp; &nbsp; = integer(entry(2,session:parameter))</div>
+<div>
+&nbsp; &nbsp; &nbsp; &nbsp;l_connect-name&nbsp; &nbsp;= entry(3,session:parameter)</div>
+<div>
+&nbsp; &nbsp; &nbsp; &nbsp;l_connect-usr&nbsp; &nbsp; = integer(entry(4,session:parameter)).</div>
+<div>
+<br /></div>
+<div>
+define stream a.</div>
+<div>
+output stream a to value(os-getenv("tmpfile2")) append.</div>
+<div>
+<br /></div>
+<div>
+for each _connect where _connect-usr &lt;&gt; ?</div>
+<div>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; and _connect-name &lt;&gt; "progress"</div>
+<div>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; and _connect-name = (if l_connect-name = "" then</div>
+<div>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; _connect-name</div>
+<div>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;else</div>
+<div>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; l_connect-name)</div>
+<div>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; and _connect-usr&nbsp; = (if l_connect-usr = 0 then</div>
+<div>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; _connect-usr</div>
+<div>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;else</div>
+<div>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; l_connect-usr)</div>
+<div>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; and _connect-pid = (if l_connect-pid = 0 then</div>
+<div>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;_connect-pid</div>
+<div>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; else</div>
+<div>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;l_connect-pid)</div>
+<div>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; and _connect-device = (if l_connect-device = "" then</div>
+<div>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;_connect-device</div>
+<div>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; else</div>
+<div>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;l_connect-device)</div>
+<div>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; no-lock:</div>
+<div>
+&nbsp; &nbsp; display _connect-usr _connect-name format "x(12)" _connect-pid&nbsp;</div>
+<div>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; _connect-device.</div>
+<div>
+&nbsp; &nbsp; put stream a unformatted pdbname(1) " " _connect-usr skip.</div>
+<div>
+end.</div>
+<div>
+<br /></div>
+<div>
+output stream a close.</div>
+<div>
+quit.</div>
+<div style="text-decoration-line: underline;">
+<br /></div>
+</div>
+<div>
+<br /></div>
+</div>

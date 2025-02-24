@@ -1,0 +1,192 @@
+---
+layout: post
+title: MySQL Resource Usage
+date: '2019-07-04T08:27:00.003-07:00'
+author: Rajesh Nair
+tags:
+modified_time: '2020-02-19T08:25:39.359-08:00'
+blogger_id: tag:blogger.com,1999:blog-8827475125741824309.post-8603267003174570256
+blogger_orig_url: https://csrepo.blogspot.com/2019/07/mysql-resource-usage.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<div class="sidenav">
+<br /></div>
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<h3 style="text-align: left;">
+Global Memory</h3>
+<div>
+Global buffers and caches are allocated on startup of mysqld and shared by all sessions.These can be general or storage engine specific.These are managed by global variables having fixed size resource allocation which are set in my.cnf file and can be changed dynamically.</div>
+<div>
+<br /></div>
+<div>
+<b>global buffer variables</b></div>
+<div>
+&nbsp;Table cache (table_open_cache)</div>
+<div>
+&nbsp;Query cache (query_cache_size)</div>
+<div>
+&nbsp;Thread cache (thread_cache)</div>
+<div>
+&nbsp;Privileged tables ( memory version of mysql db tables )</div>
+<div>
+<br /></div>
+<div>
+<b>storage engine variables</b></div>
+<div>
+<div>
+MyISAM - keybuffer(key_bufer_size) recently used index pages of myisam tables</div>
+<div>
+InnoDB - Buffer pool ( innodb_buffer_pool_size, innodb_additional_mem_pool_size)</div>
+<div>
+<span style="white-space: pre;"> </span>Log Buffer (innodb_log_buffer_size)</div>
+</div>
+<div>
+<br /></div>
+<h3 style="text-align: left;">
+<b>Session Memory</b></h3>
+<div>
+<div>
+Allocated for each client connection , default thread size is 192k (256k on 64 bit) buffer and caches add to connection cost.dynamically allocated as needed mostly.Some allocated more than once (eg joins,sort).Released when query done or session closed.Special concern for persistent connections</div>
+</div>
+<div>
+<br /></div>
+<div>
+<b>session buffer variables and controls</b></div>
+<div>
+<div>
+max_allowed_packet and net_buffer_length</div>
+<div>
+sort_buffer_size - space allocated for sort in session without indexes&nbsp; &amp; join_buffer_size - each pair of tables without index join crireria</div>
+<div>
+read_buffer_size &amp; read_rnd_buffer_size</div>
+<div>
+These are not storage engine specific buffers</div>
+</div>
+<div>
+<b><br /></b></div>
+<div>
+<b>Estimating Memory Usage</b></div>
+<div>
+<div>
+worst case calculation for memory footprint can be done as:&nbsp;</div>
+<div>
+sum(global_buffers)+(max_conn * sum(session_buffers))</div>
+<div>
+<br /></div>
+<div>
+All buffers for all clients maxed at one time is unlikely. Over committing memory is a normal practice and is usually safe.Monitoring memory use is essential.We need to be aware that host memory is limited.Make sure disk swap space is available and minimize large session buffers.</div>
+<div>
+<h3 style="text-align: left;">
+Data Directory/Disk Storage</h3>
+</div>
+</div>
+<div>
+Disk storage should be kept of larger volumes to avoid any space bottlenecks.For example even for an alter table usually the operation takes twice the size of table on disk.Some solutions for maintaining disk storage are:<br />
+*symbolic links &amp; partitioning with MyISAM files<br />
+*InnoDB tablespace can be put on a different volume from data directory and can have multiple *segments on multiple volumes.<br />
+<b><br /></b>
+<b>Data on Replication Slave</b><br />
+This would contain all the files on master and addition to that relay logs,master info file,relay log info,May require additional trigger files etc.<br />
+Best way :InnoDB on Master , but MyISAM on slave<br />
+<br />
+<b>Temporary Disk Usage</b><br />
+There are also temporary storages used for mysql operations such as:<br />
+*explicit temp tables on disk(session based)<br />
+*implicit temp tables for various uses(sort/group op, intermediate results)<br />
+*alter/optimize table ops<br />
+*storage of LOAD DATA LOCAL INFILE files or replicated import files on slave device</div>
+<div>
+<br /></div>
+<div>
+The directory name of the temporary disk is stored in&nbsp;@@tmpdir variable.Replicated import files stored in directory named in @@slave_load_tmpdir variable.</div>
+<div>
+Default is /tmp on *nix and C:\TEMP on windows.</div>
+<div>
+<br /></div>
+<div>
+Temp Directory issues:</div>
+<div>
+<div>
+unix - /tmp as /tmpfs</div>
+<div>
+ram based so never written</div>
+<div>
+sysadmin may remove /tmp in prod.</div>
+</div>
+<div>
+<br /></div>
+<div>
+<b>Disk Speed Issues</b></div>
+<div>
+<div>
+disk speed critical for efficient operations(unless all data fits into memory tables)</div>
+<div>
+reads can be aided by caching(query caching)</div>
+<div>
+writes are having bottleneck</div>
+<div>
+<span style="white-space: pre;"> </span>-cached writes can potentially lose data</div>
+<div>
+<span style="white-space: pre;"> </span>-battery backed writes cache are safer</div>
+</div>
+<div>
+<br /></div>
+<div>
+<b>Disk Speed remedies</b></div>
+<div>
+<div>
+Buy faster disk,small lookup tables(zip,state codes) can be mirrored to RAM.Tables and log files can be separated onto multiple drives for faster,simultaneous access.</div>
+<div>
+<br /></div>
+<div>
+<b>disk redundancy</b></div>
+<div>
+The files having maximum size for a MySQL server are the backup and binary log files.Redundancy techniques like using RAID or SAN can be used to provide redundant data copies for critical data.Replication can also be used as data redundant technique but since it is asynchronous, we have potential to loose some data which are not copied to slave.</div>
+<div>
+Better approach is to have a RAID + Replication setup or use a Distributed Redundant Block Device(DRBD).</div>
+<div>
+<br /></div>
+<div>
+<b>Open Files</b></div>
+</div>
+<div>
+MySql needs to have many files open for its operation&nbsp;references ( handles ) to which are maintained by OS.This requires computer resources.We can set limits for MySQL (open-files-limit).</div>
+<div>
+<br /></div>
+<div>
+The different open files used are:</div>
+<div>
+<div>
+*client connection ( 1 socket per conn )</div>
+<div>
+*logs {error,binary,slow query} (in master) and repl files {master.info,relay,relaylog.info}( in slave )</div>
+<div>
+*storage engine files</div>
+<div>
+<span style="white-space: pre;"> </span>- .frm for each open table<span style="white-space: pre;"> </span></div>
+<div>
+<span style="white-space: pre;"> </span>- MyISAM tables use .MYD &amp; .MYI</div>
+<div>
+<span style="white-space: pre;"> </span>- InnoDB only needs tablespace and log files</div>
+<div>
+<span style="white-space: pre;"> </span>&nbsp;-innodb_file_per_table is in use (.ibd) per table</div>
+<div>
+<br /></div>
+<div>
+*implicit disk based temp tables(session by session basis )</div>
+<div>
+*export files ( select into OUTFILE )</div>
+<div>
+*import files ( load data INFILE ) for each thread</div>
+<div>
+*administrative tables ( if write to disk is reqd )</div>
+</div>
+<div>
+<br /></div>
+<div>
+<br /></div>
+<div>
+<br /></div>
+</div>
+</div>

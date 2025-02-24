@@ -1,0 +1,170 @@
+---
+layout: post
+title: Security in Mongo
+date: '2019-04-08T22:25:00.000-07:00'
+author: Rajesh Nair
+tags:
+- security
+- Mongo
+modified_time: '2020-03-11T11:51:50.426-07:00'
+thumbnail: https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg9VQYXE4LVcb2kWxQojdsJjv6EwtrQT_wIskDVTZnRHr3ooNQ5rpCKTNi_33T4I334ymrV0eJ7HQTzPDi5jWzFCqC3zVyIhWzcOz9giHdTzqH86q_Ntrv62-b-xEX6LW2mxSW5xvlOYoU/s72-c/we.png
+blogger_id: tag:blogger.com,1999:blog-8827475125741824309.post-721974093708295791
+blogger_orig_url: https://csrepo.blogspot.com/2019/04/security-in-mongo.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+Below table would give in various security features provided by Mongo:<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg9VQYXE4LVcb2kWxQojdsJjv6EwtrQT_wIskDVTZnRHr3ooNQ5rpCKTNi_33T4I334ymrV0eJ7HQTzPDi5jWzFCqC3zVyIhWzcOz9giHdTzqH86q_Ntrv62-b-xEX6LW2mxSW5xvlOYoU/s1600/we.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="258" data-original-width="991" height="166" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg9VQYXE4LVcb2kWxQojdsJjv6EwtrQT_wIskDVTZnRHr3ooNQ5rpCKTNi_33T4I334ymrV0eJ7HQTzPDi5jWzFCqC3zVyIhWzcOz9giHdTzqH86q_Ntrv62-b-xEX6LW2mxSW5xvlOYoU/s640/we.png" width="640" /></a></div>
+<br />
+<h3 style="text-align: left;">
+<b>Authentication</b></h3>
+<div style="text-align: left;">
+Authentication default mechanism used is SCRAM( Salted Challenge Response Mechanism),&nbsp;</div>
+<div style="text-align: left;">
+basically password security.</div>
+<div style="text-align: left;">
+Community version has x.509 , which uses certification for authentication</div>
+<div style="text-align: left;">
+<br /></div>
+<div style="text-align: left;">
+Enterprise includes two additional authentication mechanism LDAP &amp; KERBEROS.</div>
+<div style="text-align: left;">
+<br /></div>
+<div style="text-align: left;">
+Mongodb also supports cluster authentication mechanism for communcation between clusters.</div>
+<div style="text-align: left;">
+<br /></div>
+<h3>
+<span style="font-size: 18.72px;">Authorization</span></h3>
+<div>
+Mongo db uses role based access control for a high level of responsibility isolation for operational tasks.</div>
+<br />
+We can enable authorization for a mongo instance if we use <b>-auth</b> parameter in the startup of mongod deamon.<br />
+<br />
+$ <b>mongod --dbpath ~/db_loc --logpath ~/sec.log --fork --auth --port 27227</b><br />
+<b><br /></b>
+Or we can also set&nbsp;authorization: "enabled" in the config file.<br />
+<br />
+Once started with -auth parameter we will not be able to do read/write over the databases/collection unless we have the required privileges:<br />
+<br />
+&gt; <b>db.foo.insert({x:1})</b><br />
+<i>WriteResult({</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "writeError" : {</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "code" : 13,</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "errmsg" : "not authorized on test to execute command { insert: \"foo\", ordered: true, $db: \"test\" }"</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; }</i><br />
+<i>})</i><br />
+<i><br /></i>
+<i><br /></i>
+So before starting the database in -auth mode, we need to create a super user who would be the db admin for the mongo instance and would do the role management, administrative actions ,etc.<br />
+<br />
+So to enable security features in mongo follow the below steps:<br />
+<br />
+1. Start the mongo database without any auth parameter.<br />
+<br />
+2. Login to mongo shell and create a super user account<br />
+<i>$mongo</i><br />
+<i>&gt;use admin</i><br />
+<i>&gt;db.createUser({</i><br />
+<i>user:"sr",</i><br />
+<i>pwd:"sr123",</i><br />
+<i>roles:[{</i><br />
+<i>role:"root",db:"admin"</i><br />
+<i>}]})</i><br />
+<i>&gt;exit</i><br />
+<br />
+3.Restart the mongo server with -auth parameter<br />
+<i>&gt;db.shutdownServer()</i><br />
+<i>$mongod --auth</i><br />
+<i><br /></i>
+4.Login using the new super user created<br />
+<i>mongo -u sr -p sr123 --authenticationDatabase admin</i><br />
+<br />
+By using this login session we can run admin commands such as:<br />
+<i>listDatabases</i><br />
+<i>dbStats</i><br />
+<i>listIndexes</i><br />
+<i>listCollections</i><br />
+<i>viewUsers</i><br />
+<br />
+We can create a normal user with read write privilege to a particular database by :<br />
+<br />
+1. $<i>mongo -u sr -p sr123 --authenticationDatabase admin</i><br />
+<br />
+2. use accounts<br />
+<br />
+3.<i>db.createUser({</i><br />
+<i>user: "gal"</i><br />
+<i>pwd:"galer",</i><br />
+<i>roles:["readWrite"]</i><br />
+<i>})</i><br />
+<i><br /></i>
+4. Now we can login to a new mongo shell with the new user pass and do read write operations on the accounts database<br />
+<i>$mongo -u gal -p galer --authenticationDatabase accounts</i><br />
+<br />
+* We can switch to another user while being in the mongo shell by using<br />
+<i>&gt; db.auth('sr','sr123')</i><br />
+<br />
+* To logout from the session we can use:<br />
+<i>&gt;db.logout()</i><br />
+<br />
+* To change the password for a user we can use:<br />
+<i>&gt;db.changeUserPassword("user","pass")</i><br />
+<br />
+<br />
+<br />
+<br />
+We can create<br />
+var me = { user: "raj" , pwd : "raj123" , roles :[ "userAdminAnyDatabase"]}<br />
+var me = { user: "raj" , pwd : "raj123" , roles :[ "dbAdminAnyDatabase"]}<br />
+var w = { user: "nair" , pwd : "raj123" , roles :[ "readWriteAnyDatabase"]}<br />
+&gt; use test<br />
+var a = { user: "maya" , pwd : "raj123" , roles :[ "readWrite"]}&nbsp; - for access only to test database(create using user var- me)<br />
+<br />
+db.createUser(<br />
+&nbsp; {<br />
+&nbsp; &nbsp; user: "reportsUser",<br />
+&nbsp; &nbsp; pwd: "12345678",<br />
+&nbsp; &nbsp; roles: [<br />
+&nbsp; &nbsp; &nbsp; &nbsp;{ role: "read", db: "reporting" },<br />
+&nbsp; &nbsp; &nbsp; &nbsp;{ role: "read", db: "products" },<br />
+&nbsp; &nbsp; &nbsp; &nbsp;{ role: "read", db: "sales" },<br />
+&nbsp; &nbsp; &nbsp; &nbsp;{ role: "readWrite", db: "accounts" }<br />
+&nbsp; &nbsp; ]<br />
+&nbsp; }<br />
+)<br />
+<br />
+<br />
+&gt; db.createUser(me)<br />
+Successfully added user: { "user" : "raj", "roles" : [ "userAdminAnyDatabase" ] }<br />
+<br />
+$ mongo localhost:27227/admin&nbsp; -u raj –p<br />
+<br />
+<b>Roles:</b><br />
+<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhRiF2nKxmcMvAQnxVc2b1fH97gAiGJVTXO2gwm6obmyykz1gDTwpBmd81DQ78x26BT0gqCOBD3q3kQz9JJB5oONTttiBUe0ZHKCdPkUO6F5F16oDb7NadpSbOCCMHjHRPJVC7QCW7aoM0/s1600/Capture.JPG" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="423" data-original-width="1059" height="254" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhRiF2nKxmcMvAQnxVc2b1fH97gAiGJVTXO2gwm6obmyykz1gDTwpBmd81DQ78x26BT0gqCOBD3q3kQz9JJB5oONTttiBUe0ZHKCdPkUO6F5F16oDb7NadpSbOCCMHjHRPJVC7QCW7aoM0/s640/Capture.JPG" width="640" /></a></div>
+<br />
+<br />
+<b>--keyFile &lt;fname&gt;</b> - to tell mongodb clusters to communicate among themselves using shared secret key.<br />
+<br />
+To provide authorization<br />
+&gt; db.auth("raj","raj123")<br />
+Users –<br />
+•<span style="white-space: pre;"> </span>Admin User –can do administration, created in admin database,can access all databases<br />
+•<span style="white-space: pre;"> </span>Regular User – access specific database,read/write or read only<br />
+<br />
+<br />
+<b>SSL and KeyFiles</b><br />
+<br />
+Key File – ensures members of clusters are legitimate.<br />
+Auth – authentication and authorization for client.<br />
+Scons –ssl – for encrypted data between client and shard servers and between shard servers.<br />
+<br />
+<b>Intra-Cluster Security</b><br />
+<br />
+$mongod --dbpath /home/azureuser/data2 --port 27002 --auth --replSet z --keyFile /home/azureuser/data/keyfile --logpath /home/azureuser/data2/data.log –fork<br />
+<div>
+<br /></div>
+</div>

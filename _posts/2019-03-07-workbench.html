@@ -1,0 +1,105 @@
+---
+layout: post
+title: GUI Clients
+date: '2019-03-07T01:42:00.000-08:00'
+author: Rajesh Nair
+tags:
+- Workbench
+- MySQL
+modified_time: '2020-05-10T14:09:51.984-07:00'
+blogger_id: tag:blogger.com,1999:blog-8827475125741824309.post-5749174179740934448
+blogger_orig_url: https://csrepo.blogspot.com/2019/03/workbench.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<div class="sidenav">
+<br /></div>
+<div dir="ltr" style="text-align: left;" trbidi="on">
+There are very GUI clients are present in market to manage and administer the MySQL databases.These are DBA control consoles which provide easy access to administrative data.<br />
+<br />
+Some of the GUI clients are:<br />
+<br />
+<b>MySQL WorkBench</b><br />
+<b><br /></b>
+<br />
+<div>
+Official MYSQL GUI tool from oracle.Provides:</div>
+<div>
+-SQL development</div>
+<div>
+-Data modeling</div>
+<div>
+-Server Administration</div>
+<div>
+<div>
+-Documentation library</div>
+<div>
+-DB migration assistance</div>
+</div>
+<div>
+<br /></div>
+<div>
+It can be downloaded from&nbsp;https://dev.mysql.com/downloads/workbench&nbsp;</div>
+<div>
+<br /></div>
+To install workbench in unix server , follow the below steps:<br />
+<br />
+1. Download rpm from https://dev.mysql.com/downloads/workbench/<br />
+<br />
+<div>
+2.  Download the dependencies for workbench by using below commands:<br />
+<br />
+yum install epel-release<br />
+yum install proj<br />
+yum install tinyxml</div>
+<div>
+yum install libzip<br />
+<br />
+3.Install the workbench and debug-info by using below commands:<br />
+<br />
+yum install mysql-workbench.x86_64<br />
+yum install mysql-workbench-debug-info.x86_64<br />
+<br />
+4. Open mysql workbench using below command<br />
+<br />
+#mysql-workbench<br />
+<br />
+5. Once the mysql-workbench application is open, connect to the mysql server, local or remote by providing the details to connect<br />
+<br />
+6.In sql script file type the mysql queries to operate on the mysql databases.</div>
+<div>
+<br /></div>
+<div>
+There are some other similar GUI clients available from other vendors which can be used to administer the MySQL databases, some of them are:</div>
+<div>
+<br /></div>
+<div>
+<div>
+<b>Navicat</b>-Provides user account,system varaible,data import/export,migration,synch</div>
+<div>
+https://www.navicat.com</div>
+<div>
+<br /></div>
+<div>
+<b>phpMyAdmin</b> - php based web based GUI</div>
+<div>
+https://www.phpmyadmin.net/</div>
+<div>
+<br /></div>
+<div>
+<b>Toad </b>- windows only MySQL dev tool with some admin tools including table comparision tools</div>
+<div>
+http://www.toadworld.com/downloads</div>
+<div>
+<br /></div>
+<div>
+<b>SQLYog</b> -commercial windows only admin tool</div>
+<div>
+Data export,import,sync,backup with scheduling,index analyzer and schema optimizer.</div>
+<div>
+https://www.webyog.com/product/downloads/</div>
+</div>
+<div>
+<br /></div>
+</div>
+</div>

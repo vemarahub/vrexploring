@@ -1,0 +1,78 @@
+---
+layout: post
+title: Wired Tiger in Mongo
+date: '2019-03-21T02:25:00.001-07:00'
+author: Rajesh Nair
+tags:
+- Mongo
+- Wired Tiger
+modified_time: '2020-02-06T05:18:29.402-08:00'
+blogger_id: tag:blogger.com,1999:blog-8827475125741824309.post-7671609727308844346
+blogger_orig_url: https://csrepo.blogspot.com/2019/03/wired-tiger-in-mongo.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+Wired tiger is a pluggable storage engine with following features:<br />
+* Document level locking<br />
+* Compression<br />
+* Fulfills some pitfalls of MMAPv1<br />
+* Performance gain<br />
+<br />
+We can specify the specific storage engine on which we want to run the mongo instance as below<br />
+<br />
+<div class="MsoNormal">
+<b>mongod<span style="mso-spacerun: yes;">&nbsp;
+</span>--storageEngine wiredTiger</b><o:p></o:p></div>
+<br /><br />
+<br />
+<div class="MsoNormal">
+<b>Data files of a wired tiger Storage Engine:</b><o:p></o:p></div>
+<br />
+<br />
+-rw-------. 1 mongod mongod&nbsp; &nbsp;21 Sep 15&nbsp; 2010 WiredTiger.lock<br />
+-rw-------. 1 mongod mongod&nbsp; &nbsp;45 Sep 15&nbsp; 2010 WiredTiger<br />
+-rw-------. 1 mongod mongod&nbsp; 114 Sep 15&nbsp; 2010 storage.bson<br />
+-rw-------. 1 mongod mongod 4.0K Mar 20 07:37 WiredTigerLAS.wt<br />
+-rw-------. 1 mongod mongod&nbsp; &nbsp; 5 Mar 20 07:37 mongod.lock<br />
+-rw-------. 1 mongod mongod&nbsp; 32K Mar 20 07:38 index-3--5338574939802031263.wt<br />
+-rw-------. 1 mongod mongod&nbsp; 32K Mar 20 07:38 collection-2--5338574939802031263.wt<br />
+drwx------. 2 mongod mongod 4.0K Mar 20 07:38 journal<br />
+-rw-------. 1 mongod mongod&nbsp; 32K Mar 20 07:42 index-8--5338574939802031263.wt<br />
+-rw-------. 1 mongod mongod&nbsp; 36K Mar 20 07:43 collection-7--5338574939802031263.wt<br />
+-rw-------. 1 mongod mongod&nbsp; 16K Mar 20 08:05 index-1--1414695316089644899.wt<br />
+-rw-------. 1 mongod mongod&nbsp; 16K Mar 20 08:05 collection-0--1414695316089644899.wt<br />
+-rw-------. 1 mongod mongod&nbsp; 36K Mar 20 08:05 _mdb_catalog.wt<br />
+-rw-------. 1 mongod mongod&nbsp; 32K Mar 20 23:27 index-1--5338574939802031263.wt<br />
+-rw-------. 1 mongod mongod&nbsp; 32K Mar 20 23:27 collection-0--5338574939802031263.wt<br />
+-rw-------. 1 mongod mongod&nbsp; 24K Mar 21 01:21 index-5--5338574939802031263.wt<br />
+-rw-------. 1 mongod mongod&nbsp; 24K Mar 21 01:21 collection-4--5338574939802031263.wt<br />
+-rw-------. 1 mongod mongod&nbsp; 36K Mar 21 01:22 sizeStorer.wt<br />
+-rw-------. 1 mongod mongod&nbsp; 12K Mar 21 01:22 index-6--5338574939802031263.wt<br />
+-rw-------. 1 mongod mongod&nbsp; 68K Mar 21 01:22 WiredTiger.wt<br />
+-rw-------. 1 mongod mongod 1.1K Mar 21 01:22 WiredTiger.turtle<br />
+drwx------. 2 mongod mongod 4.0K Mar 21 04:21 diagnostic.data<br />
+<br />
+<b>Wired Tiger Internals</b><br />
+<div>
+* Stores data in btree</div>
+<div>
+* Writes are initially seperate,incorporated later</div>
+<div>
+* two caches are used - WT cache which is by default set as half of RAM and FS cache.</div>
+<div>
+Two caches are used before writing to disk to improve performance with a 60s checkpoint.</div>
+<div>
+At cache level, wired tiger compressed the data.</div>
+<div>
+The compressions used by WT are :</div>
+<div>
+* Snappy - (default) - This is a fast compression mode</div>
+<div>
+* zlib - this has the capability of compressing more</div>
+<div>
+*none</div>
+<div>
+<br /></div>
+<div>
+<br /></div>
+</div>

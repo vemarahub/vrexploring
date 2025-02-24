@@ -1,0 +1,12 @@
+---
+layout: post
+title: Disaster Snapshot Recovery in Mongo
+date: '2020-05-11T04:04:00.000-07:00'
+author: Rajesh Nair
+tags:
+modified_time: '2020-05-11T04:04:09.444-07:00'
+blogger_id: tag:blogger.com,1999:blog-8827475125741824309.post-3895575054954346998
+blogger_orig_url: https://csrepo.blogspot.com/2020/05/disaster-snapshot-recovery-in-mongo.html
+---
+
+<div><br /></div><br /><div>Say for in a database maintenance activity we drop a collection by mistake, we can restore to the last state just before dropping the database using oplog file and the latest available backup.Follow the below steps to restore the database to last state:</div><div><br /></div><div>1. use local</div><div>db.oplog.rs.findOne({"o.drop":" "})</div><div>we will get epoch_sec for that particular drop statement.</div><div><br /></div><div>2. Dump the oplog file</div><div>mongodump -d local -c oplog.rs -out /data/oplog_dump -query {"ns":{"nin":[config.system.sessions,config.cache.collections]}}</div><div><br /></div><div>3. Restore the latest backup using mongorestore</div><div><br /></div><div>4. Restore the oplog upto the epoch time of collection drop</div><div>mongorestore --oplogReplay --oplogFile --oplogLimit epoch_sec</div><div><br /></div><div><br /></div><div>&nbsp;</div>

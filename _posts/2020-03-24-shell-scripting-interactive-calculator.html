@@ -1,0 +1,78 @@
+---
+layout: post
+title: Shell Script - Interactive Calculator
+date: '2020-03-24T02:22:00.001-07:00'
+author: Rajesh Nair
+tags:
+- shell scripting
+- unix
+- linux calculator
+modified_time: '2020-03-24T23:06:39.515-07:00'
+blogger_id: tag:blogger.com,1999:blog-8827475125741824309.post-5404370450386886002
+blogger_orig_url: https://csrepo.blogspot.com/2020/03/shell-scripting-interactive-calculator.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<br />
+<b>Script :</b> Interactive Calculator<br />
+<br />
+<b>Script Name:</b> calculator.sh<br />
+<br />
+<b>Script Function:</b>Script to run a fully interactive command line–based calculator.<br />
+<br />
+<b>Script Usage: ./</b>calculator.sh<br />
+<br />
+<b><u>Code:</u></b><br />
+<br />
+#!/bin/bash<br />
+# calc--A command line calculator that acts as a frontend to bc<br />
+scale=2<br />
+<br />
+scriptbc(){<br />
+if [ "$1" = "-p" ] ; then<br />
+&nbsp; &nbsp; &nbsp; &nbsp; precision=$2<br />
+&nbsp; &nbsp; &nbsp; &nbsp; shift 2<br />
+else<br />
+&nbsp; &nbsp; &nbsp; &nbsp; precision=2 # Default<br />
+fi<br />
+bc -q -l &lt;&lt; EOF<br />
+scale=$precision<br />
+$*<br />
+quit<br />
+EOF<br />
+}<br />
+<br />
+show_help()<br />
+{<br />
+cat &lt;&lt; EOF<br />
+In addition to standard math functions, calc also supports:<br />
+a % b remainder of a/b<br />
+a ^ b exponential: a raised to the b power<br />
+s(x) sine of x, x in radians<br />
+c(x) cosine of x, x in radians<br />
+a(x) arctangent of x, in radians<br />
+l(x) natural log of x<br />
+e(x) exponential log of raising e to the x<br />
+j(n,x) Bessel function of integer order n of x<br />
+scale N show N fractional digits (default = 2)<br />
+EOF<br />
+}<br />
+echo "Calc--a simple calculator. Enter 'help' for help, 'quit' to quit."<br />
+/bin/echo -n "calc&gt; "<br />
+while read command args<br />
+do<br />
+&nbsp; &nbsp; &nbsp; &nbsp; case $command<br />
+&nbsp; &nbsp; &nbsp; &nbsp; in<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; quit|exit) exit 0 ;;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; help|\?) show_help ;;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; scale) scale=$args ;;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; *) scriptbc -p $scale "$command" "$args" ;;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; esac<br />
+&nbsp; &nbsp; &nbsp; &nbsp; /bin/echo -n "calc&gt; "<br />
+done<br />
+echo ""<br />
+<br />
+exit 0<br />
+<div>
+<br /></div>
+</div>

@@ -1,0 +1,193 @@
+---
+layout: post
+title: CRUD in Mongo
+date: '2019-03-19T00:36:00.000-07:00'
+author: Rajesh Nair
+tags:
+- Insert
+- Find
+- Mongo
+- Remove
+- CRUD
+- Update
+modified_time: '2020-05-07T12:54:51.780-07:00'
+blogger_id: tag:blogger.com,1999:blog-8827475125741824309.post-1569054086821887556
+blogger_orig_url: https://csrepo.blogspot.com/2019/03/crud-in-mongo.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<div class="sidenav">
+CRUD corresponds to Create,Read,Update and Delete.Like any other database technology, mongo also supports CRUD operations on it by the use of its various functions for the same.</div>
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<br />
+<div style="text-align: left;">
+<b>Create</b></div>
+<div style="text-align: left;">
+<b><br /></b></div>
+<div>
+For create operations in mongo we can use insert method to insert documents into our collections.</div>
+<div>
+Eg:&nbsp;</div>
+<div>
+<b>&gt;db.sample.insert( { a:2,b:"a string",c:22.44 } );</b></div>
+<div>
+<i>WriteResult( { "nInserted" : 1 } )</i></div>
+<div>
+<b><br /></b></div>
+<div>
+<b>Read</b></div>
+<div>
+<b><br /></b></div>
+<div>
+Read operations corresponds to a select query in RDBMS systems.We can use find method to select all or specific documents from the database</div>
+<div>
+<b>db.sample.find();</b></div>
+<div>
+<b><br /></b></div>
+<div>
+<h3 style="text-align: left;">
+<b>Update</b></h3>
+</div>
+<div>
+<b><br /></b></div>
+<div>
+Update operation can be used to modify any field in the existing document of a collection.</div>
+<div>
+<b>db.&lt;collection&gt;.update(&lt;where&gt;,&lt;doc_or_partial_update_expression&gt;,&lt;upsert&gt;,&lt;multi&gt;)</b></div>
+<div>
+<b><br /></b></div>
+<div>
+The update can be a full update or a partial update on the document.<br />
+For partial update an example would be<br />
+<b>t.update({_id:101},{$set:{y:100}})</b><br />
+<div>
+<b><br /></b></div>
+We can even add new few fields to a specific document using update method.<br />
+&nbsp;_id field which is the default field for all documents cannot be modified using update method.<br />
+<br />
+<b>&gt; db.collection.update( query_document, update_document, options_document )</b><br />
+where options_document contains key:value pairs such as:<br />
+multi : true/false,<br />
+upsert : true/false,<br />
+writeConcern: document<br />
+<div>
+<br /></div>
+<br />
+<b>Upsert</b><br />
+Upsert corresponds to update or insert, This is set as third parameter in the update query.If the matching criteria is present in the collection, the particular document is updated.Else if the document is not present, it will be created as a new document in the collection<br />
+<b>&gt; db.test.update({age:30},{age:40},true)</b><br />
+<i>WriteResult({</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "nMatched" : 0,</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "nUpserted" : 1,</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "nModified" : 0,</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "_id" : ObjectId("4c90cd5237743aea27c04281")</i><br />
+<i>})</i><br />
+<div>
+<br /></div>
+<br />
+<b>Multi Update</b><br />
+The last or 4th parameter in the update method is for specifying if the update is a multi document update or not<br />
+db.&lt;coll&gt;.update(&lt;where&gt;,&lt;obj&gt;,&lt;upsert&gt;,&lt;multi&gt;);<br />
+<br />
+It is by default false, if it is set to true, all the matching criterias of where condition will be updated with obj.Otherwise only first matching criteria is updated<br />
+<br />
+<b>&gt;db.orders.update({order_id:123},{$inc:{priority:1}},false,true});</b><br />
+<br />
+Inserting values into an array can be done by using push keyword,<br />
+<b>t.update({_id:101},{$push:{arr:"hii"}})</b><br />
+<div>
+<b><br /></b></div>
+<br />
+<b>Save</b><br />
+Save method can be used to update a document in the collection<br />
+eg:<br />
+&gt;myobj = db.products.find({"y":200});<br />
+&gt;myobj.y = 400;<br />
+&gt;myobj<br />
+{"id": ObjectId("2386218328736ff"),"x":"hello",y":400}<br />
+<br />
+<b>&gt;db.products.save(myobj);</b><br />
+WriteResult({"nMatched":1,"nUpserted":0,"nModified":1})<br />
+<br />
+<h3 style="text-align: left;">
+Delete</h3>
+</div>
+<div>
+Deletion in mongo is done by using remove method, we can specify the criteria of deletion as argument and all the documents matching the criteria would be deleted.</div>
+<div>
+<b>db.test.remove({_id:100});</b></div>
+<div>
+<br /></div>
+<div>
+To remove all the documents of a collection , we can use</div>
+<div>
+<b>db.test.remove({});</b></div>
+<div>
+<br /></div>
+<div>
+We can also remove the documents matching a regular expression , for example:</div>
+<div>
+<b>db.test2.remove({x: /ello/ });</b></div>
+<div>
+<br />
+<br />
+<b>Bulk Insert</b><br />
+Bulk insertion of data can&nbsp; be done on a collection in mongo either as a ordered insertion or unordered insertion.<br />
+<br />
+Unordered Bulk Insert<br />
+<b>&gt;var bulk = db.items.initializeUnorderedBulkOp();</b><br />
+<b>&nbsp;&gt;bulk.insert({item:"abc",defaultQty:100,status:"A",points:100});</b><br />
+<b>&nbsp;&gt;bulk.insert({item:"abcd",defaultQty:101,status:"B",points:101});</b><br />
+<div>
+<b>&gt;bulk.insert({item:"abcde",defaultQty:102,status:"C",points:102});</b></div>
+<div>
+<div>
+<b>&gt;bulk.execute();</b></div>
+</div>
+<div>
+<i><br /></i></div>
+<div>
+<div>
+<i>BulkWriteResult({</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "writeErrors" : [ ],</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "writeConcernErrors" : [ ],</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "nInserted" : 3,</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "nUpserted" : 0,</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "nMatched" : 0,</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "nModified" : 0,</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "nRemoved" : 0,</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "upserted" : [ ]</i></div>
+<div>
+<i>})</i></div>
+</div>
+<div>
+<br /></div>
+Ordered Bulk Remove &amp; Update<br />
+<b>&nbsp;&gt;var b = db.items.initializeOrderedBulkOp()</b><br />
+<b>&gt;b.find({"item":"abc"}).remove()</b><br />
+<b>&gt;b.find({"item":"abcd"}).remove()</b><br />
+<b>&gt;b.find({"item":"abcde"}).update({$inc:{points:1}})</b><br />
+<b>&gt; b.execute()</b><br />
+<i>BulkWriteResult({</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "writeErrors" : [ ],</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "writeConcernErrors" : [ ],</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "nInserted" : 0,</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "nUpserted" : 0,</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "nMatched" : 1,</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "nModified" : 1,</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "nRemoved" : 2,</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "upserted" : [ ]</i><br />
+<br />
+<i>})</i></div>
+<div>
+<br /></div>
+</div>
+</div>

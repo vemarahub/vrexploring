@@ -1,0 +1,430 @@
+---
+layout: post
+title: Administrative Commands in Mongo
+date: '2019-03-20T07:03:00.002-07:00'
+author: Rajesh Nair
+tags:
+- Mongo
+- Mongo commands
+modified_time: '2020-03-11T10:53:43.452-07:00'
+blogger_id: tag:blogger.com,1999:blog-8827475125741824309.post-7248508701290388989
+blogger_orig_url: https://csrepo.blogspot.com/2019/03/administrative-commands-in-mongo.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+The following are some of the commands that can be used for database administration for mongo.<br />
+<br />
+<b>1. getLastError</b><br />
+&gt; db.getLastError()<br />
+<i>E11000 duplicate key error collection: sample1.test1 index: _id_ dup key: { : ObjectId('4c90bf054b7f54c607f6b23c') }</i><br />
+<div>
+<br /></div>
+<div>
+This command will help in getting details about the last failed command execution.For example in the above scenario an insert had failed to test1 collection since the primary key already existed for _id field.</div>
+<div>
+<br /></div>
+<div>
+<b>2. isMaster</b></div>
+&gt; db.isMaster()<br />
+<i>{</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "ismaster" : true,</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "maxBsonObjectSize" : 16777216,</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "maxMessageSizeBytes" : 48000000,</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "maxWriteBatchSize" : 100000,</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "localTime" : ISODate("2019-03-20T14:44:51.434Z"),</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "logicalSessionTimeoutMinutes" : 30,</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "minWireVersion" : 0,</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "maxWireVersion" : 7,</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "readOnly" : false,</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "ok" : 1</i><br />
+<i>}</i><br />
+<div>
+<br /></div>
+<div>
+It lets us know whether the current mongo instance we are accessing is the master instance in a replication setup of mongo.</div>
+<div>
+<br /></div>
+<div>
+<b>3. Drop Collection</b></div>
+<div>
+<div>
+&gt; db.items.drop()</div>
+<div>
+<i>true</i></div>
+</div>
+<div>
+<br /></div>
+<div>
+It can be used to drop a specific collection from the database, as in this case collection items is dropped.</div>
+<div>
+<br /></div>
+<div>
+<b>4. Server Status</b></div>
+<div>
+<div>
+&gt; db.serverStatus()</div>
+<div>
+<div>
+<i>{</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "host" : "localhost.localdomain",</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "version" : "4.0.6",</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "process" : "mongod",</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "pid" : NumberLong(3817),</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "uptime" : 764,</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "uptimeMillis" : NumberLong(763716),</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "uptimeEstimate" : NumberLong(763),</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "localTime" : ISODate("2019-03-20T14:49:49.322Z"),</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "asserts" : {------------</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ------------&nbsp; &nbsp;&nbsp;</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "storage" : {</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "freelist" : {</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "search" : {</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "bucketExhausted" : NumberLong(0),</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "requests" : NumberLong(0),</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "scanned" : NumberLong(0)</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; }</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; }</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; },</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </i><i>&nbsp;},</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "ok" : 1</i></div>
+<div>
+<i>}</i></div>
+<div style="font-weight: bold;">
+<br /></div>
+<div>
+Server status gives a statistics on what is happening on the database.</div>
+<div>
+<br /></div>
+<div>
+<b>5.Run Command</b></div>
+<div>
+<div class="MsoNormal">
+&gt;db.runCommand({&lt;commandName&gt;:value})<o:p></o:p><br />
+&gt;&gt; db.runCommand({isMaster:1})<br />
+<i>{</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "ismaster" : true,</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "maxBsonObjectSize" : 16777216,</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "maxMessageSizeBytes" : 48000000,</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "maxWriteBatchSize" : 100000,</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "localTime" : ISODate("2019-03-21T07:30:15.724Z"),</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "logicalSessionTimeoutMinutes" : 30,</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "minWireVersion" : 0,</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "maxWireVersion" : 7,</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "readOnly" : false,</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "ok" : 1</i><br />
+<i>}</i><br />
+<div>
+<br /></div>
+<div>
+We can run any database administration command using the db.runCommand method.</div>
+<div>
+<br /></div>
+<div>
+<b>6.Current Ops</b></div>
+&gt; db.currentOp()<br />
+<i>{</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "inprog" : [</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; {</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "host" : "localhost.localdomain:27017",</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "desc" : "conn5",</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "connectionId" : 5,</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "client" : "127.0.0.1:33962",</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "appName" : "MongoDB Shell",</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "clientMetadata" : {</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "application" : {</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "name" : "MongoDB Shell"</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; },</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "driver" : {</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "name" : "MongoDB Internal Client",</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "version" : "4.0.6"</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; },</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "os" : {</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "type" : "Linux",</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "name" : "Red Hat Enterprise Linux Server release 7.0 (Maipo)",</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "architecture" : "x86_64",</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "version" : "Kernel 3.10.0-123.el7.x86_64"</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; }</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; },</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "active" : true,</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "currentOpTime" : "2019-03-21T00:32:25.307-0700",</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "opid" : 16326,</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "lsid" : {</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "id" : UUID("7f3598ab-9cc1-47ec-9a2f-e81130cb7b58"),</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "uid" : BinData(0,"47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=")</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; },</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "secs_running" : NumberLong(0),</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "microsecs_running" : NumberLong(80),</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "op" : "command",</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "ns" : "admin.$cmd.aggregate",</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "command" : {</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "currentOp" : 1,</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "lsid" : {</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "id" : UUID("7f3598ab-9cc1-47ec-9a2f-e81130cb7b58")</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; },</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "$db" : "admin"</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; },</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "numYields" : 0,</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "locks" : {</i><br />
+<i><br /></i>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; },</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "waitingForLock" : false,</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "lockStats" : {</i><br />
+<i><br /></i>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; }</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; }</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; ],</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "ok" : 1</i><br />
+<i>}</i><br />
+<div>
+<br /></div>
+<div>
+This method lets us know what is currently running on the server.</div>
+<div>
+<div class="MsoNormal">
+For performance, can check “secs_running” parameters.<o:p></o:p></div>
+<div class="MsoNormal">
+Incase of replication, secondary reading from oplog using
+getmore.<o:p></o:p></div>
+<div class="MsoNormal">
+<br /></div>
+<div class="MsoNormal">
+To Know total running operations:<o:p></o:p></div>
+<div class="MsoNormal">
+&gt; db.currentOp().inprog.length</div>
+<div class="MsoNormal">
+<i>1</i></div>
+</div>
+<div>
+<br /></div>
+<div>
+<b>7.Kill Ops</b></div>
+<div>
+<div>
+&gt; db.killOp(16326)</div>
+<div>
+<i>{ "info" : "attempting to kill op", "ok" : 1 }</i></div>
+<div style="font-weight: bold;">
+<br /></div>
+</div>
+<div>
+<div class="MsoNormal">
+The method killOp() can be used kill the operation running on database using opId from
+currentOps.<b><o:p></o:p></b></div>
+<div class="MsoNormal">
+<br /></div>
+<div class="MsoNormal">
+<b>8. Collection Stats</b></div>
+<div class="MsoNormal">
+&gt; db.items.stats()</div>
+<div class="MsoNormal">
+<i>{</i></div>
+<div class="MsoNormal">
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "ns" : "sample1.items",</i></div>
+<div class="MsoNormal">
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "size" : 360,</i></div>
+<div class="MsoNormal">
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "count" : 10,</i></div>
+<div class="MsoNormal">
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "avgObjSize" : 36,</i></div>
+<div class="MsoNormal">
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "storageSize" : 16384,</i></div>
+<div class="MsoNormal">
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "capped" : false,</i></div>
+<div class="MsoNormal">
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "wiredTiger" : {</i></div>
+<div class="MsoNormal">
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "metadata" : {</i></div>
+<div class="MsoNormal">
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "formatVersion" : 1</i></div>
+<div class="MsoNormal">
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; },</i></div>
+<div class="MsoNormal">
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;------</i></div>
+<div class="MsoNormal">
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "nindexes" : 1,</i></div>
+<div class="MsoNormal">
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "totalIndexSize" : 16384,</i></div>
+<div class="MsoNormal">
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "indexSizes" : {</i></div>
+<div class="MsoNormal">
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "_id_" : 16384</i></div>
+<div class="MsoNormal">
+<i>&nbsp; &nbsp; &nbsp; &nbsp; },</i></div>
+<div class="MsoNormal">
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "ok" : 1</i></div>
+<div class="MsoNormal">
+</div>
+<div class="MsoNormal">
+<i>}</i></div>
+<div>
+<br /></div>
+<div>
+To know details of collections we can check that using db.coll.stats()<br />
+<br />
+<b>9.Mongo Stat</b><br />
+<b>#mongostat</b><br />
+<i>insert query update delete getmore command dirty used flushes vsize&nbsp; &nbsp;res qrw arw net_in net_out conn&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; time</i><br />
+<i>&nbsp; &nbsp; *0&nbsp; &nbsp; *0&nbsp; &nbsp; &nbsp;*0&nbsp; &nbsp; &nbsp;*0&nbsp; &nbsp; &nbsp; &nbsp;0&nbsp; &nbsp; &nbsp;1|0&nbsp; 0.0% 0.1%&nbsp; &nbsp; &nbsp; &nbsp;0 1.05G 90.0M 0|0 1|0&nbsp; &nbsp;157b&nbsp; &nbsp;62.6k&nbsp; &nbsp; 1 Mar 24 00:37:24.330</i><br />
+<i>&nbsp; &nbsp; *0&nbsp; &nbsp; *0&nbsp; &nbsp; &nbsp;*0&nbsp; &nbsp; &nbsp;*0&nbsp; &nbsp; &nbsp; &nbsp;0&nbsp; &nbsp; &nbsp;1|0&nbsp; 0.0% 0.1%&nbsp; &nbsp; &nbsp; &nbsp;0 1.05G 90.0M 0|0 1|0&nbsp; &nbsp;157b&nbsp; &nbsp;62.9k&nbsp; &nbsp; 1 Mar 24 00:37:25.330</i><br />
+<i>&nbsp; &nbsp; *0&nbsp; &nbsp; *0&nbsp; &nbsp; &nbsp;*0&nbsp; &nbsp; &nbsp;*0&nbsp; &nbsp; &nbsp; &nbsp;0&nbsp; &nbsp; &nbsp;1|0&nbsp; 0.0% 0.1%&nbsp; &nbsp; &nbsp; &nbsp;0 1.05G 90.0M 0|0 1|0&nbsp; &nbsp;157b&nbsp; &nbsp;62.7k&nbsp; &nbsp; 1 Mar 24 00:37:26.335</i><br />
+<i>&nbsp; &nbsp; *0&nbsp; &nbsp; *0&nbsp; &nbsp; &nbsp;*0&nbsp; &nbsp; &nbsp;*0&nbsp; &nbsp; &nbsp; &nbsp;0&nbsp; &nbsp; &nbsp;2|0&nbsp; 0.0% 0.1%&nbsp; &nbsp; &nbsp; &nbsp;0 1.05G 90.0M 0|0 1|0&nbsp; &nbsp;159b&nbsp; &nbsp;63.4k&nbsp; &nbsp; 1 Mar 24 00:37:27.328</i><br />
+<br />
+<b>10.Mongo Top</b><br />
+<b># mongotop</b><br />
+<i>2019-03-24T00:38:10.492-0700&nbsp; &nbsp; connected to: 127.0.0.1</i><br />
+<i><br /></i>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ns&nbsp; &nbsp; total&nbsp; &nbsp; read&nbsp; &nbsp; write&nbsp; &nbsp; 2019-03-24T00:38:11-07:00</i><br />
+<i>&nbsp; admin.$cmd.aggregate&nbsp; &nbsp; &nbsp; 0ms&nbsp; &nbsp; &nbsp;0ms&nbsp; &nbsp; &nbsp; 0ms</i><br />
+<i>&nbsp; &nbsp; admin.system.roles&nbsp; &nbsp; &nbsp; 0ms&nbsp; &nbsp; &nbsp;0ms&nbsp; &nbsp; &nbsp; 0ms</i><br />
+<i>&nbsp; admin.system.version&nbsp; &nbsp; &nbsp; 0ms&nbsp; &nbsp; &nbsp;0ms&nbsp; &nbsp; &nbsp; 0ms</i><br />
+<i>&nbsp;config.system.profile&nbsp; &nbsp; &nbsp; 0ms&nbsp; &nbsp; &nbsp;0ms&nbsp; &nbsp; &nbsp; 0ms</i><br />
+<i>config.system.sessions&nbsp; &nbsp; &nbsp; 0ms&nbsp; &nbsp; &nbsp;0ms&nbsp; &nbsp; &nbsp; 0ms</i><br />
+<i>&nbsp; &nbsp; &nbsp;local.startup_log&nbsp; &nbsp; &nbsp; 0ms&nbsp; &nbsp; &nbsp;0ms&nbsp; &nbsp; &nbsp; 0ms</i><br />
+<i>&nbsp; local.system.replset&nbsp; &nbsp; &nbsp; 0ms&nbsp; &nbsp; &nbsp;0ms&nbsp; &nbsp; &nbsp; 0ms</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;sample1.items&nbsp; &nbsp; &nbsp; 0ms&nbsp; &nbsp; &nbsp;0ms&nbsp; &nbsp; &nbsp; 0ms</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; sample1.places&nbsp; &nbsp; &nbsp; 0ms&nbsp; &nbsp; &nbsp;0ms&nbsp; &nbsp; &nbsp; 0ms</i><br />
+<br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp;sample1.sample1&nbsp; &nbsp; &nbsp; 0ms&nbsp; &nbsp; &nbsp;0ms&nbsp; &nbsp; &nbsp; 0ms</i></div>
+</div>
+<div>
+<br />
+<br />
+<b>11.&nbsp;db.getLogComponents()</b><br />
+{<br />
+&nbsp; &nbsp; &nbsp; &nbsp; "verbosity" : 0,<br />
+&nbsp; &nbsp; &nbsp; &nbsp; "accessControl" : {<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "verbosity" : -1<br />
+&nbsp; &nbsp; &nbsp; &nbsp; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; "command" : {<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "verbosity" : -1<br />
+&nbsp; &nbsp; &nbsp; &nbsp; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; "control" : {<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "verbosity" : -1<br />
+&nbsp; &nbsp; &nbsp; &nbsp; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; "executor" : {<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "verbosity" : -1<br />
+&nbsp; &nbsp; &nbsp; &nbsp; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; "geo" : {<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "verbosity" : -1<br />
+&nbsp; &nbsp; &nbsp; &nbsp; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; "index" : {<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "verbosity" : -1<br />
+&nbsp; &nbsp; &nbsp; &nbsp; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; "network" : {<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "verbosity" : -1,<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "asio" : {<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "verbosity" : -1<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "bridge" : {<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "verbosity" : -1<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; }<br />
+&nbsp; &nbsp; &nbsp; &nbsp; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; "query" : {<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "verbosity" : -1<br />
+&nbsp; &nbsp; &nbsp; &nbsp; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; "replication" : {<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "verbosity" : -1,<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "heartbeats" : {<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "verbosity" : -1<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "rollback" : {<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "verbosity" : -1<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; }<br />
+&nbsp; &nbsp; &nbsp; &nbsp; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; "sharding" : {<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "verbosity" : -1,<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "shardingCatalogRefresh" : {<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "verbosity" : -1<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; }<br />
+&nbsp; &nbsp; &nbsp; &nbsp; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; "storage" : {<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "verbosity" : -1,<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "recovery" : {<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "verbosity" : -1<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "journal" : {<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "verbosity" : -1<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; }<br />
+&nbsp; &nbsp; &nbsp; &nbsp; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; "write" : {<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "verbosity" : -1<br />
+&nbsp; &nbsp; &nbsp; &nbsp; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; "ftdc" : {<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "verbosity" : -1<br />
+&nbsp; &nbsp; &nbsp; &nbsp; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; "tracking" : {<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "verbosity" : -1<br />
+&nbsp; &nbsp; &nbsp; &nbsp; },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; "transaction" : {<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "verbosity" : -1<br />
+&nbsp; &nbsp; &nbsp; &nbsp; }<br />
+<br />
+}<br />
+<br />
+<b>12.db.adminCommand("getLog":"global")</b></div>
+<div>
+<br /></div>
+<div>
+<div>
+{</div>
+<div>
+&nbsp; &nbsp; &nbsp; &nbsp; "totalLinesWritten" : 42,</div>
+<div>
+&nbsp; &nbsp; &nbsp; &nbsp; "log" : [</div>
+<div>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 0, $db: \"test\" } numYields:0 reslen:224 locks:{} protocol:op_msg 0ms",</div>
+<div>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "2010-09-15T04:41:57.871+0530 D INDEX&nbsp; &nbsp; [TTLMonitor] deleted: 0",</div>
+<div>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "2010-09-15T04:42:00.222+0530 I COMMAND&nbsp; [conn3] successfully set parameter logComponentVerbosity to { index: { verbosity: 0.0 } } (was { verbosity: 1, accessControl: { verbosity: -1 }, command: { verbosity: -1 }, control: { verbosity: -1 }, executor: { verbosity: -1 }, geo: { verbosity: -1 }, index: { verbosity: 1 }, network: { verbosity: -1, asio: { verbosity: -1 }, bridge: { verbosity: -1 } }, query: { verbosity: -1 }, replication: { verbosity: -1, heartbeats: { verbosity: -1 },&nbsp;</div>
+<div>
+<br /></div>
+<div>
+<b>Log Message Severity Levels</b></div>
+<div>
+F- Fatal</div>
+<div>
+E-Error</div>
+<div>
+W-Warning</div>
+<div>
+I-Informational(Verbosity Level 0)</div>
+<div>
+D-Debug(Verbosity Level 1-5)</div>
+<div>
+<br /></div>
+<div>
+<br /></div>
+</div>
+<div>
+<br /></div>
+<div>
+<br /></div>
+<div>
+<br /></div>
+</div>
+<b></b></div>
+</div>
+</div>
+</div>

@@ -1,0 +1,96 @@
+---
+layout: post
+title: Shell Script - Reminder Utility
+date: '2020-03-24T00:44:00.000-07:00'
+author: Rajesh Nair
+tags:
+- unix reminder
+- shell scripting
+- unix
+- shell
+modified_time: '2020-03-24T02:58:22.644-07:00'
+blogger_id: tag:blogger.com,1999:blog-8827475125741824309.post-1600735175980244398
+blogger_orig_url: https://csrepo.blogspot.com/2020/03/shell-script-reminder-utility.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<br />
+<b>Script :</b> Reminder Utility<br />
+<br />
+<b>Script Name:</b> remember.sh, remindme.sh<br />
+<br />
+<b>Script Function:&nbsp;</b>The first script, remember , lets you easily save<br />
+your snippets of information into a single rememberfile in your home directory.<br />
+If invoked without any arguments, it reads standard input until the<br />
+end-of-file sequence (^D) is given by pressing CTRL-D. If invoked with arguments,<br />
+it just saves those arguments directly to the data file.<br />
+remindme, a companion shell script , either displays the contents of the whole rememberfile when no arguments are given or displays the results of searching through it using the arguments as a pattern.<br />
+<br />
+<b>Script Usage:</b>&nbsp;./remember.sh &lt; arg &gt;<arg><arg></arg></arg><br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;./remindme.sh &lt; arg &gt;<br />
+<br />
+<b><u>Code:</u></b><br />
+<b><u><br /></u></b>
+<b><u>remeber.sh</u></b><br />
+<b><u><br /></u></b>
+#!/bin/bash<br />
+# remember--An easy command line-based reminder pad<br />
+rememberfile="$HOME/.remember"<br />
+if [ $# -eq 0 ] ; then<br />
+# Prompt the user for input and append whatever they write to<br />
+# the rememberfile.<br />
+&nbsp; &nbsp; &nbsp; &nbsp; echo "Enter note, end with ^D: "<br />
+&nbsp; &nbsp; &nbsp; &nbsp; cat - &gt;&gt; $rememberfile<br />
+else<br />
+# Append any arguments passed to the script on to the .remember file.<br />
+&nbsp;echo "$@" &gt;&gt; $rememberfile<br />
+fi<br />
+<br />
+exit 0<br />
+<div>
+<br /></div>
+<div>
+<b><u>remindme.sh</u></b></div>
+<div>
+<b><u><br /></u></b></div>
+<div>
+<div>
+#!/bin/bash</div>
+<div>
+# remindme--Searches a data file for matching lines or, if no</div>
+<div>
+# argument is specified, shows the entire contents of the data file</div>
+<div>
+rememberfile="$HOME/.remember"</div>
+<div>
+if [ ! -f $rememberfile ] ; then</div>
+<div>
+&nbsp; &nbsp; &nbsp; &nbsp; echo "$0: You don't seem to have a .remember file. " &gt;&amp;2</div>
+<div>
+&nbsp; &nbsp; &nbsp; &nbsp; echo "To remedy this, please use 'remember' to add reminders" &gt;&amp;2</div>
+<div>
+&nbsp; &nbsp; &nbsp; &nbsp; exit 1</div>
+<div>
+fi</div>
+<div>
+if [ $# -eq 0 ] ; then</div>
+<div>
+&nbsp; &nbsp; &nbsp; &nbsp; # Display the whole rememberfile when not given any search criteria.</div>
+<div>
+&nbsp; &nbsp; &nbsp; &nbsp; more $rememberfile</div>
+<div>
+else</div>
+<div>
+&nbsp; &nbsp; &nbsp; &nbsp; # Otherwise, search through the file for the given terms, and display</div>
+<div>
+&nbsp; &nbsp; &nbsp; &nbsp; # the results neatly.</div>
+<div>
+&nbsp; &nbsp; &nbsp; &nbsp; grep -i -- "$@" $rememberfile | ${PAGER:-more}</div>
+<div>
+fi</div>
+<div>
+exit 0</div>
+<div style="text-decoration-line: underline;">
+<br /></div>
+</div>
+</div>

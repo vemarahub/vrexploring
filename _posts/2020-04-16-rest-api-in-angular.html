@@ -1,0 +1,195 @@
+---
+layout: post
+title: Rest Api in Angular
+date: '2020-04-16T06:44:00.000-07:00'
+author: Rajesh Nair
+tags:
+- service in angular
+- rest api
+- angular
+modified_time: '2020-04-16T20:50:08.665-07:00'
+blogger_id: tag:blogger.com,1999:blog-8827475125741824309.post-2706820253379720294
+blogger_orig_url: https://csrepo.blogspot.com/2020/04/rest-api-in-angular.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+To call a rest api service in angular, follow the below steps after setting up a fake service and routings as mentioned in previous blogs:<br />
+<br />
+<b>1. </b>Generate an Angular service that interfaces with the JSON REST API.<br />
+&nbsp;ng generate service data<br />
+<br />
+<b>2. </b>Write&nbsp;<span style="background-color: white; color: #292b2c; font-family: &quot;amiri&quot;; font-size: 16px;">&nbsp;</span><code style="background-color: white; box-sizing: inherit; color: #292b2c;">src/app/data.service.ts</code><span style="background-color: white; color: #292b2c; font-family: &quot;amiri&quot;; font-size: 16px;">&nbsp;file to call the fake rest api in the getAllBooks method as below:</span><br />
+<div style="background-color: #1e1e1e; color: #d4d4d4; font-family: Consolas, &quot;Courier New&quot;, monospace; font-size: 14px; line-height: 19px; white-space: pre;">
+<div>
+<span style="color: #c586c0;">import</span>&nbsp;{&nbsp;<span style="color: #9cdcfe;">Injectable</span>&nbsp;}&nbsp;<span style="color: #c586c0;">from</span>&nbsp;<span style="color: #ce9178;">'@angular/core'</span>;</div>
+<br />
+<div>
+<span style="color: #c586c0;">import</span>&nbsp;{&nbsp;<span style="color: #9cdcfe;">HttpClient</span>,&nbsp;<span style="color: #9cdcfe;">HttpErrorResponse</span>&nbsp;}&nbsp;<span style="color: #c586c0;">from</span>&nbsp;<span style="color: #ce9178;">'@angular/common/http'</span>;</div>
+<br />
+<div>
+<span style="color: #c586c0;">import</span>&nbsp;{&nbsp;&nbsp;<span style="color: #9cdcfe;">throwError</span>&nbsp;}&nbsp;<span style="color: #c586c0;">from</span>&nbsp;<span style="color: #ce9178;">'rxjs'</span>;</div>
+<div>
+<span style="color: #c586c0;">import</span>&nbsp;{&nbsp;<span style="color: #9cdcfe;">retry</span>,&nbsp;<span style="color: #9cdcfe;">catchError</span>&nbsp;}&nbsp;<span style="color: #c586c0;">from</span>&nbsp;<span style="color: #ce9178;">'rxjs/operators'</span>;</div>
+<br />
+<div>
+@<span style="color: #dcdcaa;">Injectable</span>({</div>
+<div>
+&nbsp;&nbsp;<span style="color: #9cdcfe;">providedIn:</span>&nbsp;<span style="color: #ce9178;">'root'</span></div>
+<div>
+})</div>
+<div>
+<span style="color: #c586c0;">export</span>&nbsp;<span style="color: #569cd6;">class</span>&nbsp;<span style="color: #4ec9b0;">DataService</span>&nbsp;{</div>
+<br />
+<div>
+&nbsp;&nbsp;<span style="color: #569cd6;">private</span>&nbsp;<span style="color: #9cdcfe;">REST_API_SERVER</span>&nbsp;=&nbsp;<span style="color: #ce9178;">"http://localhost:3000"</span>;</div>
+<br />
+<div>
+&nbsp;&nbsp;<span style="color: #569cd6;">constructor</span>(<span style="color: #569cd6;">private</span>&nbsp;<span style="color: #9cdcfe;">httpClient</span>:&nbsp;<span style="color: #4ec9b0;">HttpClient</span>)&nbsp;{&nbsp;}</div>
+<br />
+<div>
+&nbsp;&nbsp;<span style="color: #dcdcaa;">handleError</span>(<span style="color: #9cdcfe;">error</span>:&nbsp;<span style="color: #4ec9b0;">HttpErrorResponse</span>)&nbsp;{</div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #569cd6;">let</span>&nbsp;<span style="color: #9cdcfe;">errorMessage</span>&nbsp;=&nbsp;<span style="color: #ce9178;">'Unknown&nbsp;error!'</span>;</div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #c586c0;">if</span>&nbsp;(<span style="color: #9cdcfe;">error</span>.<span style="color: #9cdcfe;">error</span>&nbsp;<span style="color: #569cd6;">instanceof</span>&nbsp;<span style="color: #4ec9b0;">ErrorEvent</span>)&nbsp;{</div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #6a9955;">//&nbsp;Client-side&nbsp;errors</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #9cdcfe;">errorMessage</span>&nbsp;=&nbsp;<span style="color: #ce9178;">`Error:&nbsp;</span><span style="color: #569cd6;">${</span><span style="color: #9cdcfe;">error</span>.<span style="color: #9cdcfe;">error</span>.<span style="color: #9cdcfe;">message</span><span style="color: #569cd6;">}</span><span style="color: #ce9178;">`</span>;</div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;<span style="color: #c586c0;">else</span>&nbsp;{</div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #6a9955;">//&nbsp;Server-side&nbsp;errors</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #9cdcfe;">errorMessage</span>&nbsp;=&nbsp;<span style="color: #ce9178;">`Error&nbsp;Code:&nbsp;</span><span style="color: #569cd6;">${</span><span style="color: #9cdcfe;">error</span>.<span style="color: #9cdcfe;">status</span><span style="color: #569cd6;">}</span><span style="color: #d7ba7d;">\n</span><span style="color: #ce9178;">Message:&nbsp;</span><span style="color: #569cd6;">${</span><span style="color: #9cdcfe;">error</span>.<span style="color: #9cdcfe;">message</span><span style="color: #569cd6;">}</span><span style="color: #ce9178;">`</span>;</div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;}</div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #9cdcfe;">window</span>.<span style="color: #dcdcaa;">alert</span>(<span style="color: #9cdcfe;">errorMessage</span>);</div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #c586c0;">return</span>&nbsp;<span style="color: #dcdcaa;">throwError</span>(<span style="color: #9cdcfe;">errorMessage</span>);</div>
+<div>
+&nbsp;&nbsp;}</div>
+<br />
+<div>
+&nbsp;<span style="color: #569cd6;">public</span>&nbsp;<span style="color: #dcdcaa;">getAllBooks</span>(){</div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #c586c0;">return</span>&nbsp;<span style="color: #569cd6;">this</span>.<span style="color: #9cdcfe;">httpClient</span>.<span style="color: #dcdcaa;">get</span>(<span style="color: #569cd6;">this</span>.<span style="color: #9cdcfe;">REST_API_SERVER</span>+<span style="color: #ce9178;">"/books/"</span>).<span style="color: #dcdcaa;">pipe</span>(<span style="color: #dcdcaa;">retry</span>(<span style="color: #b5cea8;">3</span>),&nbsp;<span style="color: #dcdcaa;">catchError</span>(<span style="color: #569cd6;">this</span>.<span style="color: #9cdcfe;">handleError</span>));</div>
+<div>
+}</div>
+<br />
+<div>
+}</div>
+</div>
+<span style="background-color: white; color: #292b2c; font-family: &quot;amiri&quot;; font-size: 16px;"><br /></span>
+<span style="background-color: white; color: #292b2c; font-family: &quot;amiri&quot;; font-size: 16px;"><br /></span>
+<span style="background-color: white; color: #292b2c; font-family: &quot;amiri&quot;; font-size: 16px;"><b>3. </b>Open&nbsp;</span><span style="background-color: white; color: #292b2c; font-family: monospace; font-size: 13px;">src/app/dashboard/dashboard.component.ts and edit as below to use the service getAllBooks in the dashboard component.</span><br />
+<span style="background-color: white; color: #292b2c; font-family: monospace; font-size: 13px;"><br /></span>
+<br />
+<div style="background-color: #1e1e1e; color: #d4d4d4; font-family: Consolas, &quot;Courier New&quot;, monospace; font-size: 14px; line-height: 19px; white-space: pre;">
+<div>
+<span style="color: #c586c0;">import</span>&nbsp;{&nbsp;<span style="color: #9cdcfe;">Component</span>,&nbsp;<span style="color: #9cdcfe;">OnInit</span>&nbsp;}&nbsp;<span style="color: #c586c0;">from</span>&nbsp;<span style="color: #ce9178;">'@angular/core'</span>;</div>
+<div>
+<span style="color: #c586c0;">import</span>&nbsp;{&nbsp;<span style="color: #9cdcfe;">DataService</span>&nbsp;}&nbsp;<span style="color: #c586c0;">from</span>&nbsp;<span style="color: #ce9178;">'../data.service'</span>;</div>
+<div>
+<span style="color: #c586c0;">import</span>&nbsp;{&nbsp;&nbsp;<span style="color: #9cdcfe;">takeUntil</span>&nbsp;}&nbsp;<span style="color: #c586c0;">from</span>&nbsp;<span style="color: #ce9178;">'rxjs/operators'</span>;</div>
+<div>
+<span style="color: #c586c0;">import</span>&nbsp;{&nbsp;<span style="color: #9cdcfe;">Subject</span>&nbsp;}&nbsp;<span style="color: #c586c0;">from</span>&nbsp;<span style="color: #ce9178;">'rxjs'</span>;</div>
+<br />
+<div>
+@<span style="color: #dcdcaa;">Component</span>({</div>
+<div>
+&nbsp;&nbsp;<span style="color: #9cdcfe;">selector:</span>&nbsp;<span style="color: #ce9178;">'app-dashboard'</span>,</div>
+<div>
+&nbsp;&nbsp;<span style="color: #9cdcfe;">templateUrl:</span>&nbsp;<span style="color: #ce9178;">'./dashboard.component.html'</span>,</div>
+<div>
+&nbsp;&nbsp;<span style="color: #9cdcfe;">styleUrls:</span>&nbsp;[<span style="color: #ce9178;">'./dashboard.component.scss'</span>]</div>
+<div>
+})</div>
+<div>
+<span style="color: #c586c0;">export</span>&nbsp;<span style="color: #569cd6;">class</span>&nbsp;<span style="color: #4ec9b0;">DashboardComponent</span>&nbsp;<span style="color: #569cd6;">implements</span>&nbsp;<span style="color: #4ec9b0;">OnInit</span>&nbsp;{</div>
+<br />
+<div>
+&nbsp;&nbsp;<span style="color: #9cdcfe;">books</span>&nbsp;=&nbsp;[];</div>
+<div>
+&nbsp;&nbsp;<span style="color: #9cdcfe;">book</span>=<span style="color: #ce9178;">""</span>;</div>
+<div>
+&nbsp;&nbsp;<span style="color: #9cdcfe;">destroy$</span>:&nbsp;<span style="color: #4ec9b0;">Subject</span>&lt;<span style="color: #4ec9b0;">boolean</span>&gt;&nbsp;=&nbsp;<span style="color: #569cd6;">new</span>&nbsp;<span style="color: #4ec9b0;">Subject</span>&lt;<span style="color: #4ec9b0;">boolean</span>&gt;();</div>
+<br />
+<div>
+&nbsp;&nbsp;<span style="color: #569cd6;">constructor</span>(<span style="color: #569cd6;">private</span>&nbsp;<span style="color: #9cdcfe;">dataService</span>:&nbsp;<span style="color: #4ec9b0;">DataService</span>)&nbsp;{&nbsp;}</div>
+<br />
+<div>
+&nbsp;&nbsp;<span style="color: #dcdcaa;">ngOnInit</span>()&nbsp;{</div>
+<br />
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #569cd6;">this</span>.<span style="color: #9cdcfe;">dataService</span>.<span style="color: #dcdcaa;">getAllBooks</span>().<span style="color: #dcdcaa;">subscribe</span>((<span style="color: #9cdcfe;">data</span>:&nbsp;<span style="color: #4ec9b0;">any</span>[])<span style="color: #569cd6;">=&gt;</span>{</div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #4ec9b0;">console</span>.<span style="color: #dcdcaa;">log</span>(<span style="color: #9cdcfe;">data</span>);</div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #569cd6;">this</span>.<span style="color: #9cdcfe;">books</span>&nbsp;=&nbsp;<span style="color: #9cdcfe;">data</span>;</div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;})&nbsp;&nbsp;</div>
+<div>
+&nbsp;&nbsp;}</div>
+<br />
+<div>
+&nbsp;&nbsp;<span style="color: #dcdcaa;">ngOnDestroy</span>()&nbsp;{</div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #569cd6;">this</span>.<span style="color: #9cdcfe;">destroy$</span>.<span style="color: #dcdcaa;">next</span>(<span style="color: #569cd6;">true</span>);</div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #6a9955;">//&nbsp;Unsubscribe&nbsp;from&nbsp;the&nbsp;subject</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #569cd6;">this</span>.<span style="color: #9cdcfe;">destroy$</span>.<span style="color: #dcdcaa;">unsubscribe</span>();</div>
+<div>
+&nbsp;&nbsp;}</div>
+<br />
+<div>
+}</div>
+</div>
+<br />
+<b>4. </b>Open&nbsp;<span style="background-color: white; color: #292b2c; font-family: monospace; font-size: 13px;">src/app/home/dashboard.component.html and display the contents of Books json data in the dashboard screen of your angular app as below:</span><br />
+<span style="background-color: white; color: #292b2c; font-family: monospace; font-size: 13px;"><br /></span>
+<br />
+<div style="background-color: #1e1e1e; color: #d4d4d4; font-family: Consolas, &quot;Courier New&quot;, monospace; font-size: 14px; line-height: 19px; white-space: pre;">
+<div>
+<span style="color: grey;">&lt;</span><span style="color: #569cd6;">div</span>&nbsp;<span style="color: #9cdcfe;">style</span>=<span style="color: #ce9178;">"</span><span style="color: #ce9178;">padding:&nbsp;13px;</span><span style="color: #ce9178;">"</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;</span><span style="color: #569cd6;">mat-spinner</span>&nbsp;<span style="color: #9cdcfe;">*ngIf</span>=<span style="color: #ce9178;">"books.length&nbsp;===&nbsp;0"</span><span style="color: grey;">&gt;&lt;/</span><span style="color: #569cd6;">mat-spinner</span><span style="color: grey;">&gt;</span></div>
+<br />
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;</span><span style="color: #569cd6;">mat-card</span>&nbsp;<span style="color: #9cdcfe;">*ngFor</span>=<span style="color: #ce9178;">"let&nbsp;book&nbsp;of&nbsp;books"</span>&nbsp;<span style="color: #9cdcfe;">style</span>=<span style="color: #ce9178;">"</span><span style="color: #ce9178;">margin-top:10px;</span><span style="color: #ce9178;">"</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;</span><span style="color: #569cd6;">mat-card-header</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;</span><span style="color: #569cd6;">mat-card-title</span><span style="color: grey;">&gt;</span>{{ "{{" }}book.title}}<span style="color: grey;">&lt;/</span><span style="color: #569cd6;">mat-card-title</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;</span><span style="color: #569cd6;">mat-card-subtitle</span><span style="color: grey;">&gt;</span>{{ "{{" }}book.author}}<span style="color: grey;">&lt;/</span><span style="color: #569cd6;">mat-card-subtitle</span><span style="color: grey;">&gt;</span>&nbsp;</div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;/</span><span style="color: #569cd6;">mat-card-header</span><span style="color: grey;">&gt;</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;</span><span style="color: #569cd6;">mat-card-content</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;</span><span style="color: #569cd6;">p</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ "{{" }}book.description}}</div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;/</span><span style="color: #569cd6;">p</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;/</span><span style="color: #569cd6;">mat-card-content</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;</span><span style="color: #569cd6;">mat-card-actions</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;</span><span style="color: #569cd6;">button</span>&nbsp;<span style="color: #9cdcfe;">mat-button</span><span style="color: grey;">&gt;</span>&nbsp;Buy&nbsp;Book<span style="color: grey;">&lt;/</span><span style="color: #569cd6;">button</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;/</span><span style="color: #569cd6;">mat-card-actions</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;</div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;/</span><span style="color: #569cd6;">mat-card</span><span style="color: grey;">&gt;</span></div>
+<div>
+<span style="color: grey;">&lt;/</span><span style="color: #569cd6;">div</span><span style="color: grey;">&gt;</span></div>
+</div>
+</div>

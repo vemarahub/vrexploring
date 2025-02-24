@@ -1,0 +1,1158 @@
+---
+layout: post
+title: Shell Script - Server Statistics
+date: '2020-03-25T00:15:00.002-07:00'
+author: Rajesh Nair
+tags:
+- linux
+- shell scripting
+- unix
+- shell
+modified_time: '2020-03-25T00:16:55.066-07:00'
+blogger_id: tag:blogger.com,1999:blog-8827475125741824309.post-8354326113082977753
+blogger_orig_url: https://csrepo.blogspot.com/2020/03/shell-script-server-statistics.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<br />
+<b>Script : </b>Shell script to test the throughput of disk subsystem.<br />
+<br />
+<b>Script Name:</b> serverstat.sh<br />
+<br />
+<b>Script Function:&nbsp;</b> Statistics about server status,disk and memory details<br />
+Eg:]# cat iotest.log<br />
+<div>
+04:45:25&nbsp; &nbsp; Date: Wed Sep 15 04:45:25 2010</div>
+04:45:25&nbsp; &nbsp; Host: Linux testServ 3.10.0-123.el7.x86_64 #1 SMP Mon May 5 11:16:57 EDT 2014 x86_64 x86_64 x86_64 GNU/Linux<br />
+04:45:25&nbsp; Uptime: up 8:25, 3 users, load average: 0.00, 0.01, 0.05<br />
+04:45:25&nbsp; &nbsp; &nbsp;DLC: /usr/dlc<br />
+04:45:25 Threads: 2<br />
+04:45:25 TestSiz: 51200 KB<br />
+04:45:25 TestDir: /home/rajesh<br />
+Filesystem&nbsp; &nbsp; &nbsp;1K-blocks&nbsp; &nbsp; &nbsp;Used Available Use% Mounted on<br />
+/dev/sda3&nbsp; &nbsp; &nbsp; &nbsp;18555904 16287996&nbsp; &nbsp;2267908&nbsp; 88% /<br />
+<div>
+<br /></div>
+<b>Script Usage:</b> ./serverstat.sh [ temp dir path]<br />
+<br />
+<b><u>Code:</u></b><br />
+<b><u><br /></u></b>
+#!/bin/sh<br />
+<br />
+THIS=`basename $0`<br />
+Release="V2.1 as of July 07, 2014 12:10"<br />
+<br />
+# Default values:<br />
+#<br />
+# Directory to create the temp files in. It can be set through command line.<br />
+TestDir="."<br />
+<br />
+# Base disk size to use in the tests (the -size parameter):<br />
+TestSize=50M<br />
+<br />
+# Total size of writes during ddWriteTest (the -write parameter):<br />
+# Default is $TestSize<br />
+ddWriteSize=""<br />
+<br />
+# Total size of writes during biWriteTes (the -unbuf parameter):<br />
+# Default is ($TestSize / $biWriteFact)<br />
+biWriteSize=""<br />
+biWriteFact=4<br />
+<br />
+# Total size of reads during ddReadTest (the -read parameter):<br />
+# Default is ($TestSize * $ddReadFact)<br />
+ddReadSize=""<br />
+ddReadFact=4<br />
+<br />
+# Minimal size to run the read test (ddReadTest):<br />
+MinReadSize=10M<br />
+<br />
+# Blocksize to use in read/write tests:<br />
+BlockSize=8K<br />
+<br />
+# Number of threads to spawm in multi-threaded tests.It can be set by -n.<br />
+# Zero means the number of logical processors.<br />
+NumThreads=0<br />
+<br />
+# Minimal number of threads to spawm in multi-threaded tests:<br />
+MinThreads=2<br />
+<br />
+# Minimal file access time subtracted from the current time:<br />
+MinFileTime=30 #&nbsp; in minutes<br />
+<br />
+# Minimal size to use a file in the read test (ddReadTest):<br />
+MinFileSize=512K<br />
+<br />
+# Log to save the statistics in. I/O rates will be reported on screen as well.<br />
+MyLog=`pwd`/`echo $THIS | sed -e 's/.sh$//'`.log<br />
+<br />
+<br />
+#------------------------------------------------------------------------------<br />
+<br />
+Usage()<br />
+{<br />
+&nbsp; echo "<br />
+$BD$THIS$UB: disk I/O tests, Release $Release<br />
+<br />
+Set of disk I/O tests:<br />
+${BD}ddWriteTest$UB creates the temp files using dd command (buffered writes);<br />
+${BD}ddReadTest$UB reads any existing files that were not recently accessed;<br />
+${BD}biWriteTest$UB writes on disk in unbuffered mode using proutil -C bigrow.<br />
+<br />
+The tests run in the single- and multi-threaded mode.<br />
+<br />
+${BD}Usage:$UB $THIS [dir] [options]<br />
+where options:<br />
+&nbsp;\"dir\" is a directory where script will create temp files to test disk I/O.<br />
+&nbsp;By default the current directory will be used.<br />
+<br />
+&nbsp;-h|-help is help.<br />
+<br />
+&nbsp;-n|-num Threads is the number of threads than will be spawn in the tests.<br />
+&nbsp; &nbsp; Default value is the number of logical CPUs. Minimum is $MinThreads.<br />
+<br />
+&nbsp;-s|-size Size[K|M|G] is a basic size of the test disk activity.<br />
+&nbsp; &nbsp; Default value is $TestSize. Max is a half of space available in filesystem.<br />
+&nbsp; &nbsp; If the size for a particular test is not set explicitly then:<br />
+&nbsp; &nbsp; -write (ddWriteTest) = Size<br />
+&nbsp; &nbsp; -unbuf (biWriteTest) = Size / $biWriteFact<br />
+&nbsp; &nbsp; -read&nbsp; (ddReadTest)&nbsp; = Size * $ddReadFact<br />
+<br />
+&nbsp;-w|-ws|-write Size[K|M|G] is the total size of temp files in ddWriteTest.<br />
+<br />
+&nbsp;-u|-us|-unbuf Size[K|M|G] is the total size of buffered writes in biWriteTest.<br />
+<br />
+&nbsp;-r|-rs|-read&nbsp; Size[K|M|G] is the total size to read in ddReadTest.<br />
+&nbsp; ddReadTest will be skipped if it fails to find at least $MinReadSize<br />
+<br />
+&nbsp;To skip any test just set its size to zero.<br />
+<br />
+&nbsp;-a|-amin AccessTime (in minutes). Default value is $MinFileTime.<br />
+&nbsp; ddReadTest will try to find the files that were not recently accessed.<br />
+<br />
+&nbsp;The most recent version of the script can be downloaded from:<br />
+&nbsp;${BD}ftp://ftp.progress-tech.ru/pub/Users/george/Scripts/iotest.sh$UB" | \<br />
+&nbsp; more<br />
+<br />
+&nbsp; exit<br />
+} # Usage()<br />
+<br />
+<br />
+#------------------------------------------------------------------------------<br />
+# SizeOfFiles expects the output of ls -l and returns the total size of files:<br />
+<br />
+SizeOfFiles()<br />
+{<br />
+# ls -l<br />
+# total 1148<br />
+# -rw-rw-r--&nbsp; &nbsp; 1 root&nbsp; &nbsp; &nbsp;system&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;2089 Feb 03 14:13 tmp.lg<br />
+<br />
+&nbsp;awk 'NF&gt;=9 {Size+=$5}; END {print Size}' -<br />
+<br />
+} # SizeOfFiles()<br />
+<br />
+<br />
+#------------------------------------------------------------------------------<br />
+# SizeInBytes converts a size value in KB, GB or TB to integer value in bytes.<br />
+# SizeInBytes returns an empty string if input value was incorrect.<br />
+# Kilobyte&nbsp; &nbsp;= 1024 Bytes<br />
+# Megabyte&nbsp; &nbsp;= 1024 Kilobytes<br />
+# Gigabyte&nbsp; &nbsp;= 1024 Megabytes<br />
+# Terabyte&nbsp; &nbsp;= 1024 Gigabytes<br />
+# Petabyte&nbsp; &nbsp;= 1024 Terabytes<br />
+# Exabyte&nbsp; &nbsp; = 1024 Petabytes<br />
+# Zettabyte&nbsp; = 1024 Exabytes<br />
+# Yottabyte&nbsp; = 1024 Zettabytes<br />
+# Brontobyte = 1024 Yottabytes<br />
+# Geopbyte&nbsp; &nbsp;= 1024 Brontobytes<br />
+<br />
+SizeInBytes()<br />
+{<br />
+&nbsp; Size=$1<br />
+&nbsp; case $Size in<br />
+&nbsp; &nbsp; *[bB]) Size=`echo $Size | sed -e 's/b$//; s/B$//'`<br />
+&nbsp; &nbsp; ;;<br />
+&nbsp; &nbsp; *k) Size=`echo $Size | sed -e 's/k$//'`<br />
+&nbsp; &nbsp; &nbsp; &nbsp; Size=`expr $Size \* 1000 2&gt;/dev/null`<br />
+&nbsp; &nbsp; ;;<br />
+&nbsp; &nbsp; *K) Size=`echo $Size | sed -e 's/K$//'`<br />
+&nbsp; &nbsp; &nbsp; &nbsp; Size=`expr $Size \* 1024 2&gt;/dev/null`<br />
+&nbsp; &nbsp; ;;<br />
+&nbsp; &nbsp; *m) Size=`echo $Size | sed -e 's/m$//'`<br />
+&nbsp; &nbsp; &nbsp; &nbsp; Size=`expr $Size \* 1000000 2&gt;/dev/null`<br />
+&nbsp; &nbsp; ;;<br />
+&nbsp; &nbsp; *M) Size=`echo $Size | sed -e 's/M$//'`<br />
+&nbsp; &nbsp; &nbsp; &nbsp; Size=`expr $Size \* 1048576 2&gt;/dev/null`<br />
+&nbsp; &nbsp; ;;<br />
+&nbsp; &nbsp; *g) Size=`echo $Size | sed -e 's/g$//'`<br />
+&nbsp; &nbsp; &nbsp; &nbsp; Size=`expr $Size \* 1000000000 2&gt;/dev/null`<br />
+&nbsp; &nbsp; ;;<br />
+&nbsp; &nbsp; *G) Size=`echo $Size | sed -e 's/G$//'`<br />
+&nbsp; &nbsp; &nbsp; &nbsp; Size=`expr $Size \* 1073741824 2&gt;/dev/null`<br />
+&nbsp; &nbsp; ;;<br />
+&nbsp; &nbsp; *)&nbsp; Size=`expr $Size + 0 2&gt;/dev/null`<br />
+&nbsp; &nbsp; ;;<br />
+&nbsp; esac&nbsp; #case $Size<br />
+<br />
+&nbsp; echo $Size<br />
+}<br />
+<br />
+<br />
+#------------------------------------------------------------------------------<br />
+# SizeInUnits converts the size value to a short form (KB, GB or TB):<br />
+<br />
+SizeInUnits()<br />
+{<br />
+# $1 is a size in bytes.<br />
+# Output is the size in KB, MB or GB.<br />
+<br />
+&nbsp; echo $1 | \<br />
+&nbsp; $awk '<br />
+&nbsp; &nbsp; $1&gt;=1073741824 {Size=sprintf("%i",$1/107374182.4);print Size/10,"GB";exit}<br />
+&nbsp; &nbsp; $1&gt;=1048576&nbsp; &nbsp; {Size=sprintf("%i",$1/104857.6);&nbsp; &nbsp;print Size/10,"MB";exit}<br />
+&nbsp; &nbsp; $1&gt;=1024&nbsp; &nbsp; &nbsp; &nbsp;{Size=sprintf("%i",$1/102.4);&nbsp; &nbsp; &nbsp; print Size/10,"KB";exit}<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;{Size=$1;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; print Size,"Bytes";exit}<br />
+&nbsp; ' #awk<br />
+} # SizeInUnits()<br />
+<br />
+<br />
+#------------------------------------------------------------------------------<br />
+<br />
+IORate()<br />
+{<br />
+# IORate() takes the input from time command.<br />
+# $1 is a size of IO activity.<br />
+# Output is the ratio of size to the elapsed time (in KB/sec or MB/sec).<br />
+<br />
+<br />
+# Sample output of time:<br />
+# real&nbsp; 0m4.949s<br />
+# user&nbsp; 0m0.066s<br />
+# sys&nbsp; &nbsp;0m0.476s<br />
+#<br />
+# time -p sleep 72<br />
+# real 72.00<br />
+# user 0.00<br />
+# sys&nbsp; 0.00<br />
+<br />
+# The statistics reported by time are gathered from various system calls.<br />
+# User and Sys come from wait(2) or times(2), depending on the particular system.<br />
+# Real is calculated from a start and end time gathered from the gettimeofday(2).<br />
+# These calls have the different precision. For small times we can get:<br />
+# real&nbsp; 0m0.028s<br />
+# user&nbsp; 0m0.000s<br />
+# sys&nbsp; &nbsp;0m0.035s<br />
+# The script will use real or sum of user and sys whatever is bigger.<br />
+<br />
+&nbsp; $awk '<br />
+&nbsp; &nbsp; /^real/ {print}<br />
+<br />
+&nbsp; &nbsp; NF==2 {T=$2; M=0; S=0<br />
+# Minutes:<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;i=index(T,"m")<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;if(i&gt;1) {M=substr(T,1,i-1); T=substr(T,i+1)}<br />
+# Seconds:<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;i=index(T,".")<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;if(i&gt;1) {S=substr(T,1,i-1); T=substr(T,i+1)}<br />
+# Milliseconds:<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;i=length(T)<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;if(substr(T,i,1)=="s") T=substr(T,1,i-1)<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;while(length(T)<3 p="" t="T"># Time in milliseconds:<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;S+=M*60<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;T+=S*1000<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;if($1=="real") Time=T<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;else Rest+=T<br />
+&nbsp; &nbsp; }<br />
+&nbsp; &nbsp; END {if(Rest&gt;Time) Time=Rest;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;if(Time==0) exit<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;Time=Time/1000.0<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;Rate='$1'/Time<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;if(Rate&gt;=1048576) {Rate=sprintf("%i",Rate/10485.76)<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; print Rate/100,"MB/sec";exit}<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;if(Rate&gt;=1024)&nbsp; &nbsp; {Rate=sprintf("%i",Rate/10.24)<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; print Rate/100,"KB/sec";exit}<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;if(Rate&gt;0)&nbsp; &nbsp; &nbsp; &nbsp; {print Rate,"Bytes/sec"; exit}<br />
+&nbsp; &nbsp; } #END<br />
+&nbsp; ' #awk<br />
+} # IORate()<br />
+<br />
+<br />
+#------------------------------------------------------------------------------<br />
+<br />
+ddWriteTest()<br />
+{<br />
+&nbsp; test $1 -gt 0 || return<br />
+<br />
+&nbsp; WriteSize=$1<br />
+&nbsp; RunThreads=$2<br />
+&nbsp; BlockCount=`expr $WriteSize / $BlockSize`<br />
+&nbsp; BlockCount=`expr $BlockCount / $RunThreads`<br />
+&nbsp; test $BlockCount -gt 0 || BlockCount=1<br />
+&nbsp; WriteSize=`expr $BlockCount \* $BlockSize`<br />
+&nbsp; WriteSize=`expr $WriteSize \* $RunThreads`<br />
+<br />
+# Check if there the files with names that script is going to create:<br />
+&nbsp; Thread=$RunThreads<br />
+&nbsp; while [ $Thread -gt 0 ]<br />
+&nbsp; do<br />
+&nbsp; &nbsp; TmpFile=$TmpPrefix$Thread<br />
+&nbsp; &nbsp; test -f $TmpFile &amp;&amp; \<br />
+&nbsp; &nbsp; echo2 ddWriteTest did not expect to find $TmpFile. The test is skipped.<br />
+&nbsp; &nbsp; Thread=`expr $Thread - 1`<br />
+&nbsp; done<br />
+<br />
+&nbsp; Size=`SizeInUnits $WriteSize`<br />
+&nbsp; echo2 "Writing $Size by $RunThreads threads (dd if=/dev/zero of=Tmp)..."<br />
+<br />
+&nbsp; Thread=$RunThreads<br />
+&nbsp;(while [ $Thread -gt 0 ]<br />
+&nbsp; do<br />
+&nbsp; &nbsp; TmpFile=${TmpPrefix}.$Thread<br />
+&nbsp; &nbsp; dd if=/dev/zero of=$TmpFile bs=$BlockSize count=$BlockCount &amp;&amp; \<br />
+&nbsp; &nbsp; rm $TmpFile &amp;<br />
+&nbsp; &nbsp; Thread=`expr $Thread - 1`<br />
+&nbsp; done &gt;/dev/null 2&gt;&amp;1<br />
+<br />
+&nbsp; time wait<br />
+&nbsp;) 2&gt;&amp;1 | \<br />
+&nbsp; IORate $WriteSize | \<br />
+&nbsp; while read Line<br />
+&nbsp; do<br />
+&nbsp; &nbsp; echo2 "$Line"<br />
+&nbsp; done<br />
+<br />
+#FileSize=`ls -l ${TmpPrefix}* | SizeOfFiles`<br />
+#echo2 "Total size of temp files ($TmpPrefix) is $FileSize bytes."<br />
+<br />
+&nbsp; EndOfSection<br />
+<br />
+} # ddWriteTest()<br />
+<br />
+<br />
+#------------------------------------------------------------------------------<br />
+# ddReadTest finds the set of the files that were not recently accessed<br />
+# and uses these files to test the speed of reads from the disks.<br />
+<br />
+ddReadTest()<br />
+{<br />
+&nbsp; test $1 -lt $MinReadSize &amp;&amp; return<br />
+<br />
+&nbsp; TestSize=$1<br />
+&nbsp; RunThreads=$2<br />
+<br />
+# Find the files with size at least MinFileSize<br />
+# and accessed at least $MinFileTime minutes ago.<br />
+# Stop the find if the total size of the found files is enough to the tests.<br />
+# The find command will be stopped either by SIGPIPE or by StopFlag.<br />
+<br />
+# The list of the files choosen for the read test (in format of ls -l):<br />
+&nbsp; FileList=$TmpPrefix.FileList<br />
+<br />
+# StopFlag file will contain the total size of the found files.<br />
+&nbsp; StopFlag=$TmpPrefix.StopFlag<br />
+<br />
+&nbsp; $echo "Searching for the files to use in read test...\r\c"<br />
+<br />
+&nbsp; find $TestDir -type f \<br />
+&nbsp; &nbsp; -size +$MinFileSize \<br />
+&nbsp; &nbsp; -amin +$MinFileTime \<br />
+&nbsp; &nbsp; -exec test -r {} \; \<br />
+&nbsp; &nbsp; -exec test ! -f $StopFlag \; \<br />
+&nbsp; &nbsp; -exec ls -lu {} \; 2&gt;/dev/null | \<br />
+&nbsp; awk '<br />
+&nbsp; &nbsp; BEGIN&nbsp; &nbsp; &nbsp; &nbsp; {StopFlag="'$StopFlag'"<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Limit="'$TestSize'"; Limit+=0} # to interpret as integer<br />
+&nbsp; &nbsp; NF&gt;=9&nbsp; &nbsp; &nbsp; &nbsp; {Total+=$5; print}&nbsp; # $5 in ls output is a file size<br />
+&nbsp; &nbsp; Total&gt;=Limit {exit}<br />
+&nbsp; &nbsp; END&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; {print Total &gt;StopFlag}<br />
+&nbsp; ' &gt;$FileList<br />
+<br />
+&nbsp; CleanCurrentLine<br />
+<br />
+&nbsp; TotalSize=`test -f $StopFlag &amp;&amp; cat $StopFlag &amp;&amp; rm $StopFlag`<br />
+<br />
+&nbsp; if [ -z "$TotalSize" ]<br />
+&nbsp; then<br />
+&nbsp; &nbsp; echo2 ddReadTest failed to find the files for read test. The test is skipped.<br />
+&nbsp; &nbsp; rm $FileList<br />
+&nbsp; &nbsp; return<br />
+&nbsp; fi<br />
+<br />
+&nbsp; if [ $TotalSize -lt $MinReadSize ]<br />
+&nbsp; then<br />
+&nbsp; &nbsp; Size=`SizeInUnits $TotalSize`<br />
+&nbsp; &nbsp; echo2 ddReadTest found only $Size to read. The test is skipped.<br />
+&nbsp; &nbsp; echo "FileList:" &gt;&gt;$MyLog<br />
+&nbsp; &nbsp; cat&nbsp; $FileList&nbsp; &nbsp;&gt;&gt;$MyLog<br />
+&nbsp; &nbsp; rm&nbsp; &nbsp;$FileList<br />
+&nbsp; &nbsp; return<br />
+&nbsp; fi<br />
+<br />
+# TotalSize=`cat $FileList | SizeOfFiles`<br />
+<br />
+&nbsp; test $TotalSize -gt $TestSize &amp;&amp; \<br />
+&nbsp; TotalSize=$TestSize<br />
+&nbsp; TotalBlocks=`expr $TotalSize / $BlockSize`<br />
+<br />
+# The number of file blocks to read by each thread:<br />
+&nbsp; ThreadBlocks=`expr $TotalBlocks / $RunThreads`<br />
+<br />
+&nbsp; PlanPrefix=$TmpPrefix.ReadPlan.<br />
+<br />
+# Check if there the files with names that script is going to create:<br />
+&nbsp; Thread=$RunThreads<br />
+&nbsp; while [ $Thread -gt 0 ]<br />
+&nbsp; do<br />
+&nbsp; &nbsp; ReadPlan=$PlanPrefix$Thread<br />
+&nbsp; &nbsp; if [ -f $ReadPlan ]<br />
+&nbsp; &nbsp; then<br />
+&nbsp; &nbsp; &nbsp; echo2 ddReadTest did not expect to find $ReadPlan. The test is skipped.<br />
+&nbsp; &nbsp; &nbsp; rm $FileList<br />
+&nbsp; &nbsp; &nbsp; return<br />
+&nbsp; &nbsp; fi<br />
+&nbsp; &nbsp; Thread=`expr $Thread - 1`<br />
+&nbsp; done<br />
+<br />
+# Create the read plans (ReadPlan) for each thread.<br />
+# Read plan contains the parameters for dd command to run by thread:<br />
+# if=&nbsp; &nbsp; Input file to read from;<br />
+# skip=&nbsp; The number of blocks to skip in the input file;<br />
+# count= The number of blocks to read from the input file.<br />
+<br />
+&nbsp; PlanCount=`<br />
+&nbsp; &nbsp; $awk '<br />
+&nbsp; &nbsp; &nbsp; BEGIN {<br />
+&nbsp; &nbsp; &nbsp; &nbsp; BlockSize='$BlockSize'<br />
+&nbsp; &nbsp; &nbsp; &nbsp; RunThreads='$RunThreads'<br />
+&nbsp; &nbsp; &nbsp; &nbsp; ThreadBlocks='$ThreadBlocks'<br />
+&nbsp; &nbsp; &nbsp; &nbsp; PlanPrefix="'$PlanPrefix'"<br />
+&nbsp; &nbsp; &nbsp; &nbsp; PlanCount=1<br />
+&nbsp; &nbsp; &nbsp; &nbsp; PlanFile=PlanPrefix PlanCount<br />
+&nbsp; &nbsp; &nbsp; &nbsp; PlanBlocks=ThreadBlocks<br />
+&nbsp; &nbsp; &nbsp; }<br />
+# The output of ls -l should have 9 fields:<br />
+&nbsp; &nbsp; &nbsp; NF<9 next="" p=""><br />
+# Assign the file to the threads"<br />
+&nbsp; &nbsp; &nbsp; { FileSize=$5<br />
+&nbsp; &nbsp; &nbsp; &nbsp; FileName=$NF<br />
+&nbsp; &nbsp; &nbsp; &nbsp; SkipBlocks=0<br />
+&nbsp; &nbsp; &nbsp; &nbsp; FileBlocks=FileSize/BlockSize<br />
+<br />
+# File has more blocks than the current thread needs:<br />
+&nbsp; &nbsp; &nbsp; &nbsp; while(FileBlocks&gt;=PlanBlocks)<br />
+&nbsp; &nbsp; &nbsp; &nbsp; { #print FileName " " SkipBlocks " " PlanBlocks &gt;PlanFile<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; printf"%s %s %s\n",FileName,SkipBlocks,PlanBlocks &gt;PlanFile<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; FileBlocks-=PlanBlocks<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; SkipBlocks+=PlanBlocks<br />
+<br />
+# Found blocks were enough for all therads:<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; if(PlanCount==RunThreads) exit<br />
+<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; close(PlanFile)<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; PlanCount+=1<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; PlanFile=PlanPrefix PlanCount<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; PlanBlocks=ThreadBlocks<br />
+&nbsp; &nbsp; &nbsp; &nbsp; } # while(FileBlocks&gt;0)<br />
+<br />
+# If file is small then thread will read all its blocks (FileBlocks<planblocks p="">&nbsp; &nbsp; &nbsp; &nbsp; PlanBlocks-=FileBlocks<br />
+#&nbsp; &nbsp; &nbsp; &nbsp;print FileName " " SkipBlocks " " FileBlocks &gt;PlanFile<br />
+&nbsp; &nbsp; &nbsp; &nbsp; printf"%s %s %s\n",FileName,SkipBlocks,FileBlocks &gt;PlanFile<br />
+&nbsp; &nbsp; &nbsp; }<br />
+<br />
+&nbsp; &nbsp; &nbsp; END {print PlanCount}<br />
+&nbsp; &nbsp; ' $FileList` # $awk<br />
+# PlanCount<br />
+<br />
+# In case if the script failed to create the read plans for all threads:<br />
+<br />
+&nbsp; RunThreads=$PlanCount<br />
+&nbsp; TotalBlocks=`expr $ThreadBlocks \* $RunThreads`<br />
+&nbsp; TotalSize=`expr $TotalBlocks \* $BlockSize`<br />
+<br />
+&nbsp; Size=`SizeInUnits $TotalSize`<br />
+&nbsp; echo2 "ddReadTest reads $Size by $RunThreads threads (dd if=File of=/dev/null)..."<br />
+<br />
+# Debug:<br />
+for f in `ls -1 ${PlanPrefix}*`<br />
+do<br />
+&nbsp;echo ReadPlan=$f<br />
+&nbsp;cat $f<br />
+done &gt;&gt;$MyLog<br />
+<br />
+&nbsp; Thread=$RunThreads<br />
+&nbsp;(while [ $Thread -gt 0 ]<br />
+&nbsp; do<br />
+&nbsp; &nbsp; ReadPlan=$TmpPrefix.ReadPlan.$Thread<br />
+&nbsp; &nbsp; cat $ReadPlan | \<br />
+&nbsp; &nbsp; while read File Skip Count<br />
+&nbsp; &nbsp; do<br />
+&nbsp; &nbsp; &nbsp; dd if=$File of=/dev/null bs=$BlockSize skip=$Skip count=$Count<br />
+&nbsp; &nbsp; done 2&gt;&gt;$MyLog &amp;<br />
+&nbsp; &nbsp; rm $ReadPlan<br />
+&nbsp; &nbsp; Thread=`expr $Thread - 1`<br />
+&nbsp; done &gt;/dev/null 2&gt;&amp;1<br />
+<br />
+&nbsp; time wait<br />
+&nbsp;) 2&gt;&amp;1 | \<br />
+&nbsp; IORate $TotalSize | \<br />
+&nbsp; while read Line<br />
+&nbsp; do<br />
+&nbsp; &nbsp; echo2 "$Line"<br />
+&nbsp; done<br />
+<br />
+&nbsp; echo "List of the files used by ddReadTest:" &gt;&gt;$MyLog<br />
+&nbsp; cat $FileList &gt;&gt;$MyLog<br />
+&nbsp; rm $FileList<br />
+<br />
+&nbsp; EndOfSection<br />
+<br />
+} # ddReadTest()<br />
+<br />
+<br />
+#------------------------------------------------------------------------------<br />
+# Create temp databases for bi write tests:<br />
+<br />
+CreateTmpDb()<br />
+{<br />
+&nbsp; test $1 -gt 0 || return<br />
+<br />
+&nbsp; DbCount=$1<br />
+<br />
+&nbsp; echo2 "Creating $DbCount database(s) for bi write tests..."<br />
+<br />
+&nbsp;(time \<br />
+&nbsp; while [ $DbCount -gt 0 ]<br />
+&nbsp; do<br />
+&nbsp; &nbsp; TmpDb=$DbPrefix$DbCount<br />
+&nbsp; &nbsp; $DLC/bin/prodb $TmpDb $DLC/empty1&nbsp; &nbsp; &nbsp;&gt;/dev/null 2&gt;&amp;1 || \<br />
+&nbsp; &nbsp; echo "Failed to run: $DLC/bin/prodb $TmpDb $DLC/empty1" &gt;&gt;$MyLog<br />
+&nbsp; &nbsp; DbCount=`expr $DbCount - 1`<br />
+&nbsp; done<br />
+&nbsp;) 2&gt;&amp;1 | \<br />
+&nbsp; grep "real" | \<br />
+&nbsp; while read Line<br />
+&nbsp; do<br />
+&nbsp; &nbsp; echo2 "$Line"<br />
+&nbsp; done<br />
+<br />
+&nbsp; Size=`ls -l ${DbPrefix}* | SizeOfFiles`<br />
+&nbsp; Size=`SizeInUnits $Size`<br />
+&nbsp; echo2 "Total size of temp db files is $Size."<br />
+<br />
+&nbsp; EndOfSection<br />
+<br />
+} # CreateTmpDb()<br />
+<br />
+<br />
+#------------------------------------------------------------------------------<br />
+# Delete temp databases:<br />
+<br />
+DeleteTmpDb()<br />
+{<br />
+&nbsp; DbCount=$1<br />
+<br />
+&nbsp; while [ $DbCount -gt 0 ]<br />
+&nbsp; do<br />
+&nbsp; &nbsp; TmpDb=$DbPrefix$DbCount<br />
+&nbsp; &nbsp; echo y | $DLC/bin/prodel $TmpDb<br />
+&nbsp; &nbsp; rm -f $TmpDb.st<br />
+&nbsp; &nbsp; DbCount=`expr $DbCount - 1`<br />
+&nbsp; done &gt;/dev/null 2&gt;&amp;1<br />
+<br />
+} # DeleteTmpDb()<br />
+<br />
+<br />
+#------------------------------------------------------------------------------<br />
+# biWriteTest: the buffered (-r) or unbuffered (O_DSYNC) synchronous bi writes<br />
+<br />
+# KB-P108815: Does Progress use Synchronous or Asynchronous I/O?<br />
+#<br />
+# bi writes&nbsp; &nbsp; = unbuffered synchronous I/O (O_RDWR|O_DSYNC)<br />
+# -r (non-raw) = buffered synchronous I/O (O_RDWR)<br />
+# db writes&nbsp; &nbsp; = buffered synchronous I/O (O_RDWR)<br />
+# -directio&nbsp; &nbsp; = unbuffered synchronous I/O (O_RDWR|O_DSYNC)<br />
+#<br />
+# fd = open("/path/to/dir", O_RDWR [, mode_t mode])<br />
+#<br />
+# O_DSYNC<br />
+# Write operations on the file will complete according to the<br />
+# requirements of synchronized I/O data integrity completion.<br />
+#<br />
+# By the time write(2) (and similar) return, the output data has<br />
+# been transferred to the underlying hardware, along with any<br />
+# file metadata that would be required to retrieve that data<br />
+# (i.e., as though each write(2) was followed by a call to<br />
+# fdatasync(2)).<br />
+#<br />
+# KB-P97412: As of OpenEdge 10.0B, Progress uses the&nbsp; fdatasync() call.<br />
+<br />
+<br />
+biWriteTest()<br />
+{<br />
+&nbsp; test $1 -gt 0 || return<br />
+<br />
+&nbsp; TestSize=$1<br />
+&nbsp; NumDbs=$2<br />
+&nbsp; Option="$3"<br />
+<br />
+&nbsp; BiBlockSize=`expr $BlockSize / 1024`<br />
+<br />
+# WriteSize will be splitted in 8 bi clusters for $NumDbs databases:<br />
+&nbsp; BiClSize=`expr $TestSize / 8192`<br />
+&nbsp; BiClSize=`expr $BiClSize / $NumDbs`<br />
+<br />
+# BiClSize must be a multiple of 16 ranging from 16 to 262128 (16K to 256MB)<br />
+&nbsp; test $BiClSize -lt 16&nbsp; &nbsp; &nbsp;2&gt;/dev/null &amp;&amp; BiClSize=16<br />
+&nbsp; test $BiClSize -gt 262128 2&gt;/dev/null &amp;&amp; BiClSize=262128<br />
+<br />
+&nbsp; TestSize=`expr $BiClSize \* $NumDbs`<br />
+&nbsp; TestSize=`expr $TestSize \* $BlockSize`<br />
+<br />
+&nbsp; test "Z$Option" = "Z" &amp;&amp; \<br />
+&nbsp; Mode="unbuffered (O_DSYNC)" || \<br />
+&nbsp; Mode="buffered ("${Option}")"<br />
+<br />
+&nbsp; Bigrow=`expr $TestSize / $BiClSize`<br />
+&nbsp; Bigrow=`expr $Bigrow / 1024`<br />
+&nbsp; Bigrow=`expr $Bigrow / $NumDbs`<br />
+&nbsp; Bigrow=`expr $Bigrow - 4`&nbsp; #Minus default 4 clusters<br />
+&nbsp; test $Bigrow -lt 0 &amp;&amp; Bigrow=0<br />
+<br />
+# Truncate bi (just in case if databases were used in previous tests):<br />
+&nbsp; DbCount=$NumDbs<br />
+&nbsp; while [ $DbCount -gt 0 ]<br />
+&nbsp; do<br />
+&nbsp; &nbsp; TmpDb=$DbPrefix$DbCount<br />
+&nbsp; &nbsp; $DLC/bin/_proutil $TmpDb -C truncate bi \<br />
+&nbsp; &nbsp; &nbsp; -biblocksize $BiBlockSize \<br />
+&nbsp; &nbsp; &nbsp; -bi $BiClSize \<br />
+&nbsp; &nbsp; &nbsp;-cpinternal undefined -cpcoll basic &gt;/dev/null 2&gt;&amp;1<br />
+&nbsp; &nbsp; DbCount=`expr $DbCount - 1`<br />
+&nbsp; done<br />
+<br />
+&nbsp; Size=`SizeInUnits $TestSize`<br />
+<br />
+&nbsp; echo2 "Writing $Size in $Mode mode by $NumDbs threads (biWriteTest)."<br />
+<br />
+&nbsp; DbCount=$NumDbs<br />
+&nbsp;(while [ $DbCount -gt 0 ]<br />
+&nbsp; do<br />
+&nbsp; &nbsp; TmpDb=$DbPrefix$DbCount<br />
+&nbsp; &nbsp; $DLC/bin/_proutil $TmpDb -C bigrow $Bigrow $Option \<br />
+&nbsp; &nbsp; &nbsp; -cpinternal undefined -cpcoll basic &amp;<br />
+&nbsp; &nbsp; DbCount=`expr $DbCount - 1`<br />
+&nbsp; done &gt;/dev/null 2&gt;&amp;1<br />
+<br />
+&nbsp; time wait<br />
+&nbsp;) 2&gt;&amp;1 | \<br />
+&nbsp; IORate $TestSize | \<br />
+&nbsp; while read Line<br />
+&nbsp; do<br />
+&nbsp; &nbsp; echo2 "$Line"<br />
+&nbsp; done<br />
+<br />
+&nbsp; EndOfSection<br />
+<br />
+} # biWriteTest()<br />
+<br />
+<br />
+#------------------------------------------------------------------------------<br />
+<br />
+NumOfCPUs()<br />
+{<br />
+&nbsp;OSNAME=`uname`<br />
+&nbsp;case "$OSNAME" in<br />
+&nbsp; "Linux") # -----------------------------------------------<br />
+<br />
+&nbsp; &nbsp; &nbsp;nproc 2&gt;/dev/null || \<br />
+&nbsp; &nbsp; &nbsp;dmesg 2&gt;/dev/null | grep CPUs | $awk '{print $(NF-1)}'<br />
+<br />
+#&nbsp; &nbsp; lscpu 2&gt;/dev/null | $awk '/CPU\(s\)/ {print $NF}')<br />
+<br />
+# dmesg<br />
+# Initializing CPU#0<br />
+# Total of 1 processors activated (3605.17 BogoMIPS).<br />
+# Brought up 1 CPUs<br />
+<br />
+# nproc - print the number of processing units available<br />
+# Sample outputs:<br />
+#<br />
+# 8<br />
+<br />
+# lscpu gathers CPU architecture information from sysfs and /proc/cpuinfo.<br />
+# Sample outputs:<br />
+#<br />
+# Architecture:&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; x86_64<br />
+# CPU op-mode(s):&nbsp; &nbsp; &nbsp; &nbsp; 32-bit, 64-bit<br />
+# Byte Order:&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Little Endian<br />
+# CPU(s):&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 8<br />
+# On-line CPU(s) list:&nbsp; &nbsp;0-7<br />
+# Thread(s) per core:&nbsp; &nbsp; 1<br />
+# Core(s) per socket:&nbsp; &nbsp; 4<br />
+# CPU socket(s):&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;2<br />
+# NUMA node(s):&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 1<br />
+# Vendor ID:&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;GenuineIntel<br />
+# CPU family:&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 6<br />
+# Model:&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;15<br />
+# Stepping:&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 7<br />
+# CPU MHz:&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;1866.669<br />
+# BogoMIPS:&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 3732.83<br />
+# Virtualization:&nbsp; &nbsp; &nbsp; &nbsp; VT-x<br />
+# L1d cache:&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;32K<br />
+# L1i cache:&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;32K<br />
+# L2 cache:&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 4096K<br />
+# NUMA node0 CPU(s):&nbsp; &nbsp; &nbsp;0-7<br />
+&nbsp; &nbsp;;;<br />
+<br />
+&nbsp; "AIX") # -------------------------------------------------<br />
+<br />
+# AIX 5.1 and higher:<br />
+<br />
+&nbsp; &nbsp; &nbsp;pmcycles -m 2&gt;/dev/null | wc -l<br />
+<br />
+# sar 1 1<br />
+# Sample output:<br />
+#<br />
+# AIX ren-mskosi01 1 6 00F6483D4C00&nbsp; &nbsp; 07/04/12<br />
+# System configuration: lcpu=32 ent=0.80 mode=Uncapped<br />
+&nbsp; &nbsp;;;<br />
+<br />
+&nbsp; "SunOS") # -----------------------------------------------<br />
+<br />
+&nbsp; &nbsp; &nbsp;psrinfo 2&gt;/dev/null | wc -l<br />
+<br />
+# psrinfo displays information about processors.<br />
+#<br />
+# number of physical cpu: "psrinfo -p"<br />
+# number of cores: "kstat cpu_info|grep core_id|sort -u|wc -l"<br />
+# number of threads: "psrinfo -pv"<br />
+#<br />
+# Sample outputs:<br />
+#<br />
+# psrinfo -p<br />
+# 2<br />
+#<br />
+# root@pbiudb01 # psrinfo -pv<br />
+# The physical processor has 64 virtual processors (0-63)<br />
+#&nbsp; &nbsp;UltraSPARC-T2+ (cpuid 0 clock 1165 MHz)<br />
+# The physical processor has 64 virtual processors (64-127)<br />
+#&nbsp; &nbsp;UltraSPARC-T2+ (cpuid 64 clock 1165 MHz)<br />
+# root@pbiudb01 # kstat cpu_info|grep core_id|sort -u|wc -l<br />
+#&nbsp; &nbsp; &nbsp; &nbsp;16<br />
+#<br />
+# psrinfo -p &lt;= socket(s)<br />
+# 2<br />
+#<br />
+# kstat -m cpu_info|grep -w core_id|uniq|wc -l &lt;= core(s)<br />
+# 8<br />
+#<br />
+# psrinfo|wc -l &lt;= logical (virtual) processor(s)<br />
+# 64<br />
+&nbsp; &nbsp;;;<br />
+<br />
+&nbsp; "HP-UX")<br />
+<br />
+&nbsp; &nbsp; &nbsp;machinfo 2&gt;/dev/null | grep -i CPUs | $awk '{print $5}'<br />
+<br />
+# the number of processor cores, not physical chips:<br />
+# ioscan -kfnC processor | grep processor | wc -l<br />
+# 4<br />
+# sar -Mu 1 1 | awk 'END {print NR-5}'<br />
+# 4<br />
+#<br />
+# ioscan -fk |grep -c processor<br />
+# 4<br />
+#<br />
+# cat /var/adm/syslog/syslog.log|grep processor|wc -l<br />
+# 4<br />
+# ioscan -k -C processor<br />
+# H/W Path Class Description<br />
+# ===================================<br />
+# 0/120 processor Processor<br />
+# 0/121 processor Processor<br />
+#<br />
+# machinfo<br />
+# CPU info:<br />
+#&nbsp; &nbsp;8 s (1.6 GHz, 20 MB)<br />
+#&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;4794 MT/s bus, CPU version 4<br />
+#&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;32 logical processors (4 per socket)<br />
+#<br />
+&nbsp; ;;<br />
+esac<br />
+<br />
+} # NumOfCPUs()<br />
+<br />
+<br />
+#------------------------------------------------------------------------------<br />
+# AddCurrTime reads the input stream and adds the current time to each line.<br />
+<br />
+AddCurrTime()<br />
+{<br />
+&nbsp; while IFS="" read Line<br />
+&nbsp; do<br />
+&nbsp; &nbsp; echo `date '+%H:%M:%S'` "$Line"<br />
+&nbsp; done<br />
+}<br />
+<br />
+<br />
+#------------------------------------------------------------------------------<br />
+# echo2 displays the messages on screen as well as copies them to my log file:<br />
+<br />
+echo2()<br />
+{<br />
+&nbsp; echo "$*"<br />
+&nbsp; echo "$*" | AddCurrTime&nbsp; &gt;&gt;$MyLog<br />
+} # echo2()<br />
+<br />
+<br />
+#------------------------------------------------------------------------------<br />
+# Run the system commands to monitor the disk and CPU activity:<br />
+<br />
+RunSysMon()<br />
+{<br />
+<br />
+&nbsp; LogPrefix=$1<br />
+<br />
+&nbsp; MonIntrv=1<br />
+&nbsp; MonCount=3600<br />
+&nbsp; OSNAME=`uname`<br />
+&nbsp; case "$OSNAME" in<br />
+<br />
+&nbsp; &nbsp;"Linux")&nbsp; &nbsp; SysMonCmd1="vmstat $MonIntrv $MonCount"<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;SysMonCmd2="iostat -k -t $MonIntrv $MonCount"<br />
+&nbsp; &nbsp; ;;<br />
+&nbsp; &nbsp;"SunOS")&nbsp; &nbsp; SysMonCmd1="sar -u $MonIntrv $MonCount"<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;SysMonCmd2="iostat -d -T d $MonIntrv $MonCount"<br />
+&nbsp; &nbsp; ;;<br />
+&nbsp; &nbsp;"HP-UX")&nbsp; &nbsp; SysMonCmd1="vmstat $MonIntrv $MonCount"<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;SysMonCmd2="iostat $MonIntrv $MonCount"<br />
+&nbsp; &nbsp; ;;<br />
+&nbsp; &nbsp;"AIX")&nbsp; &nbsp; &nbsp; SysMonCmd1="vmstat -t $MonIntrv $MonCount"<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;SysMonCmd2="iostat -T $MonIntrv $MonCount"<br />
+&nbsp; &nbsp; ;;<br />
+&nbsp; &nbsp;"OpenUNIX") SysMonCmd1="sar -u $MonIntrv $MonCount"<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;SysMonCmd2="sar -d $MonIntrv $MonCount"<br />
+&nbsp; &nbsp; ;;<br />
+&nbsp; &nbsp;"UnixWare") SysMonCmd1="sar -u $MonIntrv $MonCount"<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;SysMonCmd2="sar -d $MonIntrv $MonCount"<br />
+&nbsp; &nbsp; ;;<br />
+&nbsp; &nbsp;"SCO_SV")&nbsp; &nbsp;SysMonCmd1="sar -u $MonIntrv $MonCount"<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;SysMonCmd2="sar -d $MonIntrv $MonCount"<br />
+&nbsp; &nbsp; ;;<br />
+&nbsp; &nbsp;"OSF1")&nbsp; &nbsp; &nbsp;SysMonCmd1="vmstat $MonIntrv $MonCount"<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;SysMonCmd2="iostat $MonIntrv $MonCount"<br />
+&nbsp; &nbsp; ;;<br />
+&nbsp; &nbsp; *)&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;SysMonCmd1="vmstat $MonIntrv $MonCount"<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;SysMonCmd2="iostat $MonIntrv $MonCount"<br />
+&nbsp; &nbsp; ;;<br />
+&nbsp; esac<br />
+<br />
+&nbsp; SysMonLog=${LogPrefix}.1<br />
+&nbsp; echo "$SysMonCmd1" | AddCurrTime&nbsp; &gt;$SysMonLog<br />
+&nbsp; $SysMonCmd1 2&gt;&amp;1&nbsp; &nbsp;| AddCurrTime &gt;&gt;$SysMonLog &amp;<br />
+&nbsp; echo $!<br />
+<br />
+&nbsp; SysMonLog=${LogPrefix}.2<br />
+&nbsp; echo "$SysMonCmd2" | AddCurrTime&nbsp; &gt;$SysMonLog<br />
+&nbsp; $SysMonCmd2 2&gt;&amp;1&nbsp; &nbsp;| AddCurrTime &gt;&gt;$SysMonLog &amp;<br />
+&nbsp; echo $!<br />
+<br />
+} # RunSysMon()<br />
+<br />
+<br />
+#------------------------------------------------------------------------------<br />
+# Exit if the input parameters were incorrectly specified:<br />
+<br />
+Exit()<br />
+{<br />
+&nbsp; echo $THIS: Error: $*<br />
+&nbsp; exit 1<br />
+} # Exit()<br />
+<br />
+<br />
+#------------------------------------------------------------------------------<br />
+# CleanCurrentLine: clean the current line on the screen.<br />
+<br />
+CleanCurrentLine()<br />
+{<br />
+&nbsp; $echo \<br />
+"&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;\r\c"<br />
+} # CleanCurrentLine()<br />
+<br />
+<br />
+#------------------------------------------------------------------------------<br />
+# EndOfSection: put a dividing line on the screen and an empty line in MyLog.<br />
+<br />
+DividingLine=\<br />
+"-----------------------------------------------------------------------------"<br />
+<br />
+EndOfSection()<br />
+{<br />
+&nbsp; echo $DividingLine<br />
+&nbsp; echo "" &gt;&gt;$MyLog<br />
+} # EndOfSection()<br />
+<br />
+<br />
+#------------------------------------------------------------------------------<br />
+# Choosing the versions of basic Unix commands: echo and awk<br />
+<br />
+OSNAME=`uname`<br />
+<br />
+case "$OSNAME" in<br />
+&nbsp;"Linux") echo="echo -e";;<br />
+&nbsp; &nbsp; &nbsp; &nbsp;*) echo="echo";;<br />
+esac<br />
+<br />
+#------------------------------------------------------------------------------<br />
+# awk or nawk?<br />
+<br />
+case "$OSNAME" in<br />
+&nbsp;Linux|HP-UX) awk=awk ;;<br />
+&nbsp;SunOS|AIX)&nbsp; &nbsp;awk=nawk;;<br />
+&nbsp;*)<br />
+&nbsp; for awk in awk nawk<br />
+&nbsp; do<br />
+&nbsp; &nbsp;Test=`echo test | $awk 'BEGIN {prinf"test"}; $1~/^t/ {print}' 2&gt;/dev/null`<br />
+&nbsp; &nbsp;test "$Test" &amp;&amp; break<br />
+&nbsp; done<br />
+&nbsp; test "$Test" || Exit "Failed to find awk functionality."<br />
+&nbsp; ;;<br />
+esac<br />
+<br />
+<br />
+#------------------------------------------------------------------------------<br />
+# The auxiliary variables:<br />
+<br />
+# Bold/unbold terminal codes:<br />
+BD=`tput smso`<br />
+UB=`tput rmso`<br />
+<br />
+#------------------------------------------------------------------------------<br />
+# Parsing the script's input parameters:<br />
+<br />
+while [ $# -gt 0 ]<br />
+do<br />
+&nbsp; case $1 in<br />
+&nbsp; &nbsp;-h|-help) Usage<br />
+&nbsp; &nbsp;;;<br />
+<br />
+&nbsp; &nbsp;-n|-num) NumThreads=$2<br />
+&nbsp; &nbsp; &nbsp; &nbsp;test "$NumThreads" -gt 0 &gt;/dev/null 2&gt;&amp;1 || \<br />
+&nbsp; &nbsp; &nbsp; &nbsp;Exit "The -n option should be followed by numeric argument &gt; 0."<br />
+&nbsp; &nbsp; &nbsp; &nbsp;shift<br />
+&nbsp; &nbsp;;;<br />
+<br />
+&nbsp; &nbsp;-s|-size)&nbsp; &nbsp; &nbsp; TestSize=$2;&nbsp; &nbsp; shift;;<br />
+&nbsp; &nbsp;-w|-ws|-write) ddWriteSize=$2; shift;;<br />
+&nbsp; &nbsp;-u|-us|-unbuf) biWriteSize=$2; shift;;<br />
+&nbsp; &nbsp;-r|-rs|-read)&nbsp; ddReadSize=$2;&nbsp; shift;;<br />
+&nbsp; &nbsp;-a|-amin)&nbsp; &nbsp;MinFileTime=$2; shift;;<br />
+<br />
+&nbsp; &nbsp;-*) Exit "$1 is an unknown option. Use $THIS -h for a help.";;<br />
+<br />
+&nbsp; &nbsp;*) TestDir=$1;;<br />
+<br />
+&nbsp; esac&nbsp; #case $1<br />
+<br />
+&nbsp; shift<br />
+done<br />
+<br />
+#------------------------------------------------------------------------------<br />
+# Sanity checks of the script's input parameters:<br />
+<br />
+# Is TestDir exist?: ------------------------------------------<br />
+<br />
+test -d $TestDir || \<br />
+Exit "Directory $TestDir does not exist."<br />
+<br />
+# Full pathname: ----------------------------------------------<br />
+<br />
+TestDir=`(cd $TestDir; pwd) 2&gt;/dev/null`<br />
+<br />
+# Is TestSize valid?: -----------------------------------------<br />
+<br />
+TestSize=`SizeInBytes $TestSize`<br />
+test "$TestSize" || \<br />
+Exit "The -size option has an incorrect value."<br />
+<br />
+# Don't allow for tests to use more than a half of available space on filesystem:<br />
+OSNAME=`uname`<br />
+case "$OSNAME" in<br />
+<br />
+&nbsp;"Linux")<br />
+# df -k<br />
+# Filesystem&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;1K-blocks&nbsp; &nbsp; &nbsp; Used Available Use% Mounted on<br />
+# /dev/mapper/VolGroup00-LogVol00<br />
+#&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;19172036&nbsp; 11528128&nbsp; &nbsp;6654316&nbsp; 64% /<br />
+# /dev/sda1&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;101086&nbsp; &nbsp; &nbsp;11870&nbsp; &nbsp; &nbsp;83997&nbsp; 13% /boot<br />
+<br />
+&nbsp; &nbsp; AvailKB=`df -k $TestDir | $awk 'NF&gt;=5 {Avail=$(NF-2)}; END {print Avail}'`<br />
+&nbsp; ;;<br />
+&nbsp;"AIX")<br />
+# df -k<br />
+# Filesystem&nbsp; &nbsp; 1024-blocks&nbsp; &nbsp; &nbsp; Free %Used&nbsp; &nbsp; Iused %Iused Mounted on<br />
+# /dev/lvusr1&nbsp; &nbsp; &nbsp; 51773440&nbsp; &nbsp;3120000&nbsp; &nbsp;94%&nbsp; &nbsp;343681&nbsp; &nbsp; 25% /usr1<br />
+<br />
+&nbsp; &nbsp; AvailKB=`df -k $TestDir | $awk 'NF&gt;=5 {Avail=$(NF-4)}; END {print Avail}'`<br />
+&nbsp; ;;<br />
+&nbsp; *) # I don't have the output of df -k. Just allow to run the tests:<br />
+&nbsp; &nbsp; AvailKB=$TestSize<br />
+&nbsp; ;;<br />
+esac<br />
+<br />
+test `expr $TestSize / 512` -gt $AvailKB &amp;&amp; \<br />
+TestSize=`$AvailKB \* 512`<br />
+<br />
+# Total size of writes during ddWriteTest:<br />
+test "$ddWriteSize" &amp;&amp; \<br />
+ddWriteSize=`SizeInBytes $ddWriteSize` || \<br />
+ddWriteSize=$TestSize<br />
+# If SizeInBytes returns an empty string:<br />
+test "$ddWriteSize" || \<br />
+Exit "The -write option has an incorrect value."<br />
+<br />
+# Total size of writes during biWriteTest:<br />
+test "$biWriteSize" &amp;&amp; \<br />
+biWriteSize=`SizeInBytes $biWriteSize` || \<br />
+biWriteSize=`expr $TestSize / $biWriteFact`<br />
+# If SizeInBytes returns an empty string:<br />
+test "$biWriteSize" || \<br />
+Exit "The -buffered option has an incorrect value."<br />
+<br />
+# Total size of reads during ddReadTest:<br />
+test "$ddReadSize" &amp;&amp; \<br />
+ddReadSize=`SizeInBytes $ddReadSize` || \<br />
+ddReadSize=`expr $TestSize \* $ddReadFact`<br />
+# If SizeInBytes returns an empty string:<br />
+test "$ddReadSize" || \<br />
+Exit "The -read option has an incorrect value."<br />
+<br />
+# Minimal size to run the read test (ddReadTest):<br />
+MinReadSize=`SizeInBytes $MinReadSize`<br />
+test "$MinReadSize" || \<br />
+Exit "The MinReadSize variable has an incorrect value."<br />
+<br />
+# Blocksize (in KB) to use for reads and writes:<br />
+BlockSize=`SizeInBytes $BlockSize`<br />
+test "$BlockSize" || \<br />
+expr $BlockSize -lt 1024 || \<br />
+Exit "The BlockSize variable has an incorrect value."<br />
+<br />
+# Minimal size to use a file in the read test (ddReadTest):<br />
+MinFileSize=`SizeInBytes $MinFileSize`<br />
+test "$MinFileSize" || \<br />
+Exit "The MinFileSize variable has an incorrect value."<br />
+# Size in blocks (used by the -size option of find command):<br />
+MinFileSize=`expr $MinFileSize / 512`<br />
+# By default the number of threads match the number of logical processors:<br />
+test $NumThreads -eq 0 &amp;&amp; \<br />
+NumThreads=`NumOfCPUs`<br />
+<br />
+test "$NumThreads" -gt $MinThreads 2&gt;/dev/null || \<br />
+NumThreads=$MinThreads<br />
+<br />
+<br />
+#------------------------------------------------------------------------------<br />
+<br />
+# Main block:<br />
+<br />
+# Set English locale to get the command's messages in English:<br />
+<br />
+EnglishLC=`locale -a 2&gt;/dev/null | $awk '/^en_/ {print; exit}'`<br />
+EnglishLC=${EnglishLC-"en_US"}<br />
+LC_TIME=$EnglishLC;&nbsp; &nbsp; &nbsp;export LC_TIME<br />
+LC_MESSAGES=$EnglishLC; export LC_MESSAGES<br />
+echo Locale is changed to $EnglishLC<br />
+<br />
+# Results of the tests will be saved in MyLog:<br />
+<br />
+# Log Header/Introduction:<br />
+<br />
+echo2 $THIS $Release<br />
+echo2 "&nbsp; &nbsp;Date:" `date '+%a %b %e %T %Y'`<br />
+echo2 "&nbsp; &nbsp;Host:" `uname -a`<br />
+echo2 " Uptime:" `uptime | $awk '{$1=""; print}'`<br />
+echo2 "&nbsp; &nbsp; DLC:" $DLC `test -x $DLC/bin/_proutil || echo " (not found)"`<br />
+echo2 "Threads:" $NumThreads<br />
+echo2 "TestSiz:" `expr $TestSize / 1024` KB<br />
+echo2 "TestDir:" $TestDir<br />
+df -k $TestDir<br />
+df -k $TestDir &gt;&gt;$MyLog<br />
+<br />
+EndOfSection<br />
+<br />
+# Prefix for the names of temp files:<br />
+<br />
+TmpPrefix=$TestDir/$THIS.$$<br />
+<br />
+# Run system monitoring:<br />
+<br />
+MonPrefix=${TmpPrefix}.monitor<br />
+MonPIDs=`RunSysMon $MonPrefix`<br />
+<br />
+$echo \<br />
+"Gathering the current system statistics... Test will begin in 2 seconds.\r\c"<br />
+sleep 2<br />
+CleanCurrentLine<br />
+<br />
+ddWriteTest $ddWriteSize 1<br />
+ddWriteTest $ddWriteSize $NumThreads<br />
+<br />
+if [ -x $DLC/bin/_proutil ]<br />
+then<br />
+<br />
+&nbsp; PATH=$DLC/bin:$PATH<br />
+&nbsp; export PATH<br />
+<br />
+# The dot is not a legal character for a database name.<br />
+# Database names (without .db) must not be longer than 11 characters:<br />
+<br />
+&nbsp; DbPrefix=$TestDir/db`expr $$ % 65536`_<br />
+<br />
+# For safety - interrupt the tests if there are the files that match DbPrefix:<br />
+&nbsp; ls $DbPrefix* 2&gt;/dev/null &amp;&amp; \<br />
+&nbsp; Exit There are the files matched ${DbPrefix}. Can not create the temp databases.<br />
+<br />
+&nbsp; test $ddWriteSize -gt 0 || \<br />
+&nbsp; test $biWriteSize -gt 0 &amp;&amp; \<br />
+&nbsp; CreateTmpDb $NumThreads<br />
+<br />
+# With the -r option use ddWriteSize rather than biWriteSize:<br />
+&nbsp; biWriteTest $ddWriteSize 1&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;-r<br />
+&nbsp; biWriteTest $ddWriteSize $NumThreads -r<br />
+<br />
+&nbsp; biWriteTest $biWriteSize 1<br />
+&nbsp; biWriteTest $biWriteSize $NumThreads<br />
+<br />
+&nbsp; DeleteTmpDb $NumThreads<br />
+fi<br />
+<br />
+ddReadTest $ddReadSize $NumThreads<br />
+<br />
+<br />
+# Let to complete the last interval of system monitoring:<br />
+$echo "Test will be completed in 2 seconds...\r\c"<br />
+sleep 2<br />
+CleanCurrentLine<br />
+<br />
+# Stop gathering the system statistics:<br />
+for MonPID in $MonPIDs<br />
+do<br />
+&nbsp; kill $MonPID 2&gt;/dev/null<br />
+done<br />
+<br />
+# Copy the system statistics to my log:<br />
+for MonLog in `ls -1 ${MonPrefix}.*`<br />
+do<br />
+&nbsp; echo $DividingLine<br />
+&nbsp; cat $MonLog &amp;&amp; rm -f $MonLog<br />
+done&nbsp; &gt;&gt;$MyLog<br />
+<br />
+echo $DividingLine &gt;&gt;$MyLog<br />
+<br />
+<br />
+$echo The results are saved in $BD$MyLog$UB<br />
+</planblocks></9></3><br />
+<div>
+<br /></div>
+</div>

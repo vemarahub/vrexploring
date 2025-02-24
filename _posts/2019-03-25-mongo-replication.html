@@ -1,0 +1,78 @@
+---
+layout: post
+title: Mongo Replication
+date: '2019-03-25T03:31:00.002-07:00'
+author: Rajesh Nair
+tags:
+- Mongo
+- replication
+modified_time: '2020-02-06T05:25:55.287-08:00'
+blogger_id: tag:blogger.com,1999:blog-8827475125741824309.post-803530067533185252
+blogger_orig_url: https://csrepo.blogspot.com/2019/03/mongo-replication.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+Replication in any database is critical for setting up a secondary instance for the database instance.In mongo replication serves the purpose of :<br />
+* HA - High Availablity on a failover<br />
+*Durability - Data safety of our primary database instance<br />
+* Maintaining extra copies of the critical database<br />
+*DR - Having a setup of disaster recovery to help in case of loss of servers/drives in case of some unseen disasters like natural calamities.<br />
+<br />
+The database replication setup in Mongo is asynchronous i.e. there is&nbsp; latency for writing from master to slave databases.Also for mongo we can have single primary with multiple slave setups.<br />
+<br />
+Replication Cluster : Primary and set of secondaries are together called as cluster and the instances part of this clusters are called&nbsp; as members of set<br />
+<br />
+Replication Factor: This refers to the number of members in sets including primary and secondaries.<br />
+<br />
+<br />
+Replication can be:<br />
+<br />
+* Statement Based :&nbsp; Each CRUD operation would be replicated to the slave databases in the replication setup statement by statement.<br />
+<br />
+* Binary Based: The binary corresponding to each transaction would be replicated to target databases in this case.<br />
+<br />
+<b>Automatic Failover</b><br />
+Mongo has automatic failover and automatic node recovery when a member of replica set fails.Mongo uses consensus / majority notion to determine when primary is down.<br />
+The mongo driver is replica set aware , so when one of the members of the replica set goes down one of the active member is elected as primary and application starts using that node.<br />
+<br />
+<h3 style="text-align: left;">
+Recommendation For Replica Sets</h3>
+<div>
+<div>
+1 data Center:</div>
+<div>
+-<span style="white-space: pre;"> </span>3 members</div>
+<div>
+-<span style="white-space: pre;"> </span>2 + 1 arbiter</div>
+<div>
+-<span style="white-space: pre;"> </span>2 with manual failover</div>
+<div>
+<br /></div>
+<div>
+-3 members with 1 small server as secondary, we can keep priority 0 for that .</div>
+<div>
+Multiple data center:</div>
+<div>
+-<span style="white-space: pre;"> </span>3 members</div>
+<div>
+-<span style="white-space: pre;"> </span>2 in one DC1, one secondary in DC2</div>
+<div>
+-<span style="white-space: pre;"> </span>Make priority 0 for DC2</div>
+<div>
+<br /></div>
+<div>
+-<span style="white-space: pre;"> </span>3 members</div>
+<div>
+-<span style="white-space: pre;"> </span>Each in DC1, DC2 and DC3</div>
+<div>
+<br /></div>
+<div>
+Limit per set : &lt;= 12 members and &lt;= 7 voters</div>
+<div>
+<br />
+Replication sends operations from primary , not bytes – thus storage engine doesn’t affect.Thus different members in the replica set can have different storage engines.<br />
+<br /></div>
+</div>
+<div>
+<br /></div>
+</div>

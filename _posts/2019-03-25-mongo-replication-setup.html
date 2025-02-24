@@ -1,0 +1,409 @@
+---
+layout: post
+title: Mongo Replication Setup
+date: '2019-03-25T05:34:00.000-07:00'
+author: Rajesh Nair
+tags:
+- Replication Steps
+- Mongo
+modified_time: '2020-03-31T22:19:13.814-07:00'
+blogger_id: tag:blogger.com,1999:blog-8827475125741824309.post-987961959133913792
+blogger_orig_url: https://csrepo.blogspot.com/2019/03/mongo-replication-setup.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+For a statement based replication oplog file is used to apply all the transaction on the primary node to the secondary node.The default value for oplog size(MB) is 5% of free space on disk.<br />
+<br />
+Follow the below steps to setup a replication environment:<br />
+<br />
+<b>1. Create instances for primary and secondary members for the replica set in different servers.</b><br />
+On Server 1<br />
+mkdir /usr/apps/database/db1<br />
+<br />
+&nbsp;mongod --port 27001 --replSet abc --dbpath /usr/apps/database/db1&nbsp;--logpath /usr/apps/database/log.1&nbsp;--logappend --oplogSize 50 --smallfiles --fork<br />
+<br />
+On Server 2<br />
+mkdir /usr/apps/database/db2<br />
+<br />
+&nbsp;mongod --port 27002 --replSet abc --dbpath /usr/apps/database/db2 --logpath /usr/apps/database/log.2 --logappend --oplogSize 50 --smallfiles --fork<br />
+<br />
+On Server 3<br />
+mkdir /usr/apps/database/db3<br />
+<br />
+&nbsp;mongod --port 27003 --replSet abc --dbpath /usr/apps/database/db3 --logpath /usr/apps/database/log.3 --logappend --oplogSize 50 --smallfiles --fork<br />
+<br />
+OR<br />
+On primary server<br />
+<div class="MsoNormal">
+$ mongod --master --oplogSize 500<o:p></o:p></div>
+<div class="MsoNormal">
+<br /></div>
+<div class="MsoNormal">
+On Other servers</div>
+<br />
+<div class="MsoNormal">
+$ mongod --slave --source localhost:27017 --port 3000
+--dbpath /data/slave<o:p></o:p></div>
+<div class="MsoNormal">
+<br /></div>
+<div class="MsoNormal">
+<b>2.Specify Config</b><br />
+<div class="MsoNormal">
+cfg = { _id : &lt;setName&gt;,<o:p></o:p></div>
+<div class="MsoNormal">
+Members: [<o:p></o:p></div>
+<div class="MsoNormal">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; { _id: 0,
+host:&lt;name: port&gt;,&lt;options&gt; },<o:p></o:p></div>
+<div class="MsoNormal">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; { _id: 1,
+host:&lt;name: port&gt;,&lt;options&gt; },<o:p></o:p></div>
+<div class="MsoNormal">
+..<o:p></o:p></div>
+<div class="MsoNormal">
+]<o:p></o:p></div>
+<br />
+<div class="MsoNormal">
+}<o:p></o:p></div>
+<b><br /></b></div>
+<div class="MsoNormal">
+&gt; cfg = {"_id":"abc","members":[{_id:0,host:"localhost:27001"},{_id:1,host:"localhost:27002"},{_id:2,host:"localhost:27003"}]}</div>
+<div>
+<br /></div>
+<div>
+<b>3.Initiate Repl Set</b></div>
+<div>
+<div>
+&gt; rs.initiate(cfg)</div>
+<div>
+<i>{</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "ok" : 1,</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "operationTime" : Timestamp(1553514943, 1),</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "$clusterTime" : {</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "clusterTime" : Timestamp(1553514943, 1),</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "signature" : {</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "hash" : BinData(0,"AAAAAAAAAAAAAAAAAAAAAAAAAAA="),</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "keyId" : NumberLong(0)</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; }</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; }</i></div>
+<div>
+<i>}</i></div>
+<div style="font-weight: bold;">
+<br /></div>
+</div>
+<div style="font-weight: bold;">
+4. Check Replication status&nbsp;</div>
+<div>
+<div>
+abc:PRIMARY&gt; rs.status()</div>
+<div>
+<i>{</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "set" : "abc",</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "date" : ISODate("2019-03-25T11:59:04.908Z"),</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "myState" : 1,</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "term" : NumberLong(1),</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "syncingTo" : "",</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "syncSourceHost" : "",</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "syncSourceId" : -1,</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "heartbeatIntervalMillis" : NumberLong(2000),</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "optimes" : {</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "lastCommittedOpTime" : {</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "ts" : Timestamp(1553515136, 1),</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "t" : NumberLong(1)</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; },</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "readConcernMajorityOpTime" : {</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "ts" : Timestamp(1553515136, 1),</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "t" : NumberLong(1)</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; },</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "appliedOpTime" : {</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "ts" : Timestamp(1553515136, 1),</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "t" : NumberLong(1)</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; },</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "durableOpTime" : {</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "ts" : Timestamp(1553515136, 1),</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "t" : NumberLong(1)</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; }</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; },</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "lastStableCheckpointTimestamp" : Timestamp(1553515136, 1),</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "members" : [</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; {</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "_id" : 0,</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "name" : "localhost:27001",</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "health" : 1,</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "state" : 1,</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "stateStr" : "PRIMARY",</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "uptime" : 4151,</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "optime" : {</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "ts" : Timestamp(1553515136, 1),</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "t" : NumberLong(1)</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; },</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "optimeDate" : ISODate("2019-03-25T11:58:56Z"),</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "syncingTo" : "",</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "syncSourceHost" : "",</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "syncSourceId" : -1,</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "infoMessage" : "",</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "electionTime" : Timestamp(1553514955, 1),</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "electionDate" : ISODate("2019-03-25T11:55:55Z"),</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "configVersion" : 1,</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "self" : true,</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "lastHeartbeatMessage" : ""</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; },</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; {</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "_id" : 1,</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "name" : "localhost:27002",</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "health" : 1,</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "state" : 2,</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "stateStr" : "SECONDARY",</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "uptime" : 201,</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "optime" : {</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "ts" : Timestamp(1553515136, 1),</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "t" : NumberLong(1)</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; },</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "optimeDurable" : {</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "ts" : Timestamp(1553515136, 1),</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "t" : NumberLong(1)</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; },</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "optimeDate" : ISODate("2019-03-25T11:58:56Z"),</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "optimeDurableDate" : ISODate("2019-03-25T11:58:56Z"),</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "lastHeartbeat" : ISODate("2019-03-25T11:59:03.464Z"),</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "lastHeartbeatRecv" : ISODate("2019-03-25T11:59:04.405Z"),</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "pingMs" : NumberLong(0),</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "lastHeartbeatMessage" : "",</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "syncingTo" : "localhost:27001",</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "syncSourceHost" : "localhost:27001",</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "syncSourceId" : 0,</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "infoMessage" : "",</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "configVersion" : 1</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; },</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; {</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "_id" : 2,</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "name" : "localhost:27003",</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "health" : 1,</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "state" : 2,</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "stateStr" : "SECONDARY",</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "uptime" : 201,</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "optime" : {</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "ts" : Timestamp(1553515136, 1),</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "t" : NumberLong(1)</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; },</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "optimeDurable" : {</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "ts" : Timestamp(1553515136, 1),</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "t" : NumberLong(1)</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; },</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "optimeDate" : ISODate("2019-03-25T11:58:56Z"),</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "optimeDurableDate" : ISODate("2019-03-25T11:58:56Z"),</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "lastHeartbeat" : ISODate("2019-03-25T11:59:03.464Z"),</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "lastHeartbeatRecv" : ISODate("2019-03-25T11:59:04.482Z"),</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "pingMs" : NumberLong(0),</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "lastHeartbeatMessage" : "",</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "syncingTo" : "localhost:27001",</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "syncSourceHost" : "localhost:27001",</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "syncSourceId" : 0,</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "infoMessage" : "",</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "configVersion" : 1</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; }</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; ],</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "ok" : 1,</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "operationTime" : Timestamp(1553515136, 1),</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "$clusterTime" : {</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "clusterTime" : Timestamp(1553515136, 1),</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "signature" : {</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "hash" : BinData(0,"AAAAAAAAAAAAAAAAAAAAAAAAAAA="),</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "keyId" : NumberLong(0)</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; }</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; }</i></div>
+<div>
+<i>}</i></div>
+<div style="font-weight: bold;">
+<br /></div>
+<div>
+Some important properties to check from rs.status are:</div>
+<div>
+<div class="MsoNormal">
+OptimeDate – Time of last operation.<o:p></o:p></div>
+<div class="MsoNormal">
+Heartbt- pinging &amp; response from member.<o:p></o:p></div>
+<div class="MsoNormal">
+Self : true – member talking to right now<o:p></o:p></div>
+<div class="MsoNormal">
+State : 1 – up , 8 down<b><o:p></o:p></b></div>
+<div class="MsoNormal">
+<br /></div>
+<div class="MsoNormal">
+We can see all the replica set commands by using</div>
+<div class="MsoNormal">
+<b>rs.help()</b></div>
+<div class="MsoNormal">
+<b><br /></b></div>
+<div class="MsoNormal">
+For example:</div>
+<div class="MsoNormal">
+&gt; db.printReplicationInfo()&nbsp; # tells you how long your oplog will last</div>
+<div class="MsoNormal">
+&gt; db.printSlaveReplicationInfo()&nbsp; # tells you how far behind the slave is</div>
+<div>
+<br /></div>
+<div>
+<b>5. To find current primary in the replica set</b></div>
+<div>
+<div>
+abc:PRIMARY&gt; rs.status().members.find(r=&gt;r.state===1).name</div>
+<div>
+<i>localhost:27001</i><br />
+or<br />
+abc:PRIMARY&gt;m = db.isMaster().ismaster</div>
+</div>
+<div>
+<br /></div>
+<div>
+<b>6.To allow read from slave member of the replica set</b></div>
+<div>
+<div>
+abc:SECONDARY&gt; rs.slaveOk()</div>
+</div>
+<div>
+<br /></div>
+<div>
+If primary fails ,secondary becomes primary by automatic failover and after primary comes up later, it again becomes primary.<br />
+<br />
+<b>7. No of Roll Backs</b><br />
+<div class="MsoNormal">
+db.serverStatus()['repl'] – rbid – no of rollbacks<o:p></o:p><br />
+<br />
+<b>8. Add a Member</b><br />
+rs.add("abc:27014")<br />
+<br />
+<b>9. Add an Arbiter</b><br />
+rs.addArb("abc:28000")<br />
+<br />
+<b>10. Remove a Member</b><br />
+rs.remove("abc:28000")</div>
+</div>
+</div>
+</div>
+<div class="MsoNormal">
+<o:p></o:p></div>
+</div>

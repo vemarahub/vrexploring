@@ -1,0 +1,48 @@
+---
+layout: post
+title: Restricting blank user id login to progress database
+date: '2017-12-14T02:00:00.000-08:00'
+author: Rajesh Nair
+tags:
+modified_time: '2020-03-30T00:31:36.827-07:00'
+blogger_id: tag:blogger.com,1999:blog-8827475125741824309.post-2727965473238843083
+blogger_orig_url: https://csrepo.blogspot.com/2017/12/restricting-blank-user-id-login-to.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<div class="sidenav">
+Security is a major aspect for any database,it is required to have a user/pass credential validation for every connection made to the database to provide a basic security to the data in the database.</div>
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<br />
+By default in progress a connection can be made with a blank username and password and the schema/data from the database can be accessed.<br />
+<br />
+To restrict the same , we need to disallow blank user login to the database.This can be done by following the below steps:<br />
+<br />
+1.First before disallowing a blank user login, we need to create atleast 1 user in the database, the same can be then used to access the database once blank access is disabled.<br />
+<br />
+To create a new database user any of the following steps can be used:<br />
+a&gt; Go to data dictionary select admin --&gt; security --&gt; edit user list<br />
+b&gt; add a new user with desired username and password<br />
+<br />
+Once this user is created , everytime we try to access data dictionary of the database, it will prompt for input of user/password to enter the data dictionary.<br />
+<br />
+If blank user id is allowed, we can skip the login credential part and still use all the utilities in the menu of data dictionary, once the blank user id is disabled we would not be able to perform any actions in data dictionay.<br />
+<br />
+To disallow blank user id:<br />
+<br />
+Go to data dictionary select admin --&gt; security --&gt; Disallow Blank Userid Access<br />
+<br />
+Now we can access data dictionary and use its functionalities by using the user/pass we created or which we create in future, but not by a blank user/pass login. Similarly for remote/batch access to database we would require a valid user/pass which can be passed in case of a batch login through &nbsp;-U ,-P parameters.<br />
+<br />
+To revert the restriction to disallow blank user/pass login we can run the following query in the procedure editor<br />
+<br />
+FOR EACH _file WHERE:<br />
+ASSIGN _file._CAN-READ = "*"<br />
+_file._CAN-WRITE = "*"<br />
+_file._CAN-CREATE = "*"<br />
+_file._CAN-DELETE = "*".<br />
+END.<br />
+<br />
+This will again allow a blank user access to the database.<br />
+<br /></div>
+</div>

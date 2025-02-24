@@ -1,0 +1,26 @@
+---
+layout: post
+title: Openedge Database Replication
+date: '2017-12-14T03:30:00.000-08:00'
+author: Rajesh Nair
+tags:
+- after image
+- full
+- repl.properties
+- replication server
+- source db
+- locked
+- busy
+- master
+- empty
+- replication
+- slave
+- replication agent
+- target db
+modified_time: '2019-11-11T06:35:02.678-08:00'
+thumbnail: https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhRwAqX20IMKNSk7UQvpLDoNA1hqCzpBSMEYsuZ2CeVEpA9zE_3alAbGhOxopCquOeAPPzHkinjgztny-wxWkxRSk_qHlrWcarK5gpns_U0mws5SSajVTDtodZEt7KFqawMIsOHprx1Uc-r/s72-c/replict.PNG
+blogger_id: tag:blogger.com,1999:blog-8827475125741824309.post-5585936226246343138
+blogger_orig_url: https://csrepo.blogspot.com/2017/12/openedge-database-replication.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on"><br />Openedge Replication is a feature/product from Progress that provides real-time synchronization between two or more databases. &nbsp;There is a replication server (source) and one or two replication agents (targets).<br /><br /><br />Progress OpenEdge Replication and Replication Plus provide tools and procedures to protect installations from potential outages by replicating a primary database to one or more remote, hot-standby &nbsp;destinations. Full integrity between the source and remote databases is maintained. OpenEdge Replication is completely transparent to the applications running on the platform.<br /><br /><h3 style="text-align: left;"><br />How Replication works:</h3><br /><div class="separator" style="clear: both; text-align: center;"><a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhRwAqX20IMKNSk7UQvpLDoNA1hqCzpBSMEYsuZ2CeVEpA9zE_3alAbGhOxopCquOeAPPzHkinjgztny-wxWkxRSk_qHlrWcarK5gpns_U0mws5SSajVTDtodZEt7KFqawMIsOHprx1Uc-r/s1600/replict.PNG" imageanchor="1" style="clear: left; float: left; margin-bottom: 1em; margin-right: 1em;"><img border="0" height="370" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhRwAqX20IMKNSk7UQvpLDoNA1hqCzpBSMEYsuZ2CeVEpA9zE_3alAbGhOxopCquOeAPPzHkinjgztny-wxWkxRSk_qHlrWcarK5gpns_U0mws5SSajVTDtodZEt7KFqawMIsOHprx1Uc-r/s640/replict.PNG" width="640" /></a></div><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><b><br /></b><b>Source DB/Primary database </b>- The database your application interacts with. &nbsp;Used as a source in normal operations mode<br /><br /><b>Target DB/Secondary database </b>- The database that acts as a target in normal operations mode.<br /><br /><br /><b>AI files</b> enabled at source database are used to transmit data from source to replication using the OE replication server and agent.<br /><br />The AI files have following status when used for replication:<br /><br />&gt;&gt; <b>Empty</b><br />&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;Ready for use<br /><br />&gt;&gt;<b>Busy</b><br />&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Currently being used.<br /><br />&gt;&gt;<b>Full</b><br />&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Closed and applied to target<br /><br />&gt;&gt;<b>Locked</b><br />&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;Closed and not yet applied to target<br /><div><br /></div><br /><br />To setup replication we need to copy source and target configuration files from the DLC path (&lt;installation path&gt;/properties) to the corresponding database directories of &nbsp;source and target.<br /><br /><br />Following is how a source property file <b>source.repl.properties</b> look like:<br /><br />[server]<br />&nbsp; &nbsp; control-agents=agent1<br />&nbsp; &nbsp; database=source<br />&nbsp; &nbsp; transition=manual<br />&nbsp; &nbsp; transition-timeout=600<br /><br />[control-agent.agent1]<br />&nbsp; &nbsp;name=agent1<br />&nbsp; &nbsp;database=source<br />&nbsp; &nbsp;host=moth<br />&nbsp; &nbsp;port=4501<br />&nbsp; &nbsp;connect-timeout=120<br />&nbsp; &nbsp;replication-method=async<br />&nbsp; &nbsp;critical=0<br /><div><br /></div><div><br /></div><div>Following is how a target property file <b>target.repl.properties</b> look like</div><div><div style="direction: ltr; margin-bottom: 0pt; margin-left: 0.38in; margin-top: 4.32pt; text-indent: -0.38in; unicode-bidi: embed; word-break: normal;"><br /></div></div><div>[agent]<br />&nbsp; &nbsp;name=agent1<br />&nbsp; &nbsp;database=source<br />&nbsp; &nbsp;listener-minport=4387<br />&nbsp; &nbsp;listener-maxport=4500</div><div><br /></div><div><br /></div><br /><br /><br /></div>

@@ -1,0 +1,128 @@
+---
+layout: post
+title: Shell Script - Database Stop
+date: '2020-03-25T23:34:00.000-07:00'
+author: Rajesh Nair
+tags:
+- progress
+- stop database
+- shell scripting
+modified_time: '2020-03-26T03:43:38.026-07:00'
+blogger_id: tag:blogger.com,1999:blog-8827475125741824309.post-5866843796405458887
+blogger_orig_url: https://csrepo.blogspot.com/2020/03/shell-script-database-stop.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<br />
+<b>Script :</b> Progress Database Stop<br />
+<br />
+<b>Script Name: </b>stoppro.sh<br />
+<br />
+<b>Script Function: </b>To stop the database instance and optionally truncate bi (-t)<br />
+<br />
+<b>Script Usage:</b> ./stoppro.sh &lt; db path &gt; [-t]<br />
+<br />
+<b><u>Code:</u></b><br />
+<div>
+<br /></div>
+<div>
+<br /></div>
+<div>
+<div>
+#!/bin/sh</div>
+<div>
+JOB_ID=stoppro</div>
+<div>
+set +x</div>
+<div>
+. /pro/admin/ctl/setenv.pro</div>
+<div>
+MinT=$2</div>
+<div>
+<br /></div>
+<div>
+<br /></div>
+<div>
+#-----------------------------------------------------------------------------#</div>
+<div>
+# Is database running?&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; #</div>
+<div>
+#-----------------------------------------------------------------------------#</div>
+<div>
+type proutil</div>
+<div>
+echo '&gt;&gt;' "proutil ${1} -C busy"</div>
+<div>
+proutil ${1} -C busy &amp;&amp;</div>
+<div>
+&nbsp; &nbsp; &nbsp; { echo "INFO: ${1} not stopped. (already down)"</div>
+<div>
+&nbsp; &nbsp; &nbsp; &nbsp; exit 0 ;}</div>
+<div>
+<br /></div>
+<div>
+#-----------------------------------------------------------------------------#</div>
+<div>
+# Stop database&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;#</div>
+<div>
+#-----------------------------------------------------------------------------#</div>
+<div>
+echo</div>
+<div>
+echo "Attention!! This will shutdown the database " ${1}</div>
+<div>
+echo " Do you want to continue with shutdown? Y/N"</div>
+<div>
+read ip</div>
+<div>
+<br /></div>
+<div>
+if [ $ip == "Y" ]</div>
+<div>
+then</div>
+<div>
+&nbsp; &nbsp; &nbsp; &nbsp; type proshut</div>
+<div>
+&nbsp; &nbsp; &nbsp; &nbsp; echo '&gt;&gt;' "proshut ${1} -by"</div>
+<div>
+&nbsp; &nbsp; &nbsp; &nbsp; proshut ${1} -by ||</div>
+<div>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { echo "ERROR: during proshut, see ${1}.lg for details"</div>
+<div>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; exit 1 ;}</div>
+<div>
+<br /></div>
+<div>
+#-----------------------------------------------------------------------------#</div>
+<div>
+# if -t on command line first truncate BI file.&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;#</div>
+<div>
+#-----------------------------------------------------------------------------#</div>
+<div>
+&nbsp; &nbsp; &nbsp; &nbsp; if [[ "${MinT}" = "-t" ]]</div>
+<div>
+&nbsp; &nbsp; &nbsp; &nbsp; then</div>
+<div>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; echo</div>
+<div>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; echo "truncate BI start"</div>
+<div>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; proutil ${1} -C truncate BI&nbsp; &nbsp; &nbsp;|| exit 1</div>
+<div>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; echo "truncate BI ready"</div>
+<div>
+&nbsp; &nbsp; &nbsp; &nbsp; fi</div>
+<div>
+fi</div>
+<div>
+exit 0</div>
+<div>
+#=============================================================================#</div>
+<div>
+# EOF&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;#</div>
+<div>
+#=============================================================================#</div>
+<div>
+<br /></div>
+</div>
+</div>

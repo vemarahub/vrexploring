@@ -1,0 +1,126 @@
+---
+layout: post
+title: Starting Database in Mongo
+date: '2019-03-12T02:11:00.001-07:00'
+author: Rajesh Nair
+tags:
+- Mongo
+- Mongo Setup
+- Mongo Startup
+modified_time: '2020-03-31T03:43:32.178-07:00'
+blogger_id: tag:blogger.com,1999:blog-8827475125741824309.post-5654220376682150756
+blogger_orig_url: https://csrepo.blogspot.com/2019/03/starting-database-in-mongo.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<div class="sidenav">
+<br />
+To start the mongo database server on the linux machine with specific parameters for the database to start with we can use a config file , generally named as mongod.conf</div>
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<br />
+The file would contain the below entry, edit the required parameters as per requirement:<br />
+<br />
+<br />
+<div class="MsoNormal">
+<i style="mso-bidi-font-style: normal;"><span style="font-size: 8.0pt; line-height: 107%; mso-no-proof: yes;"># mongod.conf<o:p></o:p></span></i></div>
+<div class="MsoNormal" style="line-height: normal;">
+<i style="mso-bidi-font-style: normal;"><span style="font-size: 8.0pt; mso-no-proof: yes;"># where to write logging
+data.<o:p></o:p></span></i></div>
+<div class="MsoNormal" style="line-height: normal;">
+<i style="mso-bidi-font-style: normal;"><span style="font-size: 8.0pt; mso-no-proof: yes;">systemLog:<o:p></o:p></span></i></div>
+<div class="MsoNormal" style="line-height: normal;">
+<i style="mso-bidi-font-style: normal;"><span style="font-size: 8.0pt; mso-no-proof: yes;"><span style="mso-spacerun: yes;">&nbsp; </span>destination: file<o:p></o:p></span></i></div>
+<div class="MsoNormal" style="line-height: normal;">
+<i style="mso-bidi-font-style: normal;"><span style="font-size: 8.0pt; mso-no-proof: yes;"><span style="mso-spacerun: yes;">&nbsp; </span>logAppend: true<o:p></o:p></span></i></div>
+<div class="MsoNormal" style="line-height: normal;">
+<i style="mso-bidi-font-style: normal;"><span style="font-size: 8.0pt; mso-no-proof: yes;"><span style="mso-spacerun: yes;">&nbsp; </span>path: /u01/mongo/log/temp_mongod.log<o:p></o:p></span></i></div>
+<div class="MsoNormal" style="line-height: normal;">
+<i style="mso-bidi-font-style: normal;"><span style="font-size: 8.0pt; mso-no-proof: yes;"># Where and how to store
+data.<o:p></o:p></span></i></div>
+<div class="MsoNormal" style="line-height: normal;">
+<i style="mso-bidi-font-style: normal;"><span style="font-size: 8.0pt; mso-no-proof: yes;">storage:<o:p></o:p></span></i></div>
+<div class="MsoNormal" style="line-height: normal;">
+<i style="mso-bidi-font-style: normal;"><span style="font-size: 8.0pt; mso-no-proof: yes;"><span style="mso-spacerun: yes;">&nbsp; </span>dbPath: /u01/mongo/tempData<o:p></o:p></span></i></div>
+<div class="MsoNormal" style="line-height: normal;">
+<i style="mso-bidi-font-style: normal;"><span style="font-size: 8.0pt; mso-no-proof: yes;"><span style="mso-spacerun: yes;">&nbsp; </span>journal:<o:p></o:p></span></i></div>
+<div class="MsoNormal" style="line-height: normal;">
+<i style="mso-bidi-font-style: normal;"><span style="font-size: 8.0pt; mso-no-proof: yes;"><span style="mso-spacerun: yes;">&nbsp;&nbsp;&nbsp; </span>enabled: true<o:p></o:p></span></i></div>
+<div class="MsoNormal" style="line-height: normal;">
+<i style="mso-bidi-font-style: normal;"><span style="font-size: 8.0pt; mso-no-proof: yes;">#<span style="mso-spacerun: yes;">&nbsp; </span>engine:<o:p></o:p></span></i></div>
+<div class="MsoNormal" style="line-height: normal;">
+<i style="mso-bidi-font-style: normal;"><span style="font-size: 8.0pt; mso-no-proof: yes;">#<span style="mso-spacerun: yes;">&nbsp; </span>mmapv1:<o:p></o:p></span></i></div>
+<div class="MsoNormal" style="line-height: normal;">
+<i style="mso-bidi-font-style: normal;"><span style="font-size: 8.0pt; mso-no-proof: yes;">#<span style="mso-spacerun: yes;">&nbsp; </span>wiredTiger:<o:p></o:p></span></i></div>
+<div class="MsoNormal" style="line-height: normal;">
+<i style="mso-bidi-font-style: normal;"><span style="font-size: 8.0pt; mso-no-proof: yes;"># how the process runs<o:p></o:p></span></i></div>
+<div class="MsoNormal" style="line-height: normal;">
+<i style="mso-bidi-font-style: normal;"><span style="font-size: 8.0pt; mso-no-proof: yes;">processManagement:<o:p></o:p></span></i></div>
+<div class="MsoNormal" style="line-height: normal;">
+<i style="mso-bidi-font-style: normal;"><span style="font-size: 8.0pt; mso-no-proof: yes;"><span style="mso-spacerun: yes;">&nbsp; </span>fork: true<span style="mso-spacerun: yes;">&nbsp;
+</span># fork and run in background<o:p></o:p></span></i></div>
+<div class="MsoNormal" style="line-height: normal;">
+<i style="mso-bidi-font-style: normal;"><span style="font-size: 8.0pt; mso-no-proof: yes;"><span style="mso-spacerun: yes;">&nbsp; </span>pidFilePath:
+/u01/mongo/tempData/mongod.pid<span style="mso-spacerun: yes;">&nbsp; </span>#
+location of pidfile<o:p></o:p></span></i></div>
+<div class="MsoNormal" style="line-height: normal;">
+<i style="mso-bidi-font-style: normal;"><span style="font-size: 8.0pt; mso-no-proof: yes;"><span style="mso-spacerun: yes;">&nbsp; </span>#timeZoneInfo: /usr/share/zoneinfo<o:p></o:p></span></i></div>
+<div class="MsoNormal" style="line-height: normal;">
+<i style="mso-bidi-font-style: normal;"><span style="font-size: 8.0pt; mso-no-proof: yes;"># network interfaces<o:p></o:p></span></i></div>
+<div class="MsoNormal" style="line-height: normal;">
+<i style="mso-bidi-font-style: normal;"><span style="font-size: 8.0pt; mso-no-proof: yes;">net:<o:p></o:p></span></i></div>
+<div class="MsoNormal" style="line-height: normal;">
+<i style="mso-bidi-font-style: normal;"><span style="font-size: 8.0pt; mso-no-proof: yes;"><span style="mso-spacerun: yes;">&nbsp; </span>port: 27017<o:p></o:p></span></i></div>
+<div class="MsoNormal" style="line-height: normal;">
+<i style="mso-bidi-font-style: normal;"><span style="font-size: 8.0pt; mso-no-proof: yes;"><span style="mso-spacerun: yes;">&nbsp; </span>#bindIp: 127.0.0.1<span style="mso-spacerun: yes;">&nbsp; </span># Listen to local interface only, comment to
+listen on all interfaces.<o:p></o:p></span></i></div>
+<div class="MsoNormal" style="line-height: normal;">
+<i style="mso-bidi-font-style: normal;"><span style="font-size: 8.0pt; mso-no-proof: yes;"><span style="mso-spacerun: yes;">&nbsp; </span>bindIp: 172.30.5.71<span style="mso-spacerun: yes;">&nbsp; </span># Listen to local interface only, comment to
+listen on all interfaces.<o:p></o:p></span></i></div>
+<div class="MsoNormal" style="line-height: normal;">
+<i style="mso-bidi-font-style: normal;"><span style="font-size: 8.0pt; mso-no-proof: yes;">#security:<o:p></o:p></span></i></div>
+<div class="MsoNormal" style="line-height: normal;">
+<i style="mso-bidi-font-style: normal;"><span style="font-size: 8.0pt; mso-no-proof: yes;">#operationProfiling:<o:p></o:p></span></i></div>
+<div class="MsoNormal" style="line-height: normal;">
+<i style="mso-bidi-font-style: normal;"><span style="font-size: 8.0pt; mso-no-proof: yes;">replication:<o:p></o:p></span></i></div>
+<div class="MsoNormal" style="line-height: normal;">
+<i style="mso-bidi-font-style: normal;"><span style="font-size: 8.0pt; mso-no-proof: yes;">replSetName: rs0<o:p></o:p></span></i></div>
+<div class="MsoNormal" style="line-height: normal;">
+<i style="mso-bidi-font-style: normal;"><span style="font-size: 8.0pt; mso-no-proof: yes;">#sharding:<o:p></o:p></span></i></div>
+<div class="MsoNormal" style="line-height: normal;">
+<i style="mso-bidi-font-style: normal;"><span style="font-size: 8.0pt; mso-no-proof: yes;">## Enterprise-Only
+Options<o:p></o:p></span></i></div>
+<div class="MsoNormal" style="line-height: normal;">
+<i style="mso-bidi-font-style: normal;"><span style="font-size: 8.0pt; mso-no-proof: yes;">#auditLog:<o:p></o:p></span></i></div>
+<div class="MsoNormal" style="line-height: normal;">
+<i style="mso-bidi-font-style: normal;"><span style="font-size: 8.0pt; mso-no-proof: yes;">#snmp:<o:p></o:p></span></i></div>
+<br />
+<br />
+This file can be used to start the mongo database deamon by using the below command:<br />
+<br />
+<span style="font-family: &quot;calibri&quot; , &quot;sans-serif&quot;; font-size: 11.0pt; line-height: 107%;"><b>mongod --config mongo.conf</b></span><br />
+<span style="font-family: &quot;calibri&quot; , &quot;sans-serif&quot;; font-size: 11.0pt; line-height: 107%;"><br /></span>
+<span style="font-family: &quot;calibri&quot; , &quot;sans-serif&quot;; font-size: 11.0pt; line-height: 107%;">&nbsp;We can additionally use --fork to run the service in background</span><br />
+<span style="font-family: &quot;calibri&quot; , &quot;sans-serif&quot;; font-size: 11.0pt; line-height: 107%;"><br /></span>
+<span style="font-family: &quot;calibri&quot; , &quot;sans-serif&quot;; font-size: 11.0pt; line-height: 107%;"><b style="font-family: Calibri, sans-serif;">mongod --config mongo.conf --fork</b></span><br />
+<span style="font-family: &quot;calibri&quot; , &quot;sans-serif&quot;; font-size: 11.0pt; line-height: 107%;"><b style="font-family: Calibri, sans-serif;"><br /></b></span>
+<span style="font-family: &quot;calibri&quot; , sans-serif;"><span style="font-size: 14.6667px;">The database files created when we execute the above command and start the mongo database are:</span></span><br />
+<span style="font-family: inherit;"><br /></span>
+<br />
+<div class="MsoNormal">
+<span style="mso-no-proof: yes;"><span style="font-family: inherit;">Journal – redo logs for crash
+recovery<o:p></o:p></span></span></div>
+<div class="MsoNormal">
+<span style="mso-no-proof: yes;"><span style="font-family: inherit;">Mongod.lock – to keep the
+database running<o:p></o:p></span></span></div>
+<div class="MsoNormal">
+<span style="mso-no-proof: yes;"><span style="font-family: inherit;">Pcat.ns – namespace file –
+system catalogue<o:p></o:p></span></span></div>
+<div class="MsoNormal">
+<span style="mso-no-proof: yes;"><span style="font-family: inherit;">Pcat.0,pcat.1 – data files ,
+2gb limit,automatically created and preallocated</span><o:p></o:p></span></div>
+<div class="MsoNormal">
+<span style="mso-no-proof: yes;"><span style="font-family: inherit;"><br /></span></span></div>
+<div class="MsoNormal">
+<span style="mso-no-proof: yes;"><span style="font-family: inherit;"><br /></span></span></div>
+<span style="font-family: &quot;calibri&quot; , sans-serif;"><span style="font-size: 14.6667px;"></span></span></div>
+</div>

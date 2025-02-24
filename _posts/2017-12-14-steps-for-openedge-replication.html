@@ -1,0 +1,179 @@
+---
+layout: post
+title: Steps for OpenEdge Replication
+date: '2017-12-14T03:26:00.000-08:00'
+author: Rajesh Nair
+tags:
+- target.repl.properties.
+- settting replication
+- source.repl.propertes
+- openedge
+- dsrutil
+- Replication commands
+modified_time: '2020-02-19T08:22:26.799-08:00'
+blogger_id: tag:blogger.com,1999:blog-8827475125741824309.post-1550917501524777239
+blogger_orig_url: https://csrepo.blogspot.com/2017/12/steps-for-openedge-replication.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<br />
+<br />
+below steps for OS Copy Replication<br />
+<br />
+1.Copy the source.repl.properties file from dlc/properties path and copy the the &nbsp; DB path ,giving it the db name eg: testdb.repl.properties.<br />
+<br />
+Edit the file with all entries as below.By using the format as below for the properties file we can maintain the same file for both source and target database.<br />
+<br />
+==========<br />
+[server]<br />
+&nbsp; &nbsp; control-agents=agent_testdb<br />
+&nbsp; &nbsp; database=testdb<br />
+&nbsp; &nbsp; transition=manual<br />
+&nbsp; &nbsp; transition-timeout=1200<br />
+&nbsp; &nbsp; defer-agent-startup=9000<br />
+&nbsp; &nbsp; agent-shutdown-action=recovery<br />
+&nbsp; &nbsp; repl-keep-alive=90<br />
+<br />
+[control-agent.agent_testdb]<br />
+&nbsp; &nbsp;name=agent_testdb<br />
+&nbsp; &nbsp;database=testdb<br />
+&nbsp; &nbsp;host= 10.XX.X.XX &nbsp;#(target Server IP)<br />
+&nbsp; &nbsp;port=12165 &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;#(target DB port)<br />
+&nbsp; &nbsp;connect-timeout=120<br />
+&nbsp; &nbsp;replication-method=async<br />
+&nbsp; &nbsp;critical=0<br />
+<br />
+[agent]<br />
+&nbsp; &nbsp;name=agent_testdb<br />
+&nbsp; &nbsp;database=testdb<br />
+&nbsp; &nbsp;listener-minport=4387<br />
+&nbsp; &nbsp;listener-maxport=4500<br />
+<br />
+[transition]<br />
+&nbsp; &nbsp;database-role=reverse<br />
+&nbsp; &nbsp;responsibility=primary<br />
+&nbsp; &nbsp;restart-after-transition=1<br />
+&nbsp; &nbsp;source-startup-arguments=-DBService replserv -pf testdb.pf<br />
+&nbsp; &nbsp;target-startup-arguments=-DBService replagent -pf testdb.pf<br />
+&nbsp; &nbsp;auto-begin-ai=1<br />
+&nbsp; &nbsp;transition-to-agents=agent_mss<br />
+&nbsp; &nbsp;auto-add-ai-areas=0<br />
+============<br />
+<br />
+Note: testdb is the name of the database in this context, for which we are setting replication.<br />
+<br />
+<br />
+2.Markbackup ai<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; rfutil testdb -C mark backedup<br />
+&nbsp; <br />
+<br />
+3.Ebable ai on Source<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; proutil testdb -C aimage begin<br />
+&nbsp; <br />
+<br />
+4.Enable replication on Source<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; proutil testdb -C enablesitereplication source <br />
+<br />
+<br />
+5.start replication on Source<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; proserve testdb -pf amos.pf -S 12173 -DBService replserv<br />
+<br />
+<br />
+6.Enable Proquiet on Source<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;proquiet testdb enable<br />
+<br />
+7. &nbsp; &nbsp; &nbsp; OS copy the database from source to target server.<br />
+<br />
+8.Disable Proquiet on Source<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; proquiet testdb disable<br />
+<br />
+<br />
+9. &nbsp; &nbsp; &nbsp; remove recovey and .lk file from target<br />
+<br />
+10.Repair the db with st file in TARGET Side &nbsp; &nbsp; &nbsp; <br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; prostrct repair testdb testdb.st<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; prostrct list testdb<br />
+<br />
+<br />
+11.Modify testdb.repl.properties<br />
+<br />
+[server]<br />
+&nbsp; &nbsp; control-agents=agent_testdb<br />
+&nbsp; &nbsp; database=testdb<br />
+&nbsp; &nbsp; transition=manual<br />
+&nbsp; &nbsp; transition-timeout=1200<br />
+&nbsp; &nbsp; defer-agent-startup=9000<br />
+&nbsp; &nbsp; agent-shutdown-action=recovery<br />
+&nbsp; &nbsp; repl-keep-alive=90<br />
+<br />
+[control-agent.agent_testdb]<br />
+&nbsp; &nbsp;name=agent_testdb<br />
+&nbsp; &nbsp;database=testdb<br />
+&nbsp; &nbsp;host=localhost<br />
+&nbsp; &nbsp;port=12163 &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;#( Source DB Startup Port)<br />
+&nbsp; &nbsp;connect-timeout=120<br />
+&nbsp; &nbsp;replication-method=async<br />
+&nbsp; &nbsp;critical=0<br />
+<br />
+[agent]<br />
+&nbsp; &nbsp;name=agent_testdb<br />
+&nbsp; &nbsp;database=testdb<br />
+&nbsp; &nbsp;listener-minport=4387<br />
+&nbsp; &nbsp;listener-maxport=4500<br />
+<br />
+[transition]<br />
+&nbsp; &nbsp;database-role=reverse<br />
+&nbsp; &nbsp;responsibility=primary<br />
+&nbsp; &nbsp;restart-after-transition=1<br />
+&nbsp; &nbsp;source-startup-arguments=-DBService replserv -pf testdb.pf<br />
+&nbsp; &nbsp;target-startup-arguments=-DBService replagent -pf testdb.pf<br />
+&nbsp; &nbsp;auto-begin-ai=1<br />
+&nbsp; &nbsp;transition-to-agents=agent_testdb<br />
+&nbsp; &nbsp;auto-add-ai-areas=0<br />
+<br />
+<br />
+<br />
+<br />
+11.Enable target replication<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; proutil testdb -C enablesitereplication target<br />
+&nbsp; &nbsp; &nbsp; <br />
+12.Disable ai on target<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; rfutil testdb -C aimage end<br />
+&nbsp; &nbsp; &nbsp; <br />
+13.Start target<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; proserve testdb -pf testdb.pf -S 12170 -DBService replagent<br />
+&nbsp; &nbsp; &nbsp; <br />
+<br />
+14.After that Restart Source and target..[ In case replication not happening. Check with step 15 command for checking the replication status ]<br />
+<br />
+15.Check Status<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; dsrutil testdb -C monitor<br />
+&nbsp; &nbsp; <br />
+<br />
+&nbsp; IF it works then ignore the below..<br />
+<br />
+<br />
+16.After that Restart Source and target Server..<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; dsrutil testdb RESTART Server<br />
+&nbsp; &nbsp; &nbsp; &nbsp; <br />
+16.Check Status<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; dsrutil testdb -C monitor<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+To start Database in replication always use -DBService<br />
+<br />
+Source:<br />
+proserve testdb -pf testdb.pf -S 12163 -DBService replserv<br />
+<br />
+Target:<br />
+proserve testdb -pf testdb.pf -S 12165 -DBService replagent<br />
+<br />
+<br />
+<br />
+<br />
+ALWAYS START THE SLAVE/TARGET FIRST. THEN START THE SOURCE/SERVER<br />
+Always stop the slave/target server first. then stop the source. then start the target and start the source<br />
+<br /></div>

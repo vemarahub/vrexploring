@@ -1,0 +1,131 @@
+---
+layout: post
+title: Shell Script - ProgressDB Storage Growth
+date: '2020-03-24T03:26:00.000-07:00'
+author: Rajesh Nair
+tags:
+- extents
+- progress
+- script
+- shell scripting
+- storage area
+modified_time: '2020-03-24T23:07:01.179-07:00'
+blogger_id: tag:blogger.com,1999:blog-8827475125741824309.post-8444179785448322696
+blogger_orig_url: https://csrepo.blogspot.com/2020/03/shell-script-progressdb-storage-growth.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<br />
+<b>Script :</b> Progress database Storage area size growth<br />
+<br />
+<b>Script Name: </b>progress_growth_rpt.sh<br />
+<br />
+<b>Script Function:</b>Calculate report of time remaining for extents to grow into variable for each storage area of Progress database<br />
+<br />
+<b>Script Usage:</b> ./progress_growth_rpt.sh&nbsp;&lt; dbanalys_rptold &gt; &lt; dbanalys_rptnew &gt;<br />
+<br />
+<b><u>Code:</u></b><br />
+<b><u><br /></u></b>
+#!/usr/bin/bash<br />
+RPT_PTH=/emc/reale/archive/dban<br />
+STRT_FL="area${1}.txt"<br />
+END_FL="area${2}.txt"<br />
+STORAGE_OP_FL="/tmp/area_rpt_${2}.csv"<br />
+MAIL_GRP=xxxxx@xxx.com<br />
+echo ",,,,,${1},,${2},,,,,"&gt;$STORAGE_OP_FL<br />
+echo "DB Nm,AreaName,MaxBlocks,Size(in MB),Old- HiWater Used,Old - HiWater Used (in MB),Current HiWater Used,Current HiWater Used(MB),Free Blks,Free(MB),Monthly Blocks,M.Grw(MB),Mths Avail"&gt;&gt;$STORAGE_OP_FL<br />
+<br />
+if [ $# != 2 ]; then<br />
+&nbsp; &nbsp;echo "Wrong usage. Please run as below"<br />
+&nbsp; &nbsp;echo "$0 <start date="" in="" mmddyy=""> <end date="" in="" mmddyy="">"</end></start><br />
+&nbsp; &nbsp;exit<br />
+fi<br />
+<br />
+if [ ! -f ${RPT_PTH}/${STRT_FL} ]; then<br />
+&nbsp; &nbsp;echo "Old date data file is missing"<br />
+&nbsp; &nbsp;exit<br />
+elif [ ! -f ${RPT_PTH}/${END_FL} ]; then<br />
+&nbsp; &nbsp;echo "new date data file is missing"<br />
+&nbsp; &nbsp;exit<br />
+fi<br />
+function ceil()<br />
+{<br />
+&nbsp; &nbsp;VAL=$(echo $1 +.5 | bc)<br />
+&nbsp; &nbsp;RET_VAL=`echo "${VAL%.*}"`<br />
+&nbsp; &nbsp;if [ "${RET_VAL}" = "" ]; then<br />
+&nbsp; &nbsp; &nbsp; RET_VAL=0<br />
+&nbsp; &nbsp;fi<br />
+&nbsp; &nbsp;echo "${RET_VAL}"<br />
+&nbsp; &nbsp;#echo "${VAL%.*}"<br />
+<br />
+}<br />
+cd ${RPT_PTH}<br />
+echo -e "START FILE:${STRT_FL}\nEND FILE:${END_FL}"<br />
+<br />
+cat ${STRT_FL}|egrep -vi "Control Area|Primary Recovery Area|Schema Area|After Image Area|^UNIQUEID|^FIELDHSTSEQ"|awk 'NF&gt;0'&gt;${STRT_FL}.tmp<br />
+cat ${END_FL}|egrep -vi "Control Area|Primary Recovery Area|Schema Area|After Image Area|^UNIQUEID|^FIELDHSTSEQ"|awk 'NF&gt;0'&gt;${END_FL}.tmp<br />
+#for i in `cat ${STRT_FL}.tmp`; do<br />
+exec&lt;${STRT_FL}.tmp<br />
+while read i; do<br />
+&nbsp; &nbsp;OLD_DB_NM=`echo $i|awk -F" " '{print $1}'`<br />
+&nbsp; &nbsp;OLD_AREA_NM=`echo $i|awk -F" " '{print $2}'`<br />
+&nbsp; &nbsp;OLD_WTR_MRK=`echo $i|awk -F" " '{print $4}'`<br />
+&nbsp; &nbsp;if [ `cat ${RPT_PTH}/${END_FL}.tmp|grep -w ${OLD_DB_NM}|grep -w ${OLD_AREA_NM}|wc -l` -gt 0 ]; then<br />
+&nbsp; &nbsp; &nbsp; NEW_DB_NM=`cat ${END_FL}.tmp|grep -w ${OLD_DB_NM}|grep -w ${OLD_AREA_NM}|awk -F" " '{print $1}'`<br />
+&nbsp; &nbsp; &nbsp; NEW_AREA_NM=`cat ${END_FL}.tmp|grep -w ${OLD_DB_NM}|grep -w ${OLD_AREA_NM}|awk -F" " '{print $2}'`<br />
+&nbsp; &nbsp; &nbsp; NEW_MAX_BLOK=`cat ${END_FL}.tmp|grep -w ${OLD_DB_NM}|grep -w ${OLD_AREA_NM}|awk -F" " '{print $3}'`<br />
+&nbsp; &nbsp; &nbsp; NEW_WTR_MRK=`cat ${END_FL}.tmp|grep -w ${OLD_DB_NM}|grep -w ${OLD_AREA_NM}|awk -F" " '{print $4}'`<br />
+&nbsp; &nbsp; &nbsp; SIZE_IN_MB_TMP=`echo "${NEW_MAX_BLOK}*8192/(1024*1024)"|bc -l`<br />
+&nbsp; &nbsp; &nbsp; SIZE_IN_MB=`ceil $SIZE_IN_MB_TMP`<br />
+&nbsp; &nbsp; &nbsp; OLD_HI_WTR_IN_MB_TMP=`echo "${OLD_WTR_MRK}*8192/(1024*1024)"|bc -l`<br />
+&nbsp; &nbsp; &nbsp; OLD_HI_WTR_IN_MB=`ceil $OLD_HI_WTR_IN_MB_TMP`<br />
+&nbsp; &nbsp; &nbsp; CURR_HI_WTR_IN_MB_TMP=`echo "${NEW_WTR_MRK}*8192/(1024*1024)"|bc -l`<br />
+&nbsp; &nbsp; &nbsp; CURR_HI_WTR_IN_MB=`ceil $CURR_HI_WTR_IN_MB_TMP`<br />
+&nbsp; &nbsp; &nbsp; FREE_BLK_TMP=`echo "${NEW_MAX_BLOK}-${OLD_WTR_MRK}"|bc -l`<br />
+&nbsp; &nbsp; &nbsp; FREE_BLK=`ceil $FREE_BLK_TMP`<br />
+&nbsp; &nbsp; &nbsp; FREE_BLK_IN_MB_TMP=`echo "${FREE_BLK}*8192/(1024*1024)"|bc -l`<br />
+&nbsp; &nbsp; &nbsp; FREE_BLK_IN_MB=`ceil $FREE_BLK_IN_MB_TMP`<br />
+&nbsp; &nbsp; &nbsp; MNTHLY_BLK_TMP=`echo "${NEW_WTR_MRK}-${OLD_WTR_MRK}"|bc -l`<br />
+&nbsp; &nbsp; &nbsp; MNTHLY_BLK=`ceil $MNTHLY_BLK_TMP`<br />
+&nbsp; &nbsp; &nbsp; MGROW_IN_MB_TMP=`echo "${MNTHLY_BLK}*8192/(1024*1024)"|bc -l`<br />
+&nbsp; &nbsp; &nbsp; MGROW_IN_MB=`ceil $MGROW_IN_MB_TMP`<br />
+&nbsp; &nbsp; &nbsp; if [ ${MNTHLY_BLK} -ne 0 ]; then<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;MNTHS_AVAIL_TMP=`echo "${FREE_BLK}/${MNTHLY_BLK}"|bc -l`<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;MNTHS_AVAIL=`ceil $MNTHS_AVAIL_TMP`<br />
+&nbsp; &nbsp; &nbsp; else<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;MNTHS_AVAIL="###"<br />
+&nbsp; &nbsp; &nbsp; fi<br />
+&nbsp; fi<br />
+&nbsp; echo "$NEW_DB_NM,$NEW_AREA_NM,$NEW_MAX_BLOK,${SIZE_IN_MB}MB,$OLD_WTR_MRK,$OLD_HI_WTR_IN_MB,$NEW_WTR_MRK,$CURR_HI_WTR_IN_MB,$FREE_BLK,${FREE_BLK_IN_MB}MB,$MNTHLY_BLK,${MGROW_IN_MB}MB,$MNTHS_AVAIL"&gt;&gt;$STORAGE_OP_FL<br />
+&nbsp; echo "$NEW_DB_NM,$NEW_AREA_NM,$NEW_MAX_BLOK,${SIZE_IN_MB}MB,$OLD_WTR_MRK,$OLD_HI_WTR_IN_MB,$NEW_WTR_MRK,$CURR_HI_WTR_IN_MB,$FREE_BLK,${FREE_BLK_IN_MB}MB,$MNTHLY_BLK,${MGROW_IN_MB}MB,$MNTHS_AVAIL"<br />
+done<br />
+exec&lt;${END_FL}.tmp<br />
+while read i; do<br />
+&nbsp; NEW_DB_NM=`echo $i|awk -F" " '{print $1}'`<br />
+&nbsp; NEW_AREA_NM=`echo $i|awk -F" " '{print $2}'`<br />
+&nbsp; NEW_MAX_BLOK=`echo $i|awk -F" " '{print $3}'`<br />
+&nbsp; NEW_WTR_MRK=`echo $i|awk -F" " '{print $4}'`<br />
+&nbsp; if [ `cat ${RPT_PTH}/${STRT_FL}.tmp|grep -w ${NEW_DB_NM}|grep -w ${NEW_AREA_NM}|wc -l` -eq 0 ]; then<br />
+&nbsp; &nbsp; &nbsp; SIZE_IN_MB_TMP=`echo "${NEW_MAX_BLOK}*8192/(1024*1024)"|bc -l`<br />
+&nbsp; &nbsp; &nbsp; SIZE_IN_MB=`ceil $SIZE_IN_MB_TMP`<br />
+&nbsp; &nbsp; &nbsp; CURR_HI_WTR_IN_MB_TMP=`echo "${NEW_WTR_MRK}*8192/(1024*1024)"|bc -l`<br />
+&nbsp; &nbsp; &nbsp; CURR_HI_WTR_IN_MB=`ceil $CURR_HI_WTR_IN_MB_TMP`<br />
+&nbsp; &nbsp; &nbsp; FREE_BLK_IN_MB_TMP=`echo "${NEW_MAX_BLOK}*8192/(1024*1024)"|bc -l`<br />
+&nbsp; &nbsp; &nbsp; FREE_BLK_IN_MB=`ceil $FREE_BLK_IN_MB_TMP`<br />
+&nbsp; &nbsp; &nbsp; MGROW_IN_MB_TMP=`echo "${NEW_WTR_MRK}*8192/(1024*1024)"|bc -l`<br />
+&nbsp; &nbsp; &nbsp; MGROW_IN_MB=`ceil $MGROW_IN_MB_TMP`<br />
+&nbsp; &nbsp; &nbsp; if [ ${MNTHLY_BLK} -ne 0 ]; then<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;MNTHS_AVAIL_TMP=`echo "${NEW_MAX_BLOK}/${NEW_WTR_MRK}"|bc -l`<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;MNTHS_AVAIL=`ceil $MNTHS_AVAIL_TMP`<br />
+&nbsp; &nbsp; &nbsp; else<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;MNTHS_AVAIL="###"<br />
+&nbsp; &nbsp; &nbsp; fi<br />
+&nbsp; &nbsp; &nbsp; echo "$NEW_DB_NM,$NEW_AREA_NM,$NEW_MAX_BLOK,${SIZE_IN_MB}MB,0,0,$NEW_WTR_MRK,$CURR_HI_WTR_IN_MB,$NEW_MAX_BLOK,${FREE_BLK_IN_MB}MB,$NEW_WTR_MRK,${MGROW_IN_MB}MB,$MNTHS_AVAIL"&gt;&gt;$STORAGE_OP_FL<br />
+&nbsp; fi<br />
+done<br />
+uuencode $STORAGE_OP_FL area_rprt_${2}.csv|mailx -s "STORAGE REPORT-AUTO" $MAIL_GRP<br />
+<br />
+rm ${STRT_FL}.tmp ${END_FL}.tmp<br />
+<div>
+<br /></div>
+</div>

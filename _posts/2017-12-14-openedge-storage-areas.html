@@ -1,0 +1,24 @@
+---
+layout: post
+title: Openedge Storage Areas
+date: '2017-12-14T04:53:00.000-08:00'
+author: Rajesh Nair
+tags:
+- type I
+- progress
+- openedge
+- storage areas
+- type II
+modified_time: '2020-02-05T10:29:25.867-08:00'
+blogger_id: tag:blogger.com,1999:blog-8827475125741824309.post-7509864501203280949
+blogger_orig_url: https://csrepo.blogspot.com/2017/12/openedge-storage-areas.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+Storage areas are identified by their name. Each Progress database must contain three specific<br />storage areas, and may contain several optional storage areas.Following are the different storage areas in an OE DB architecture:<br /><br /><b>Control Area (.db ) </b>:  The control area act as a table of contents for the database engine,listing the name and location of every area and extent in the database.<br /><br /><b>Schema Area( .d1 ... .dn )</b> : The schema area contains the master and sequence blocks, as well as schema tables and indexes.<br /><br /><b>Primary Recovery Area(.b1... .bn) </b>: It stores notes about data changes.In the event of hardware failure  , the database engines uses these notes to undo any incomplete transactions and maintain data integrity.<br /><br /><b>Application Data Area(.d1 ... .dn)</b> : It contains user data,indexes, clobs and blobs.Any table/index we would like to create for our business requirement should be created under this storage area.<br /><br /><b>Transaction Log Area ( .t1 ... .tn )</b> : This lists two- phase commit transactions and would only contain fixed length extents.<br /><br /><b>Type I and Type II Storage Area</b><br /><br />The Type II Storage area architecture was introduced in OE 10 version. <br />The difference between Type I(introduced in 9.x) and Type II storage area structure is the concept of "clusters" per storage Area which is basically grouping of database blocks.<br /><br /><div>
+A cluster is a contiguous allocation of space for one type of database object. Data clusters reduce fragmentation and enable your database to yield better performance from the underlying file system.<br /><br />There are three choices for cluster size:<br />-small ( 8 database blocks )<br />-medium ( 64 database blocks )<br />-large ( 512 database blocks )<br /><br />Where as a Type I Storage Area contains individual database blocks.Also, the max size of a type II storage area is fixed at approximately one petabyte when large files are enabled.<br />A max of 1024 extents per area and a max size of 1 TB / extent.<br /></div>
+<div>
+Max Area Size = Max no of extent/area  *  max extent size = 1 PB</div>
+<div>
+<br />thus , max records per area = max area size * records per block / db_blocksize<br /><br />for ex , a type II storage area with 64 records/block defined ina database with 4KB blocksize,would yield 2^46 or 70,368,768 addressable rows.For a similar scenario , a Type I storage area would yield a 128 GB ,max storage area size compared to 1 PB of Type II.</div>
+</div>

@@ -1,0 +1,64 @@
+---
+layout: post
+title: Introduction to Mongo
+date: '2019-03-11T22:31:00.001-07:00'
+author: Rajesh Nair
+tags:
+- Intro to Mongo
+- Mongo
+modified_time: '2020-02-06T03:40:12.674-08:00'
+thumbnail: https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiFbpmN0yqMqDT6LZ2nkos-9PWXieeUNWuKm1SILRbmGu0OsbABaJAn7c6YkOWI56UNQ7aguT67MOMBw6s5t5qauUfYs1hqHI6ouf7zvA7tRFZ0tZ0chqb44uF09luKdgvcrdNAimnDQ6M/s72-c/Picture1.png
+blogger_id: tag:blogger.com,1999:blog-8827475125741824309.post-2984599886678467071
+blogger_orig_url: https://csrepo.blogspot.com/2019/03/introduction-to-mongo.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<br />
+Mongo database is an open source , high performing , schema - free, non relational and document oriented database which provides highest level of availability for its applications.<br />
+Its basically written in C,C++ and java script and supports all major programming languages like C#,C++,java,python,PHP,perl,ruby etc.<br />
+<br />
+The data model heirarchy for a mongo database can be defined as below:<br />
+<div style="text-align: left;">
+<br /></div>
+<br />
+<div style="line-height: 200%; margin-bottom: 0pt; margin-left: 0.38in; margin-top: 0pt; text-align: left; text-indent: -0.38in; unicode-bidi: embed; word-break: normal;">
+<span style="font-family: inherit;"><span style="color: black;">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;</span><span style="color: #212121;">A
+Mongo system holds a set of Databases.</span><span style="color: #212121;">A
+database holds a set of<span style="mso-spacerun: yes;">&nbsp;
+</span>Collections(tables).</span><span style="color: #212121;">A
+collection holds a set of </span><span style="color: #212121;">Documents(rows).</span><span style="color: #212121;">A
+</span><span style="color: #212121;">document holds </span><span style="color: #212121;">a set </span><span style="color: #212121;">of fields.</span><span style="color: #212121;">A
+field is a Key-Value pair.</span><span style="color: #212121;">A
+Key is a name(string).</span><span style="color: #212121;">A
+Value is a basic type like string, integer, float, timestamp, binary or </span><span style="color: #212121;">document, or </span><span style="color: #212121;">an array of values(</span><span style="color: #212121;">eg</span><span style="color: #212121;">: </span><span style="color: #212121;">Datatype </span><span style="color: #212121;">in&nbsp; SQL Server).</span></span></div>
+<div style="line-height: 200%; margin-bottom: 0pt; margin-left: 0.38in; margin-top: 0pt; text-align: left; text-indent: -0.38in; unicode-bidi: embed; word-break: normal;">
+<span style="font-family: inherit;"><span style="color: #212121;">Below picture will give a better idea of the data model:</span></span></div>
+<div class="separator" style="clear: both; text-align: center;">
+<a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiFbpmN0yqMqDT6LZ2nkos-9PWXieeUNWuKm1SILRbmGu0OsbABaJAn7c6YkOWI56UNQ7aguT67MOMBw6s5t5qauUfYs1hqHI6ouf7zvA7tRFZ0tZ0chqb44uF09luKdgvcrdNAimnDQ6M/s1600/Picture1.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="501" data-original-width="565" height="283" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiFbpmN0yqMqDT6LZ2nkos-9PWXieeUNWuKm1SILRbmGu0OsbABaJAn7c6YkOWI56UNQ7aguT67MOMBw6s5t5qauUfYs1hqHI6ouf7zvA7tRFZ0tZ0chqb44uF09luKdgvcrdNAimnDQ6M/s320/Picture1.png" width="320" /></a></div>
+<div style="line-height: 200%; margin-bottom: 0pt; margin-left: 0.38in; margin-top: 0pt; text-align: left; text-indent: -0.38in; unicode-bidi: embed; word-break: normal;">
+<span style="font-family: inherit;"><span style="color: #212121;"><br /></span></span></div>
+<div style="line-height: 200%; margin-bottom: 0pt; margin-left: 0.38in; margin-top: 0pt; text-align: left; text-indent: -0.38in; unicode-bidi: embed; word-break: normal;">
+<span style="font-family: inherit;"><span style="color: #212121;">As compared to a RDBMS model , the data heierarchy for mongo can be defined as below:</span></span></div>
+<div class="separator" style="clear: both; text-align: center;">
+<a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjm7LVfGE5DOrA4-XtPUA4YNkgk78sdTc1kyWehNjOWmhUJL0E5393HRsJLIEVsGWM5GK3a7osNADd6fB1BeRn6O3dnC3kgjO645vx3c_5LofqaqOXxmoikuLZrFyPYQWEeILYpxu_FaH8/s1600/Picture2.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="356" data-original-width="759" height="187" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjm7LVfGE5DOrA4-XtPUA4YNkgk78sdTc1kyWehNjOWmhUJL0E5393HRsJLIEVsGWM5GK3a7osNADd6fB1BeRn6O3dnC3kgjO645vx3c_5LofqaqOXxmoikuLZrFyPYQWEeILYpxu_FaH8/s400/Picture2.png" width="400" /></a></div>
+<div style="line-height: 200%; margin-bottom: 0pt; margin-left: 0.38in; margin-top: 0pt; text-align: left; text-indent: -0.38in; unicode-bidi: embed; word-break: normal;">
+<span style="font-family: inherit;"><span style="color: #212121;"><br /></span></span></div>
+<div style="line-height: 200%; margin-bottom: 0pt; margin-left: 0.38in; margin-top: 0pt; text-align: left; text-indent: -0.38in; unicode-bidi: embed; word-break: normal;">
+<span style="font-family: inherit;"><span style="color: #212121;">The main features of mongo database which makes it a high on demand database are:</span></span></div>
+<div style="line-height: 200%; margin-bottom: 0pt; margin-left: 0.38in; margin-top: 0pt; text-align: left; text-indent: -0.38in; unicode-bidi: embed; word-break: normal;">
+<span style="font-family: inherit;"><span style="color: #212121;">* Expressive query language and secondary indexes</span></span></div>
+<div style="line-height: 200%; margin-bottom: 0pt; margin-left: 0.38in; margin-top: 0pt; text-align: left; text-indent: -0.38in; unicode-bidi: embed; word-break: normal;">
+<span style="font-family: inherit;"><span style="color: #212121;">*Flexibility</span></span></div>
+<div style="line-height: 200%; margin-bottom: 0pt; margin-left: 0.38in; margin-top: 0pt; text-align: left; text-indent: -0.38in; unicode-bidi: embed; word-break: normal;">
+<span style="font-family: inherit;"><span style="color: #212121;">*Strong Consistency</span></span></div>
+<div style="line-height: 200%; margin-bottom: 0pt; margin-left: 0.38in; margin-top: 0pt; text-align: left; text-indent: -0.38in; unicode-bidi: embed; word-break: normal;">
+<span style="font-family: inherit;"><span style="color: #212121;">*Scalability &amp; Performance</span></span></div>
+<div style="line-height: 200%; margin-bottom: 0pt; margin-left: 0.38in; margin-top: 0pt; text-align: left; text-indent: -0.38in; unicode-bidi: embed; word-break: normal;">
+<span style="font-family: inherit;"><span style="color: #212121;">*Always on, Global deployement</span></span></div>
+<div style="line-height: 200%; margin-bottom: 0pt; margin-left: 0.38in; margin-top: 0pt; text-align: left; text-indent: -0.38in; unicode-bidi: embed; word-break: normal;">
+<span style="font-family: inherit;"><span style="color: #212121;">* Real time analysis in the database, under load</span></span></div>
+<div style="line-height: 200%; margin-bottom: 0pt; margin-left: 0.38in; margin-top: 0pt; text-align: left; text-indent: -0.38in; unicode-bidi: embed; word-break: normal;">
+<span style="color: #212121;">*Geospatail querying</span></div>
+<div style="line-height: 200%; margin-bottom: 0pt; margin-left: 0.38in; margin-top: 0pt; text-align: left; text-indent: -0.38in; unicode-bidi: embed; word-break: normal;">
+<span style="font-family: inherit;"><span style="color: #212121;"><br /></span></span></div>
+<br /></div>

@@ -1,0 +1,128 @@
+---
+layout: post
+title: Styling with Angular Material
+date: '2020-04-16T21:01:00.001-07:00'
+author: Rajesh Nair
+tags:
+- angular material
+- angular style
+- angular
+modified_time: '2020-04-16T21:01:27.866-07:00'
+blogger_id: tag:blogger.com,1999:blog-8827475125741824309.post-1340550790213563087
+blogger_orig_url: https://csrepo.blogspot.com/2020/04/styling-with-angular-material.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+In the last blog , the dashboard.component.html has been styled by using angular material by using mat card and other similar tags.Follow the below steps to implement angular material:<br />
+<br />
+<b>1. </b>Go to project path and in cmd and type below command:<br />
+ng add @angular/material<br />
+<br />
+<b>2.</b>&nbsp;Open the src/app/app.module.ts file and add the below code for material:<br />
+<div style="background-color: #1e1e1e; color: #d4d4d4; font-family: Consolas, &quot;Courier New&quot;, monospace; font-size: 14px; line-height: 19px; white-space: pre;">
+<div>
+<span style="color: #c586c0;">import</span>&nbsp;{&nbsp;<span style="color: #9cdcfe;">BrowserModule</span>&nbsp;}&nbsp;<span style="color: #c586c0;">from</span>&nbsp;<span style="color: #ce9178;">'@angular/platform-browser'</span>;</div>
+<div>
+<span style="color: #c586c0;">import</span>&nbsp;{&nbsp;<span style="color: #9cdcfe;">NgModule</span>&nbsp;}&nbsp;<span style="color: #c586c0;">from</span>&nbsp;<span style="color: #ce9178;">'@angular/core'</span>;</div>
+<br /><div>
+<span style="color: #c586c0;">import</span>&nbsp;{&nbsp;<span style="color: #9cdcfe;">AppRoutingModule</span>&nbsp;}&nbsp;<span style="color: #c586c0;">from</span>&nbsp;<span style="color: #ce9178;">'./app-routing.module'</span>;</div>
+<div>
+<span style="color: #c586c0;">import</span>&nbsp;{&nbsp;<span style="color: #9cdcfe;">AppComponent</span>&nbsp;}&nbsp;<span style="color: #c586c0;">from</span>&nbsp;<span style="color: #ce9178;">'./app.component'</span>;</div>
+<div>
+<span style="color: #c586c0;">import</span>&nbsp;{&nbsp;<span style="color: #9cdcfe;">DashboardComponent</span>&nbsp;}&nbsp;<span style="color: #c586c0;">from</span>&nbsp;<span style="color: #ce9178;">'./dashboard/dashboard.component'</span>;</div>
+<div>
+<span style="color: #c586c0;">import</span>&nbsp;{&nbsp;<span style="color: #9cdcfe;">AboutComponent</span>&nbsp;}&nbsp;<span style="color: #c586c0;">from</span>&nbsp;<span style="color: #ce9178;">'./about/about.component'</span>;</div>
+<div>
+<span style="color: #c586c0;">import</span>&nbsp;{&nbsp;<span style="color: #9cdcfe;">HttpClientModule</span>&nbsp;}&nbsp;<span style="color: #c586c0;">from</span>&nbsp;<span style="color: #ce9178;">'@angular/common/http'</span>;</div>
+<div>
+<span style="color: #c586c0;">import</span>&nbsp;{&nbsp;<span style="color: #9cdcfe;">BrowserAnimationsModule</span>&nbsp;}&nbsp;<span style="color: #c586c0;">from</span>&nbsp;<span style="color: #ce9178;">'@angular/platform-browser/animations'</span>;</div>
+<br /><div>
+<span style="color: #c586c0;">import</span>&nbsp;{&nbsp;<span style="color: #9cdcfe;">MatButtonModule</span>&nbsp;}&nbsp;<span style="color: #c586c0;">from</span>&nbsp;<span style="color: #ce9178;">'@angular/material/button'</span>;</div>
+<br /><div>
+<span style="color: #c586c0;">import</span>&nbsp;{&nbsp;<span style="color: #9cdcfe;">MatCardModule</span>&nbsp;}&nbsp;<span style="color: #c586c0;">from</span>&nbsp;<span style="color: #ce9178;">'@angular/material/card'</span>;</div>
+<br /><div>
+<span style="color: #c586c0;">import</span>&nbsp;{&nbsp;<span style="color: #9cdcfe;">MatIconModule</span>&nbsp;}&nbsp;<span style="color: #c586c0;">from</span>&nbsp;<span style="color: #ce9178;">'@angular/material/icon'</span>;</div>
+<br /><div>
+<span style="color: #c586c0;">import</span>&nbsp;{&nbsp;<span style="color: #9cdcfe;">MatProgressSpinnerModule</span>&nbsp;}&nbsp;<span style="color: #c586c0;">from</span>&nbsp;<span style="color: #ce9178;">'@angular/material/progress-spinner'</span>;</div>
+<br /><div>
+<span style="color: #c586c0;">import</span>&nbsp;{&nbsp;<span style="color: #9cdcfe;">MatToolbarModule</span>&nbsp;}&nbsp;<span style="color: #c586c0;">from</span>&nbsp;<span style="color: #ce9178;">'@angular/material/toolbar'</span>;</div>
+<br /><br /><br /><br /><div>
+@<span style="color: #dcdcaa;">NgModule</span>({</div>
+<div>
+&nbsp;&nbsp;<span style="color: #9cdcfe;">declarations:</span>&nbsp;[</div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #9cdcfe;">AppComponent</span>,</div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #9cdcfe;">DashboardComponent</span>,</div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #9cdcfe;">AboutComponent</span>,</div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;</div>
+<div>
+&nbsp;&nbsp;],</div>
+<div>
+&nbsp;&nbsp;<span style="color: #9cdcfe;">imports:</span>&nbsp;[</div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #9cdcfe;">BrowserModule</span>,</div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #9cdcfe;">AppRoutingModule</span>,</div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #9cdcfe;">HttpClientModule</span>,</div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #9cdcfe;">BrowserAnimationsModule</span>,</div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #9cdcfe;">MatCardModule</span>,</div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #9cdcfe;">MatToolbarModule</span>,</div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #9cdcfe;">MatIconModule</span>,</div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #9cdcfe;">MatButtonModule</span>,</div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #9cdcfe;">MatCardModule</span>,</div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #9cdcfe;">MatProgressSpinnerModule</span></div>
+<div>
+&nbsp;&nbsp;</div>
+<div>
+&nbsp;&nbsp;],</div>
+<div>
+&nbsp;&nbsp;<span style="color: #9cdcfe;">providers:</span>&nbsp;[],</div>
+<div>
+&nbsp;&nbsp;<span style="color: #9cdcfe;">bootstrap:</span>&nbsp;[<span style="color: #9cdcfe;">AppComponent</span>]</div>
+<div>
+})</div>
+<div>
+<span style="color: #c586c0;">export</span>&nbsp;<span style="color: #569cd6;">class</span>&nbsp;<span style="color: #4ec9b0;">AppModule</span>&nbsp;{&nbsp;}</div>
+</div>
+<br />
+<b>3. </b>Now you can use the material components in your html files, for example in&nbsp;src/app/app.component.html we can use material as below:<br />
+<div style="background-color: #1e1e1e; color: #d4d4d4; font-family: Consolas, &quot;Courier New&quot;, monospace; font-size: 14px; line-height: 19px; white-space: pre;">
+<div>
+<span style="color: grey;">&lt;</span><span style="color: #569cd6;">mat-toolbar</span>&nbsp;<span style="color: #9cdcfe;">color</span>=<span style="color: #ce9178;">"primary"</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;</span><span style="color: #569cd6;">h1</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;BookStore&nbsp;</div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;/</span><span style="color: #569cd6;">h1</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;</span><span style="color: #569cd6;">button</span>&nbsp;<span style="color: #9cdcfe;">mat-button</span>&nbsp;<span style="color: #9cdcfe;">routerLink</span>=<span style="color: #ce9178;">"/dashboard"</span><span style="color: grey;">&gt;</span>DashBoard<span style="color: grey;">&lt;/</span><span style="color: #569cd6;">button</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;</span><span style="color: #569cd6;">button</span>&nbsp;<span style="color: #9cdcfe;">mat-button</span>&nbsp;<span style="color: #9cdcfe;">routerLink</span>=<span style="color: #ce9178;">"/"</span><span style="color: grey;">&gt;</span>Add&nbsp;Books<span style="color: grey;">&lt;/</span><span style="color: #569cd6;">button</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;</span><span style="color: #569cd6;">button</span>&nbsp;<span style="color: #9cdcfe;">mat-button</span>&nbsp;<span style="color: #9cdcfe;">routerLink</span>=<span style="color: #ce9178;">"/"</span><span style="color: grey;">&gt;</span>Update&nbsp;Book<span style="color: grey;">&lt;/</span><span style="color: #569cd6;">button</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;</span><span style="color: #569cd6;">button</span>&nbsp;<span style="color: #9cdcfe;">mat-button</span>&nbsp;<span style="color: #9cdcfe;">routerLink</span>=<span style="color: #ce9178;">"/"</span><span style="color: grey;">&gt;</span>Delete&nbsp;Book<span style="color: grey;">&lt;/</span><span style="color: #569cd6;">button</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;</span><span style="color: #569cd6;">button</span>&nbsp;<span style="color: #9cdcfe;">mat-button</span>&nbsp;<span style="color: #9cdcfe;">routerLink</span>=<span style="color: #ce9178;">"/about"</span><span style="color: grey;">&gt;</span>About<span style="color: grey;">&lt;/</span><span style="color: #569cd6;">button</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;</div>
+<div>
+&nbsp;&nbsp;<span style="color: grey;">&lt;/</span><span style="color: #569cd6;">mat-toolbar</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;</div>
+<div>
+&nbsp;&nbsp;<span style="color: grey;">&lt;</span><span style="color: #569cd6;">router-outlet</span><span style="color: grey;">&gt;&lt;/</span><span style="color: #569cd6;">router-outlet</span><span style="color: grey;">&gt;</span></div>
+</div>
+</div>

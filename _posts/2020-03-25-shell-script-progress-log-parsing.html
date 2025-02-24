@@ -1,0 +1,783 @@
+---
+layout: post
+title: Shell Script - Progress Log Parsing
+date: '2020-03-25T01:20:00.001-07:00'
+author: Rajesh Nair
+tags:
+- database log
+- progress
+- shell scripting
+modified_time: '2020-03-25T01:20:57.258-07:00'
+blogger_id: tag:blogger.com,1999:blog-8827475125741824309.post-6844252245014553207
+blogger_orig_url: https://csrepo.blogspot.com/2020/03/shell-script-progress-log-parsing.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<br />
+<b>Script : </b>Shell script to parse the progress database log file<br />
+<br />
+<b>Script Name: </b>dblogparse.sh<br />
+<br />
+<b>Script Function:&nbsp;</b>Script classifies the messages into 4 categories (groups):<br />
+&nbsp;1. Database startup parameters ("Parameters" group);<br />
+&nbsp;2. Logins/logouts messages ("Logins" group);<br />
+&nbsp;3. Informational messages that can be ignored ("Ignore" group);<br />
+&nbsp;4. Any messages that do not belong to the above groups ("Remains" group).<br />
+<br />
+&nbsp;&nbsp;<b>Script Usage: </b>./dblogparse.sh &lt; log path &gt; [-f] [-e] [-r] [-p] [-s] [-l] [-m] [-h]<br />
+<br />
+-f Show the fatal errors (marked as \"F\" in Progress log files);<br />
+-e Show the system errors (the messages with words \"SYSTEM ERROR:\");<br />
+-r Show the remained messages (except \"Logins\", \"Params\" and \"Ignore\" groups);<br />
+-p Show the startup parameters of Progress multi-user sessions (\"Params\" group);<br />
+-s Summary: the number of messages per message numbers (and without numbers);<br />
+-l Report the statistics for the messages in the \"Logins\" group;<br />
+-m ${UL}Num${UU} Display the description of Progress message number;<br />
+-h|-help Display this help.<br />
+<b><u><br /></u></b>
+<b><u>Code:</u></b><br />
+<b><u><br /></u></b>
+#!/bin/sh<br />
+------------------------------------<br />
+<br />
+THIS=`basename $0`<br />
+<br />
+Usage()<br />
+{<br />
+# Bold/unbold terminal codes:<br />
+#<br />
+BD=`tput smso` # Enter standout mode (bold on rxvt)<br />
+UB=`tput rmso` # Exit standout mode<br />
+<br />
+# Underline mode:<br />
+UL=`tput smul` # Begin underline mode<br />
+UU=`tput rmul` # Exit underline mode<br />
+<br />
+&nbsp; echo "$THIS Release $Release<br />
+<br />
+Usage:<br />
+$BD$THIS$UB [${UL}File${UU} ...] [${UL}Options${UU}]<br />
+or<br />
+tail -100000 ${UL}File${UU} | ${BD}$THIS$UB [${UL}Options${UU}]<br />
+where the options are:<br />
+${UL}File${UU}(s) are the log files of Progress databases;<br />
+-f Show the fatal errors (marked as \"F\" in Progress log files);<br />
+-e Show the system errors (the messages with words \"SYSTEM ERROR:\");<br />
+-r Show the remained messages (except \"Logins\", \"Params\" and \"Ignore\" groups);<br />
+-p Show the startup parameters of Progress multi-user sessions (\"Params\" group);<br />
+-s Summary: the number of messages per message numbers (and without numbers);<br />
+-l Report the statistics for the messages in the \"Logins\" group;<br />
+The above options can be concatenated. Example: dblog -prs<br />
+${UL}Number${UU} - number of last digits to cut from timestamps for \"Logins\" statistics;<br />
+-m ${UL}Num${UU} Display the description of Progress message number;<br />
+-h|-help Display this help.<br />
+<br />
+# echo<br />
+<br />
+&nbsp; exit<br />
+} # Usage()<br />
+<br />
+<br />
+#------------------------------------------------------------------------------<br />
+#<br />
+LogParser()<br />
+{<br />
+# Creates statistics of the errors or login/logout messages in db log file.<br />
+# LogParser reads the messages from a standard input stream (stdin).<br />
+#<br />
+# It processes approximately 50,000 lines per sec on CPU @ 2.40 GHz.<br />
+#<br />
+# Number of messages added by Progress versions:<br />
+# Ver&nbsp; &nbsp;Date&nbsp; &nbsp; &nbsp; &nbsp;Msg # Range Added<br />
+# 10.2B 2009/12/14 12419-15762 3344<br />
+# 11.0&nbsp; 2011/12/02 15763-16640&nbsp; 878<br />
+# 11.1&nbsp; 2012/06/15 16641-16738&nbsp; &nbsp;98<br />
+# 11.2&nbsp; 2013/02/13 16739-17035&nbsp; 296<br />
+# 11.3&nbsp; 2013/07/17 17036-17338&nbsp; 302<br />
+# 11.4&nbsp; 2014/07/25 17339-17759&nbsp; 421<br />
+# 11.5&nbsp; 2014/12/05 17760-17919&nbsp; 160<br />
+# 11.6&nbsp; 2015/10/16 17920-18388&nbsp; 468<br />
+# 11.7A 2016/03/25 18389-18505&nbsp; 117<br />
+#<br />
+# Only 200-300 messages used to be written to db log.<br />
+<br />
+# Options:<br />
+#<br />
+# -f Show the fatal errors (marked as "F" in Progress log files)<br />
+#&nbsp; &nbsp; They are the messages with %g or %G tags in promsgs file.<br />
+#&nbsp; &nbsp; The tags are telling to the process to terminate processing;<br />
+# -e Show the system errors (the messages with words "SYSTEM ERROR:");<br />
+# -r Show the remained messages (except "Logins", "Params" and "Ignore" groups);<br />
+# -p Show the startup parameters of Progress multi-user sessions ("Params" group);<br />
+# -s Summary: the number of messages per message numbers (and without numbers);<br />
+# -l Report the statistics for the messages in the "Logins" group;<br />
+# CutTimeDigits - the number of the digits in timestamps to cut off<br />
+# while creating the login/logout statistics.<br />
+# Range of CutTimeDigits values: 0-8<br />
+# 0&nbsp; &nbsp;= 2016/05/12@12:34:56 = per seconds<br />
+# 1&nbsp; &nbsp;= 2016/05/12@12:34:5&nbsp; = per 10 seconds<br />
+# 2,3 = 2016/05/12@12:34:&nbsp; &nbsp;= per minutes<br />
+# 4&nbsp; &nbsp;= 2016/05/12@12:3&nbsp; &nbsp; &nbsp;= per 10 minutes<br />
+# 5,6 = 2016/05/12@12:&nbsp; &nbsp; &nbsp; = per hours<br />
+# 7&nbsp; &nbsp;= 2016/05/12@1&nbsp; &nbsp; &nbsp; &nbsp; = per 10 or 4 hours<br />
+# 8&nbsp; &nbsp;= 2016/05/12@&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;= per days<br />
+<br />
+&nbsp; CutTimeDigits=0 # Default is per second statistics.<br />
+&nbsp; Logins="no"<br />
+&nbsp; Params="no"<br />
+&nbsp; Fatal="no"<br />
+&nbsp; Errors="no"<br />
+&nbsp; Remains="no"<br />
+&nbsp; Summary="no"<br />
+&nbsp; Options=""<br />
+&nbsp; while [ $# -gt 0 ]<br />
+&nbsp; do<br />
+# CutTimeDigits:<br />
+&nbsp; &nbsp; case "$1" in<br />
+&nbsp; &nbsp; &nbsp; [0-9]*)&nbsp; CutTimeDigits=$1; shift; continue;;<br />
+&nbsp; &nbsp; esac<br />
+<br />
+# Params:<br />
+&nbsp; &nbsp; case "$1" in<br />
+&nbsp; &nbsp; &nbsp; -*[pP]*) Params="yes";&nbsp; Options="$Options Params";;<br />
+&nbsp; &nbsp; esac<br />
+<br />
+# Logins:<br />
+&nbsp; &nbsp; case "$1" in<br />
+&nbsp; &nbsp; &nbsp; -*[lL]*) Logins="yes";&nbsp; Options="$Options Logins";;<br />
+&nbsp; &nbsp; esac<br />
+<br />
+# Fatal:<br />
+&nbsp; &nbsp; case "$1" in<br />
+&nbsp; &nbsp; &nbsp; -*[fF]*) Fatal="yes";&nbsp; &nbsp;Options="$Options Fatal";;<br />
+&nbsp; &nbsp; esac<br />
+<br />
+# Errors:<br />
+&nbsp; &nbsp; case "$1" in<br />
+&nbsp; &nbsp; &nbsp; -*[eE]*) Errors="yes"; Options="$Options Errors";;<br />
+&nbsp; &nbsp; esac<br />
+<br />
+# Remains:<br />
+&nbsp; &nbsp; case "$1" in<br />
+&nbsp; &nbsp; &nbsp; -*[rR]*) Remains="yes"; Options="$Options Remains";;<br />
+&nbsp; &nbsp; esac<br />
+<br />
+# Summary:<br />
+&nbsp; &nbsp; case "$1" in<br />
+&nbsp; &nbsp; &nbsp; -*[sS]*) Summary="yes"; Options="$Options Summary";;<br />
+&nbsp; &nbsp; esac<br />
+<br />
+&nbsp; &nbsp; Rest=`echo $1 | tr -d "lLpPeEfFrRsS\-"`<br />
+&nbsp; &nbsp; if [ "$Rest" ]<br />
+&nbsp; &nbsp; then<br />
+&nbsp; &nbsp; &nbsp; echo "LogParser: \"$Rest\" is an unknown option."<br />
+&nbsp; &nbsp; &nbsp; exit 1<br />
+&nbsp; &nbsp; fi # if Rest<br />
+<br />
+&nbsp; &nbsp; shift<br />
+&nbsp; done&nbsp; # while [ $# -gt 0 ]<br />
+<br />
+&nbsp; test $CutTimeDigits -gt 8 &amp;&amp; \<br />
+&nbsp; CutTimeDigits=8<br />
+# CutTimeDigits=0: 2016/05/12@14:03:52<br />
+# CutTimeDigits=1: 2016/05/12@14:03:5<br />
+# ...<br />
+# CutTimeDigits=7: 2016/05/12@1<br />
+# CutTimeDigits=8: 2016/05/12@<br />
+<br />
+&nbsp; Options=`echo $Options | \<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;awk 'BEGIN {RS=" "}<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; {print}' | \<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;sort` # Options<br />
+&nbsp; Options=`echo $Options`<br />
+&nbsp; echo "LogParser Options: $Options"<br />
+&nbsp; test "$Logins" = "yes" &amp;&amp; \<br />
+&nbsp; case "$CutTimeDigits" in<br />
+&nbsp; &nbsp; 0)&nbsp; &nbsp;echo "Login statistics per second:"&nbsp; &nbsp; ;; # 2016/05/12@12:34:56<br />
+&nbsp; &nbsp; 1)&nbsp; &nbsp;echo "Login statistics per 10 seconds:";; # 2016/05/12@12:34:5<br />
+&nbsp; &nbsp; 2|3) echo "Login statistics per minute:"&nbsp; &nbsp; ;; # 2016/05/12@12:34:<br />
+&nbsp; &nbsp; 4)&nbsp; &nbsp;echo "Login statistics per 10 minutes:";; # 2016/05/12@12:3<br />
+&nbsp; &nbsp; 5|6) echo "Login statistics per hour:"&nbsp; &nbsp; &nbsp; ;; # 2016/05/12@12:<br />
+&nbsp; &nbsp; 7)&nbsp; &nbsp;echo "Login statistics per 10 hours:"&nbsp; ;; # 2016/05/12@1<br />
+&nbsp; &nbsp; 8)&nbsp; &nbsp;echo "Login statistics per day:"&nbsp; &nbsp; &nbsp; &nbsp;;; # 2016/05/12@<br />
+&nbsp; esac # CutTimeDigits<br />
+<br />
+&nbsp; TmpFile=${DbLogPrefix:-`basename $0`.$$}.LogParser.tmp<br />
+<br />
+&nbsp; awk '<br />
+&nbsp; &nbsp; BEGIN {<br />
+&nbsp; &nbsp; &nbsp; NoNum="(-----)"<br />
+&nbsp; &nbsp; &nbsp; TmpFile="'$TmpFile'"<br />
+&nbsp; &nbsp; &nbsp; TimeSize=19-'$CutTimeDigits'<br />
+&nbsp; &nbsp; &nbsp; Logins="'$Logins'"<br />
+&nbsp; &nbsp; &nbsp; Params="'$Params'"<br />
+&nbsp; &nbsp; &nbsp; Fatal="'$Fatal'"<br />
+&nbsp; &nbsp; &nbsp; Errors="'$Errors'"<br />
+&nbsp; &nbsp; &nbsp; Remains="'$Remains'"<br />
+&nbsp; &nbsp; &nbsp; Summary="'$Summary'"<br />
+#<br />
+# "Logins" = the group of the messages related to the activity on User Control Table:<br />
+#<br />
+&nbsp; &nbsp; &nbsp; LoginsNum[&nbsp; "(298)"]="KILL signal received."<br />
+&nbsp; &nbsp; &nbsp; LoginsNum[&nbsp; "(333)"]="Multi-user session begin."<br />
+&nbsp; &nbsp; &nbsp; LoginsNum[&nbsp; "(334)"]="<multi ingle=""> session end. (334)"</multi><br />
+&nbsp; &nbsp; &nbsp; LoginsNum[&nbsp; "(451)"]="<session-type> session begin for <user> on <tty>. (451)"</tty></user></session-type><br />
+&nbsp; &nbsp; &nbsp; LoginsNum[&nbsp; "(452)"]="Login by <user> on <tty>."</tty></user><br />
+&nbsp; &nbsp; &nbsp; LoginsNum[&nbsp; "(453)"]="Logout by <user> on <tty>."</tty></user><br />
+&nbsp; &nbsp; &nbsp; LoginsNum[&nbsp; "(562)"]="HANGUP signal received."<br />
+&nbsp; &nbsp; &nbsp; LoginsNum[&nbsp; "(708)"]="Userid is now <name>."</name><br />
+&nbsp; &nbsp; &nbsp; LoginsNum[&nbsp; "(742)"]="Login usernum <n>, userid <name>, on <tty node="">."</tty></name></n><br />
+&nbsp; &nbsp; &nbsp; LoginsNum[&nbsp; "(739)"]="Logout usernum <n>, userid <name>, on <tty node="">."</tty></name></n><br />
+&nbsp; &nbsp; &nbsp; LoginsNum[&nbsp; "(792)"]="Message received with bad usernum."<br />
+&nbsp; &nbsp; &nbsp; LoginsNum[&nbsp; "(794)"]="Usernum&nbsp; terminated abnormally."<br />
+&nbsp; &nbsp; &nbsp; LoginsNum[&nbsp; "(795)"]="Error reading socket=<n> ret=<n> errno=<n>."</n></n></n><br />
+&nbsp; &nbsp; &nbsp; LoginsNum[&nbsp; "(796)"]="Error writing msg, socket=<n> errno=<n> usernum=<n> disconnected."</n></n></n><br />
+&nbsp; &nbsp; &nbsp; LoginsNum[&nbsp; "(797)"]="Partial write, socket=<n> msglen=<n> ret=<n> user <n> disconnected."</n></n></n></n><br />
+&nbsp; &nbsp; &nbsp; LoginsNum[ "(1153)"]="BROKER detects death of server <pid>."</pid><br />
+&nbsp; &nbsp; &nbsp; LoginsNum[ "(1334)"]="Rejecting login -- too many users for this server."<br />
+&nbsp; &nbsp; &nbsp; LoginsNum[ "(1166)"]="Server disconnecting user <n>."</n><br />
+&nbsp; &nbsp; &nbsp; LoginsNum[ "(2252)"]="Begin transaction backout."<br />
+&nbsp; &nbsp; &nbsp; LoginsNum[ "(2253)"]="Transaction backout completed."<br />
+&nbsp; &nbsp; &nbsp; LoginsNum[ "(2266)"]="Expected user <n> received user <n>."</n></n><br />
+&nbsp; &nbsp; &nbsp; LoginsNum[ "(2518)"]="Started. (APW, BIW, AIW or WDOG)"<br />
+&nbsp; &nbsp; &nbsp; LoginsNum[ "(2519)"]="Disconnected. (APW or WDOG)"<br />
+&nbsp; &nbsp; &nbsp; LoginsNum[ "(2520)"]="Stopped. (BIW or AIW)"<br />
+&nbsp; &nbsp; &nbsp; LoginsNum[ "(2268)"]="Invalid message was received for an attempted login."<br />
+&nbsp; &nbsp; &nbsp; LoginsNum[ "(2525)"]="Disconnecting dead server <n>."</n><br />
+&nbsp; &nbsp; &nbsp; LoginsNum[ "(2526)"]="Disconnecting client <n> of dead server <n>."</n></n><br />
+&nbsp; &nbsp; &nbsp; LoginsNum[ "(2527)"]="Disconnecting dead user <n>."</n><br />
+&nbsp; &nbsp; &nbsp; LoginsNum[ "(4375)"]="Received signal <signum>; handling as SIGHUP."</signum><br />
+&nbsp; &nbsp; &nbsp; LoginsNum[ "(4698)"]="User count exceeded. Failed attempt to login by <userid> on <devtype>."</devtype></userid><br />
+#&nbsp; &nbsp; &nbsp;LoginsNum[ "(4732)"]="Login by <name> on <tty>. Pid <pid>."&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;# DEC/OpenVMS</pid></tty></name><br />
+#&nbsp; &nbsp; &nbsp;LoginsNum[ "(4734)"]="Logout by <name> on <tty>. Pid <pid>."&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; # DEC/OpenVMS</pid></tty></name><br />
+&nbsp; &nbsp; &nbsp; LoginsNum[ "(5569)"]="Quiet point request login by <user> on <ttyxxx>." # V8.2A</ttyxxx></user><br />
+&nbsp; &nbsp; &nbsp; LoginsNum[ "(5570)"]="Quiet point request logout"&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;# V8.2A<br />
+&nbsp; &nbsp; &nbsp; LoginsNum[ "(7129)"]="Usr <n> set name to <name>."&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; # V8.3B Dbdes, Aimage new, Aimage list, BACKUP</name></n><br />
+&nbsp; &nbsp; &nbsp; LoginsNum[ "(8873)"]="Login usernum <n>, remote SQL client."&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; # V9.1B, logout with msg 453</n><br />
+#&nbsp; &nbsp; &nbsp;LoginsNum["(12092)"]="User <n> disconnect initiated."&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;# V10.1A, Not used</n><br />
+&nbsp; &nbsp; &nbsp; LoginsNum["(12454)"]="Server <n> has <n> unresolved pending connections(s). Please check port <n>."</n></n></n><br />
+&nbsp; &nbsp; &nbsp; LoginsNum["(12455)"]="Clearing pending connections from server <n>"&nbsp; &nbsp; &nbsp;# V10.2B</n><br />
+&nbsp; &nbsp; &nbsp; LoginsNum["(17961)"]="User <n> set tty to <name>. (17961)"&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; # V11.6</name></n><br />
+#<br />
+# Identify the messages without the numbers by their text pattern:<br />
+#<br />
+# PROMON&nbsp; 5: (-----) Login by root.<br />
+# BACKUP&nbsp; 7: (-----) Login by root.<br />
+# SQLSRV2 3: (-----) Login by user 2525. Using TCP/IP IPV4 address 192.168.10.162<br />
+&nbsp; &nbsp; &nbsp; LoginsMsg["Login by"]="(SQL User, PROMON or BACKUP)"<br />
+&nbsp; &nbsp; &nbsp; LoginsMsg["Logout by"]="SQL User (SQLSRV2)" # SQLSRV2 3: (-----) Logout by user 2525.<br />
+&nbsp; &nbsp; &nbsp; LoginsMsg["Sending signal to user"]="(BROKER or PROSHUT)"<br />
+&nbsp; &nbsp; &nbsp; LoginsMsg["User disconnect initiated"]="(PROSHUT)"<br />
+<br />
+&nbsp; &nbsp; &nbsp; LoginsMsg["Received RECONNECT from WTB"]="(Webspeed user/agent)"<br />
+# This is an informational message which is sent on behalf of a user.<br />
+# This message indicates that the user who connected to the database<br />
+# server is a Webspeed user/agent and that the initial connection<br />
+# between the WebSpeed broker and agent was completed.<br />
+<br />
+&nbsp; &nbsp; &nbsp; LoginsMsg["Notifying srvr"]="<n>, conn <n>, to terminate remote user <n> (12093)"</n></n></n><br />
+# SHUT 2146: (-----) User 7775 disconnect initiated<br />
+# SHUT 2146: (453)&nbsp; &nbsp;Logout by <user> on batch.</user><br />
+# BROKER&nbsp; 0: (-----) Notifying srvr 24, conn 24, to terminate remote user 7775 &lt;== should be (12093)<br />
+# BROKER&nbsp; 0: (-----) Sending signal 5 to user 7775<br />
+# SRV&nbsp; &nbsp; 24: (1166)&nbsp; Server disconnecting user 7775.<br />
+<br />
+#<br />
+# "Ignore" = the group of the informational messages that can be ignored:<br />
+#<br />
+# Miscellaneous:<br />
+#<br />
+&nbsp; &nbsp; &nbsp; IgnoreNum[&nbsp; "(439)"]="** Save file named core for analysis by Progress Software Corporation."<br />
+&nbsp; &nbsp; &nbsp; IgnoreNum[ "(2261)"]="Sending signal <n> to <n> connected user(s)."</n></n><br />
+&nbsp; &nbsp; &nbsp; IgnoreNum[ "(2263)"]="Resending shutdown request to <n> user(s)."</n><br />
+&nbsp; &nbsp; &nbsp; IgnoreNum[ "(8863)"]="This broker supports 4GL server groups only."<br />
+&nbsp; &nbsp; &nbsp; IgnoreNum[ "(8864)"]="This broker supports SQL server groups only."<br />
+&nbsp; &nbsp; &nbsp; IgnoreNum[ "(8865)"]="This broker supports both 4GL and SQL server groups."<br />
+&nbsp; &nbsp; &nbsp; IgnoreNum["(10471)"]="Database connections have been enabled."<br />
+&nbsp; &nbsp; &nbsp; IgnoreNum["(16869)"]="Removed shared memory with segment_id: <n>"</n><br />
+#<br />
+# Warnings:<br />
+#<br />
+&nbsp; &nbsp; &nbsp; IgnoreNum[ "(5407)"]="WARNING: -nb exceeded. Automatically increasing from <old> to <new>."</new></old><br />
+&nbsp; &nbsp; &nbsp; IgnoreNum[ "(5408)"]="WARNING: -l exceeded. Automatically increasing from <old> to <new>."</new></old><br />
+&nbsp; &nbsp; &nbsp; IgnoreNum[ "(5409)"]="WARNING: -mmax exceeded. Automatically increasing from <old> to <new>."</new></old><br />
+&nbsp; &nbsp; &nbsp; IgnoreNum[ "(5410)"]="WARNING: -D limit has been exceeded; automatically increasing to <new>."</new><br />
+#<br />
+# Connection:<br />
+#<br />
+&nbsp; &nbsp; &nbsp; IgnoreNum[ "(5644)"]="Started for <name> using tcp IPV4 address 0.0.0.0, pid <n>."</n></name><br />
+&nbsp; &nbsp; &nbsp; IgnoreNum[ "(5645)"]="This is an additional broker for this protocol."<br />
+&nbsp; &nbsp; &nbsp; IgnoreNum[ "(5646)"]="Started on port <port> using tcp IPV4 address 0.0.0.0, pid <n>."</n></port><br />
+&nbsp; &nbsp; &nbsp; IgnoreNum[ "(5512)"]="Previous message sent on behalf of user <n>. (5512)"</n><br />
+&nbsp; &nbsp; &nbsp; IgnoreNum["(14658)"]="Previous message sent on behalf of user <n>, server pid <n>, broker pid <n>. (5512)"</n></n></n><br />
+&nbsp; &nbsp; &nbsp; IgnoreNum["(10836)"]="Database connections are not allowed at this time."<br />
+&nbsp; &nbsp; &nbsp; IgnoreNum["(12698)"]="User <name> Roles: <name>"</name></name><br />
+&nbsp; &nbsp; &nbsp; IgnoreNum["(12699)"]="Database <name> Options: <name>"</name></name><br />
+&nbsp; &nbsp; &nbsp; IgnoreNum["(15646)"]="Started on port <port> using tcp, pid <pid>."</pid></port><br />
+#<br />
+# SQLSRV2: Database statistics<br />
+#<br />
+&nbsp; &nbsp; &nbsp; IgnoreNum["(10995)"]="Database statistics (<type>) updated for all tables."</type><br />
+&nbsp; &nbsp; &nbsp; IgnoreNum["(10996)"]="Database statistics (<type>) updated for table <name>."</name></type><br />
+&nbsp; &nbsp; &nbsp; IgnoreNum["(10997)"]="Database statistics (<schema table="">) updated by direct user sql statement (<type>)."</type></schema><br />
+#<br />
+# RFUTIL:<br />
+#<br />
+&nbsp; &nbsp; &nbsp; IgnoreNum[ "(3774)"]="Backup after-image extent and mark it as empty."<br />
+&nbsp; &nbsp; &nbsp; IgnoreNum[ "(3776)"]="Backup ai extent and mark it as empty."<br />
+&nbsp; &nbsp; &nbsp; IgnoreNum[ "(3777)"]="Switched to ai extent <name>."</name><br />
+&nbsp; &nbsp; &nbsp; IgnoreNum[ "(3778)"]="This is after-image file number <n> since the last AIMAGE BEGIN"</n><br />
+&nbsp; &nbsp; &nbsp; IgnoreNum[ "(3789)"]="Marked after-image extent <name> EMPTY."</name><br />
+&nbsp; &nbsp; &nbsp; IgnoreNum["(11805)"]="Unlocking after-image file <n> and locking ALL FULL after-image files beginning with file <n>."</n></n><br />
+&nbsp; &nbsp; &nbsp; IgnoreNum["(12074)"]="The After-image extent <name> was successfully extracted."</name><br />
+&nbsp; &nbsp; &nbsp; IgnoreNum["(13154)"]="Marked after-image extent <name> ARCHIVED."</name><br />
+&nbsp; &nbsp; &nbsp; IgnoreNum["(13199)"]="After-image extent <name> has been copied to <name>."</name></name><br />
+&nbsp; &nbsp; &nbsp; IgnoreNum["(13231)"]="From this point forward all after-image extents will be archived to <name>."</name><br />
+#<br />
+# BACKUP:<br />
+#<br />
+&nbsp; &nbsp; &nbsp; IgnoreNum[ "(1074)"]="Wrote a total of <blocks> backup blocks using <bytes> bytes of media."</bytes></blocks><br />
+&nbsp; &nbsp; &nbsp; IgnoreNum[ "(1361)"]="Incremental backup started."<br />
+&nbsp; &nbsp; &nbsp; IgnoreNum[ "(1362)"]="Full backup started."<br />
+&nbsp; &nbsp; &nbsp; IgnoreNum[ "(1363)"]="Incremental backup successfully completed."<br />
+&nbsp; &nbsp; &nbsp; IgnoreNum[ "(1364)"]="Full backup successfully completed."<br />
+&nbsp; &nbsp; &nbsp; IgnoreNum[ "(1365)"]="Database copied from <database-name>."</database-name><br />
+&nbsp; &nbsp; &nbsp; IgnoreNum[ "(1366)"]="Incremental restore of sequence <n> started."</n><br />
+&nbsp; &nbsp; &nbsp; IgnoreNum[ "(1367)"]="Incremental restore of sequence <n> completed."</n><br />
+&nbsp; &nbsp; &nbsp; IgnoreNum[ "(3664)"]="Incremental backup started."<br />
+&nbsp; &nbsp; &nbsp; IgnoreNum[ "(5459)"]="Begin backup of Before Image file(s)."<br />
+&nbsp; &nbsp; &nbsp; IgnoreNum[ "(5460)"]="End backup of Before Image file(s)."<br />
+&nbsp; &nbsp; &nbsp; IgnoreNum[ "(5461)"]="Begin backup of Data file(s)."<br />
+&nbsp; &nbsp; &nbsp; IgnoreNum[ "(5462)"]="End backup of Data file(s)."<br />
+&nbsp; &nbsp; &nbsp; IgnoreNum[ "(6678)"]="NOTE: Backup media estimates done without database scan." # V8.3A<br />
+&nbsp; &nbsp; &nbsp; IgnoreNum[ "(6680)"]="Estimate for uncompressed full backup is provided."<br />
+&nbsp; &nbsp; &nbsp; IgnoreNum[ "(6686)"]="<n> active blocks out of <n> blocks in <name> will be dumped."</name></n></n><br />
+&nbsp; &nbsp; &nbsp; IgnoreNum[ "(6688)"]="<n> BI blocks will be dumped."&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; # V8.3B</n><br />
+&nbsp; &nbsp; &nbsp; IgnoreNum[ "(6689)"]="Backup requires&nbsp; blocks ( Mb) of media."<br />
+&nbsp; &nbsp; &nbsp; IgnoreNum[ "(6699)"]="Restore would require&nbsp; blocks ( Mb) of media."<br />
+&nbsp; &nbsp; &nbsp; IgnoreNum[ "(6760)"]="This backup was taken <time>."&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; # V8.3B</time><br />
+&nbsp; &nbsp; &nbsp; IgnoreNum[ "(9285)"]="Backup requires an estimated <size id=""> of media."&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;# V9.1C</size><br />
+&nbsp; &nbsp; &nbsp; IgnoreNum[ "(9286)"]="Restore would require an estimated&nbsp; db blocks using <size id=""> of media."</size><br />
+&nbsp; &nbsp; &nbsp; IgnoreNum["(12850)"]="Backup blocks will be written to <device file="">."&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; # V10.2B</device><br />
+&nbsp; &nbsp; &nbsp; IgnoreNum["(13625)"]="Wrote a total of <blocks> backup blocks using <size id=""> of media."</size></blocks><br />
+&nbsp; &nbsp; &nbsp; IgnoreNum["(13786)"]="This backup was also used to enable after-image on the source database."<br />
+&nbsp; &nbsp; &nbsp; IgnoreNum["(14256)"]="The Replication Server has been notified that an online backup is about to be performed."<br />
+&nbsp; &nbsp; &nbsp; IgnoreNum["(14258)"]="The online backup of this database has completed normally."<br />
+&nbsp; &nbsp; &nbsp; IgnoreNum["(15108)"]="The online backup has finished backing up the BI. The Replication Agent will now begin recovery synchronization followed by normal processing."<br />
+&nbsp; &nbsp; &nbsp; IgnoreNum["(15109)"]="At Database close the number of live transactions is <n>."</n><br />
+&nbsp; &nbsp; &nbsp; IgnoreNum["(15321)"]="Before Image Log Initialisation at block <n> offset <n>."</n></n><br />
+&nbsp; &nbsp; &nbsp; IgnoreNum["(15743)"]="Before Image Log Completion at Block <n> Offset <n>."&nbsp; &nbsp; &nbsp; # V10.2B</n></n><br />
+&nbsp; &nbsp; &nbsp; IgnoreNum["(16866)"]="Dumped <n> active BI blocks."&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; # V11.2</n><br />
+#<br />
+# Identify the messages without the numbers by their text pattern:<br />
+#<br />
+# BROKER&nbsp; 2: (-----) Shared Library Path set to LIBPATH=<path></path><br />
+#<br />
+&nbsp; &nbsp; &nbsp; IgnoreMsg["Shared Library Path set to"]=""<br />
+<br />
+# SQLSRV2 3: (-----) SQL Server 11.6.01 started, configuration: "dbname.virtualconfig"<br />
+# SQLSRV2 3: (-----) "/path/to/dbname" started on IPv4 port 1025 for address 0.0.0.0, pid 9568520 (0x00920108).<br />
+# SQLSRV2 3: (-----) Thread stack size: 1024000 (bytes).<br />
+# SQLSRV2 3: (-----) DLC from ENVIRONMENT VARIABLE is: /usr/dlc<br />
+# SQLSRV2 3: (-----) WRKDIR from ENVIRONMENT VARIABLE is: /usr/wrk/<br />
+# SQLSRV2 3: (-----) JDKHOME from ENVIRONMENT VARIABLE is: /usr/dlc/jdk<br />
+# SQLSRV2 3: (-----) JREHOME from ENVIRONMENT VARIABLE is: /usr/dlc/jdk/jre<br />
+# SQLSRV2 3: (-----) CLASSPATH from DEFAULT is:<br />
+# SQLSRV2 3: (-----) PROSQL_LOCKWAIT_TIMEOUT value is: 5 seconds<br />
+<br />
+&nbsp; &nbsp; &nbsp; IgnoreMsg["started, configuration:"]=""<br />
+&nbsp; &nbsp; &nbsp; IgnoreMsg["started on port for address pid"]=""<br />
+&nbsp; &nbsp; &nbsp; IgnoreMsg["Thread stack size:"]=""<br />
+&nbsp; &nbsp; &nbsp; IgnoreMsg["DLC from ENVIRONMENT VARIABLE is:"]=""<br />
+&nbsp; &nbsp; &nbsp; IgnoreMsg["WRKDIR from ENVIRONMENT VARIABLE is:"]=""<br />
+&nbsp; &nbsp; &nbsp; IgnoreMsg["JDKHOME from ENVIRONMENT VARIABLE is:"]=""<br />
+&nbsp; &nbsp; &nbsp; IgnoreMsg["JREHOME from ENVIRONMENT VARIABLE is:"]=""<br />
+&nbsp; &nbsp; &nbsp; IgnoreMsg["CLASSPATH from DEFAULT is:"]=""<br />
+&nbsp; &nbsp; &nbsp; IgnoreMsg["PROSQL_LOCKWAIT_TIMEOUT value is:"]=""<br />
+<br />
+&nbsp; &nbsp; &nbsp; PrevLogins=""<br />
+&nbsp; &nbsp; &nbsp; PrevLoginTime=""<br />
+<br />
+# SunOS can rise the error if the arrays are not "initiated":<br />
+# awk: Count is not an array<br />
+&nbsp; &nbsp; &nbsp; TotalNumCount[""]=0<br />
+&nbsp; &nbsp; &nbsp; TotalMsgCount[""]=0<br />
+&nbsp; &nbsp; &nbsp; LoginNumCount[""]=0<br />
+&nbsp; &nbsp; &nbsp; LoginMsgCount[""]=0<br />
+&nbsp; &nbsp; } # BEGIN<br />
+#<br />
+# Skip the lines that do not begin with timestamps<br />
+# like [2016/05/12@14:03:52.486+0400]<br />
+#&nbsp; &nbsp; &nbsp; &nbsp;1234567890123456789012345678<br />
+#<br />
+&nbsp; &nbsp; ! /^\[/ {next}<br />
+#<br />
+# Lines with timestamps:<br />
+#<br />
+&nbsp; &nbsp; { CurrTime=substr($1,2,length($1)-2) # Time without "[]"<br />
+&nbsp; &nbsp; &nbsp; if(InitTime=="") InitTime=CurrTime<br />
+&nbsp; &nbsp; &nbsp; if(PrevTime=="") PrevTime=CurrTime<br />
+<br />
+&nbsp; &nbsp; &nbsp; D=substr(CurrTime,1,11) # Year/Month/Day<br />
+&nbsp; &nbsp; &nbsp; H=substr(CurrTime,12,2) # Hours<br />
+&nbsp; &nbsp; &nbsp; M=substr(CurrTime,15,2) # Minutes<br />
+&nbsp; &nbsp; &nbsp; S=substr(CurrTime,18,2) # Seconds<br />
+&nbsp; &nbsp; &nbsp; Z=substr(CurrTime,length(CurrTime)-4) # Timezone -0400<br />
+&nbsp; &nbsp; }<br />
+&nbsp; &nbsp; Z ~/^\+/ {&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; # TZ +0400<br />
+&nbsp; &nbsp; &nbsp; H-=substr(Z,2,2)&nbsp; &nbsp; &nbsp; &nbsp; # Hours<br />
+&nbsp; &nbsp; &nbsp; M-=substr(Z,4,2)&nbsp; &nbsp; &nbsp; &nbsp; # Minutes<br />
+&nbsp; &nbsp; } # TZ +0400<br />
+&nbsp; &nbsp; Z ~/^\-/ {&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; # TZ -0400<br />
+&nbsp; &nbsp; &nbsp; H+=substr(Z,2,2)&nbsp; &nbsp; &nbsp; &nbsp; # Hours<br />
+&nbsp; &nbsp; &nbsp; M+=substr(Z,4,2)&nbsp; &nbsp; &nbsp; &nbsp; # Minutes<br />
+&nbsp; &nbsp; } # TZ -0400<br />
+#<br />
+# Article Number: 000064856<br />
+# Defect PSC00256028, PSC00257044<br />
+# Upgrade to OpenEdge 11.4 or later<br />
+# A partial fix is included in OpenEdge 11.2.1 and 11.3.x<br />
+# As a side effect of the fix, messages from signal handlers will always show<br />
+# as UTC time instead of the database timezone.<br />
+#<br />
+# Example:<br />
+# [2016/05/23@04:11:27.185-0400] P-12 T-1 I ABL 8: (452) Login by user on /dev/pts/4.<br />
+# [2016/05/23@08:52:07.000+0000] P-12 T-1 I ABL 8: (562) HANGUP signal received.<br />
+# [2016/05/23@04:52:07.926-0400] P-12 T-1 I ABL 8: (453) Logout by hchen on /dev/pts/4.<br />
+#<br />
+# Convert the current time to UTC time to get the correct "Logins" statistics:<br />
+&nbsp; &nbsp; { if(length(H)==1) H="0" H<br />
+&nbsp; &nbsp; &nbsp; if(length(M)==1) M="0" M<br />
+&nbsp; &nbsp; &nbsp; if(length(M)==1) S="0" S<br />
+<br />
+&nbsp; &nbsp; &nbsp; CurrLogins=D H ":" M ":" S<br />
+&nbsp; &nbsp; &nbsp; CurrLogins=substr(CurrLogins,1,TimeSize) # TimeSize=19 = no cuts<br />
+&nbsp; &nbsp; } # Timestamps<br />
+#<br />
+# Logins/logouts statistics report:<br />
+#<br />
+&nbsp; &nbsp; Logins=="yes" &amp;&amp; PrevLogins!=CurrLogins {<br />
+&nbsp; &nbsp; &nbsp; for(Num in LoginNumCount) if(LoginNumCount[Num]&gt;0)<br />
+&nbsp; &nbsp; &nbsp; {<br />
+# Time: 2016/05/12@14:03:52.486+0400<br />
+#&nbsp; &nbsp; &nbsp; &nbsp;1234567890123456789012345678<br />
+#<br />
+&nbsp; &nbsp; &nbsp; &nbsp; printf"%10s %8s %8s %4d %7s %s\n",\<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; substr(PrevLoginTime,1,10),\<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; substr(PrevLoginTime,12),\<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; substr(LastLoginTime,12),\<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; LoginNumCount[Num],\<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Num,\<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; LoginsNum[Num]<br />
+<br />
+# Either set to zero or delete an element of the array - any option that will work:<br />
+&nbsp; &nbsp; &nbsp; &nbsp; LoginNumCount[Num]=0<br />
+&nbsp; &nbsp; &nbsp; &nbsp; delete LoginNumCount[Num]<br />
+&nbsp; &nbsp; &nbsp; } # for Num in LoginNumCount<br />
+<br />
+&nbsp; &nbsp; &nbsp; for(Msg in LoginMsgCount) if(LoginMsgCount[Msg]&gt;0) {<br />
+&nbsp; &nbsp; &nbsp; &nbsp; printf"%10s %8s %8s %4d %7s %s\n",\<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; substr(PrevLoginTime,1,10),\<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; substr(PrevLoginTime,12),\<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; substr(LastLoginTime,12),\<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; LoginMsgCount[Msg],\<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; NoNum,\<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Msg " " LoginsMsg[Msg]<br />
+<br />
+# Either set to zero or delete an element of the array - any option that will work:<br />
+&nbsp; &nbsp; &nbsp; &nbsp; LoginMsgCount[Msg]=0<br />
+&nbsp; &nbsp; &nbsp; &nbsp; delete LoginMsgCount[Msg]<br />
+&nbsp; &nbsp; &nbsp; } # for Msg in LoginMsgCount<br />
+<br />
+&nbsp; &nbsp; &nbsp; PrevLoginTime=""<br />
+&nbsp; &nbsp; &nbsp; PrevLogins=CurrLogins<br />
+&nbsp; &nbsp; } # Logins=="yes"<br />
+#<br />
+# Msg number is column 7 if there is a space between user type and user number:<br />
+# [2016/05/12@14:03:52.486+0400] P-1 T-1 I ABL 10: (452) Login by root on batch.<br />
+#<br />
+# Msg number is column 6 if there is no space between user type and user number:<br />
+# [2016/04/05@06:00:23.102+0600] P-2 T-1 I RFUTI1312: (452) Login by root on batch.<br />
+#<br />
+&nbsp; &nbsp; { Num=""<br />
+&nbsp; &nbsp; &nbsp; for(Col=6;Col&lt;=7;Col++) if($Col ~ /^\([0-9]*-*\)$/) {<br />
+&nbsp; &nbsp; &nbsp; &nbsp; Num=$Col<br />
+&nbsp; &nbsp; &nbsp; &nbsp; break<br />
+&nbsp; &nbsp; &nbsp; } # for Col<br />
+&nbsp; &nbsp; &nbsp; if(Num=="") next<br />
+#<br />
+# Cleaning a message: remove any word containing a digit.<br />
+#<br />
+&nbsp; &nbsp; &nbsp; Msg=$(Col+1)<br />
+&nbsp; &nbsp; &nbsp; for(i=Col+2;i&lt;=NF;i++) if($i !~/[0-9]/) Msg=Msg " " $i<br />
+&nbsp; &nbsp; }<br />
+#<br />
+# Messages without numbers:<br />
+#<br />
+&nbsp; &nbsp; Num==NoNum {<br />
+#<br />
+# Ignore the block dumps (dont count them in the Summary):<br />
+# (-----) 1fd0:&nbsp; 652d 5883 4e53 5056 0000 2565 2d74 7970<br />
+#<br />
+&nbsp; &nbsp; &nbsp; if(NF==Col+9 &amp;&amp; $(Col+1) ~ /^[0-1]/ &amp;&amp; $(Col+1) ~ /:$/) next<br />
+<br />
+# Summary:<br />
+&nbsp; &nbsp; &nbsp; TotalMsgCount[Msg]++<br />
+<br />
+# Fatal:<br />
+&nbsp; &nbsp; &nbsp; if($4=="F") {<br />
+&nbsp; &nbsp; &nbsp; &nbsp; FatalCount++<br />
+&nbsp; &nbsp; &nbsp; &nbsp; if(Fatal=="yes") {<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; print<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; next<br />
+&nbsp; &nbsp; &nbsp; &nbsp; } # if Fatal<br />
+&nbsp; &nbsp; &nbsp; } # if "F"<br />
+<br />
+# Errors:<br />
+&nbsp; &nbsp; &nbsp; if(Msg ~ /SYSTEM ERROR: /) {<br />
+&nbsp; &nbsp; &nbsp; &nbsp; ErrorsCount++<br />
+&nbsp; &nbsp; &nbsp; &nbsp; if(Errors=="yes") {<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; print<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; next<br />
+&nbsp; &nbsp; &nbsp; &nbsp; } # if Errors<br />
+&nbsp; &nbsp; &nbsp; } # if SYSTEM ERROR:<br />
+<br />
+&nbsp; &nbsp; &nbsp; for(Pattern in IgnoreMsg) if(index(Msg,Pattern)&gt;0) next<br />
+<br />
+&nbsp; &nbsp; &nbsp; for(Pattern in LoginsMsg) if(index(Msg,Pattern)&gt;0) {<br />
+&nbsp; &nbsp; &nbsp; &nbsp; LoginMsgCount[Pattern]++<br />
+&nbsp; &nbsp; &nbsp; &nbsp; if(PrevLoginTime=="")<br />
+&nbsp; &nbsp; &nbsp; &nbsp; PrevLoginTime=CurrTime<br />
+&nbsp; &nbsp; &nbsp; &nbsp; LastLoginTime=CurrTime<br />
+&nbsp; &nbsp; &nbsp; &nbsp; next<br />
+&nbsp; &nbsp; &nbsp; } # LoginsMsg<br />
+<br />
+&nbsp; &nbsp; &nbsp; if(Startup=="yes") {<br />
+&nbsp; &nbsp; &nbsp; &nbsp; if(Params=="yes") print<br />
+&nbsp; &nbsp; &nbsp; &nbsp; next<br />
+&nbsp; &nbsp; &nbsp; } # if Startup<br />
+<br />
+&nbsp; &nbsp; &nbsp; RemainsCount++<br />
+&nbsp; &nbsp; &nbsp; if(Remains=="yes") print<br />
+&nbsp; &nbsp; &nbsp; next<br />
+&nbsp; &nbsp; } #&nbsp; Messages without numbers<br />
+#<br />
+# The numbered messages:<br />
+#<br />
+# Summary:<br />
+&nbsp; &nbsp; { TotalNumCount[Num]++<br />
+&nbsp; &nbsp; &nbsp; Example[Num]=Msg<br />
+<br />
+# Fatal:<br />
+&nbsp; &nbsp; &nbsp; if($4=="F") {<br />
+&nbsp; &nbsp; &nbsp; &nbsp; FatalCount++<br />
+&nbsp; &nbsp; &nbsp; &nbsp; if(Fatal=="yes") {<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; print<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; next<br />
+&nbsp; &nbsp; &nbsp; &nbsp; } # if Fatal<br />
+&nbsp; &nbsp; &nbsp; } # if "F"<br />
+<br />
+# Errors:<br />
+&nbsp; &nbsp; &nbsp; if(Msg ~ /SYSTEM ERROR: /) {<br />
+&nbsp; &nbsp; &nbsp; &nbsp; ErrorsCount++<br />
+&nbsp; &nbsp; &nbsp; &nbsp; if(Errors=="yes") {<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; print<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; next<br />
+&nbsp; &nbsp; &nbsp; &nbsp; } # if Errors<br />
+&nbsp; &nbsp; &nbsp; } # if SYSTEM ERROR:<br />
+#<br />
+# "Params" group:<br />
+#<br />
+# BROKER&nbsp; 0: (333)&nbsp; &nbsp;Multi-user session begin.<br />
+# BROKER&nbsp; 0: (4234)&nbsp; Progress OpenEdge Release <version_number> on <os_platform>.</os_platform></version_number><br />
+# BROKER&nbsp; 0: (10471) Database connections have been enabled.<br />
+# PROLOG&nbsp; 5: (12684) prolog log file truncation <start end="">. (12684)</start><br />
+#<br />
+&nbsp; &nbsp; &nbsp; if(Num=="(333)")&nbsp; &nbsp;Startup="yes"<br />
+&nbsp; &nbsp; &nbsp; if(Num=="(4234)")&nbsp; Startup="yes"<br />
+&nbsp; &nbsp; &nbsp; if(Num=="(10471)") Startup="no"<br />
+&nbsp; &nbsp; &nbsp; if($5!="BROKER" &amp;&amp; $5!="PROLOG") Startup="no"<br />
+<br />
+&nbsp; &nbsp; &nbsp; for(Pattern in IgnoreNum) if(Num==Pattern) next<br />
+&nbsp; &nbsp; &nbsp; for(Pattern in LoginsNum) if(Num==Pattern) {<br />
+&nbsp; &nbsp; &nbsp; &nbsp; LoginNumCount[Pattern]++<br />
+&nbsp; &nbsp; &nbsp; &nbsp; if(PrevLoginTime=="")<br />
+&nbsp; &nbsp; &nbsp; &nbsp; PrevLoginTime=CurrTime<br />
+&nbsp; &nbsp; &nbsp; &nbsp; LastLoginTime=CurrTime<br />
+&nbsp; &nbsp; &nbsp; &nbsp; next<br />
+&nbsp; &nbsp; &nbsp; } # LoginsNum<br />
+&nbsp; &nbsp; &nbsp; if(Startup=="yes") {<br />
+&nbsp; &nbsp; &nbsp; &nbsp; if(Params=="yes")&nbsp; print<br />
+&nbsp; &nbsp; &nbsp; &nbsp; next<br />
+&nbsp; &nbsp; &nbsp; } # if Startup<br />
+<br />
+&nbsp; &nbsp; &nbsp; RemainsCount++<br />
+&nbsp; &nbsp; &nbsp; if(Remains=="yes") print<br />
+&nbsp; &nbsp; &nbsp; next<br />
+&nbsp; &nbsp; } # Numbered messages<br />
+<br />
+&nbsp; &nbsp; END {<br />
+&nbsp; &nbsp; &nbsp; if(Logins=="yes")<br />
+&nbsp; &nbsp; &nbsp; for(Num in LoginNumCount) if(LoginNumCount[Num]&gt;0)<br />
+&nbsp; &nbsp; &nbsp; &nbsp; printf"%10s %8s %8s %4d %7s %s\n",\<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; substr(PrevLoginTime,1,10),\<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; substr(PrevLoginTime,12),\<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; substr(LastLoginTime,12),\<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; LoginNumCount[Num],\<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Num,\<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; LoginsNum[Num]<br />
+&nbsp; &nbsp; &nbsp; # if Logins<br />
+<br />
+&nbsp; &nbsp; &nbsp; Count=0<br />
+&nbsp; &nbsp; &nbsp; NumTypeCount=0<br />
+&nbsp; &nbsp; &nbsp; MsgTypeCount=0<br />
+&nbsp; &nbsp; &nbsp; for(Num in TotalNumCount) if(TotalNumCount[Num]&gt;0) {<br />
+&nbsp; &nbsp; &nbsp; &nbsp; Count+=TotalNumCount[Num]<br />
+&nbsp; &nbsp; &nbsp; &nbsp; NumTypeCount++<br />
+&nbsp; &nbsp; &nbsp; } # for Num if<br />
+&nbsp; &nbsp; &nbsp; for(Msg in TotalMsgCount) if(TotalMsgCount[Msg]&gt;0) {<br />
+&nbsp; &nbsp; &nbsp; &nbsp; Count+=TotalMsgCount[Msg]<br />
+&nbsp; &nbsp; &nbsp; &nbsp; MsgTypeCount++<br />
+&nbsp; &nbsp; &nbsp; } # for Msg if<br />
+<br />
+&nbsp; &nbsp; &nbsp; printf"\nProcessed %d lines, %d messages with timestamps\n",NR,Count<br />
+&nbsp; &nbsp; &nbsp; printf"from %s\n",InitTime<br />
+&nbsp; &nbsp; &nbsp; printf"&nbsp; to %s\n",CurrTime<br />
+&nbsp; &nbsp; &nbsp; printf"Numbered messages: %d, without numbers: %d\n",NumTypeCount,MsgTypeCount<br />
+&nbsp; &nbsp; &nbsp; if(Fatal!="yes")&nbsp; RemainsCount-=FatalCount<br />
+&nbsp; &nbsp; &nbsp; if(Errors!="yes") RemainsCount-=ErrorsCount<br />
+&nbsp; &nbsp; &nbsp; printf"System errors: %d, fatal errors: %d, \"remains\": %d\n",ErrorsCount,FatalCount,RemainsCount<br />
+<br />
+&nbsp; &nbsp; &nbsp; if("'$Summary'"!="yes") exit<br />
+#<br />
+# Replace the examples by the known message descriptions:<br />
+#<br />
+&nbsp; &nbsp; &nbsp; for(Num in LoginsNum) Example[Num]=LoginsNum[Num]<br />
+&nbsp; &nbsp; &nbsp; for(Num in IgnoreNum) Example[Num]=IgnoreNum[Num]<br />
+<br />
+&nbsp; &nbsp; &nbsp; printf"\nSummary per the message numbers:\n"<br />
+&nbsp; &nbsp; &nbsp; for(Num in TotalNumCount) if(TotalNumCount[Num]&gt;0)<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; printf"%6d %7s %s\n",TotalNumCount[Num],Num,Example[Num] &gt;TmpFile<br />
+&nbsp; &nbsp; &nbsp; for(Msg in TotalMsgCount) if(TotalMsgCount[Msg]&gt;0)<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; printf"%6d %7s %s\n",TotalMsgCount[Msg],NoNum,Msg &gt;TmpFile<br />
+&nbsp; &nbsp; &nbsp; close(TmpFile)<br />
+&nbsp; &nbsp; } # END<br />
+&nbsp; ' -<br />
+<br />
+&nbsp; test -f $TmpFile &amp;&amp; \<br />
+&nbsp; cat&nbsp; &nbsp; &nbsp;$TmpFile | sort -n -r &amp;&amp; \<br />
+&nbsp; rm&nbsp; &nbsp;-f $TmpFile<br />
+<br />
+} # LogParser()<br />
+<br />
+<br />
+#------------------------------------------------------------------------------<br />
+#<br />
+Msg()<br />
+{<br />
+&nbsp; Num=$1<br />
+<br />
+&nbsp; test -z "$DLC" &amp;&amp; \<br />
+&nbsp; echo "Progress DLC environment variable variable is not set." &gt;&amp;2 &amp;&amp; \<br />
+&nbsp; return<br />
+<br />
+&nbsp; if [ ! -f $DLC/prohelp/msgdata/msg1 ]<br />
+&nbsp; then<br />
+&nbsp; &nbsp; echo "Progress DLC environment variable may not be set correctly.<br />
+Set DLC variable to Progress installation directory.<br />
+Progress DLC setting: $DLC" &gt;&amp;2<br />
+&nbsp; &nbsp; return<br />
+&nbsp; fi<br />
+<br />
+&nbsp; test -z "$Num" &amp;&amp; \<br />
+&nbsp; echo "You do't specify the message number." &gt;&amp;2 &amp;&amp; \<br />
+&nbsp; return<br />
+<br />
+&nbsp; test $Num -gt 0 2&gt;/dev/null<br />
+&nbsp; if [ $? -ne 0 ]<br />
+&nbsp; then<br />
+&nbsp; &nbsp; echo "Message number ($Num) should be an integer greater than 0." &gt;&amp;2<br />
+&nbsp; &nbsp; return<br />
+&nbsp; fi<br />
+<br />
+&nbsp; i=`expr $Num - 1`<br />
+&nbsp; i=`expr $i / 50`<br />
+&nbsp; i=`expr $i + 1`<br />
+<br />
+&nbsp; File=$DLC/prohelp/msgdata/msg$i<br />
+<br />
+&nbsp; if [ ! -f $File ]<br />
+&nbsp; then<br />
+&nbsp; &nbsp; echo "Failed to find $File"<br />
+&nbsp; &nbsp; echo "$Num seemed too large for current Progress version"<br />
+&nbsp; &nbsp; cat $DLC/version<br />
+&nbsp; &nbsp; return<br />
+&nbsp; fi &gt;&amp;2<br />
+<br />
+&nbsp; test ! -r $File &amp;&amp; \<br />
+&nbsp; echo "You don't have the permissions to read $File" &gt;&amp;2 &amp;&amp; \<br />
+&nbsp; return<br />
+<br />
+&nbsp; awk '$1=='$Num' {<br />
+&nbsp; &nbsp; i=length($1)+3<br />
+&nbsp; &nbsp; Text=substr($0,i)<br />
+&nbsp; &nbsp; i=index(Text,"\" \"")<br />
+&nbsp; &nbsp; Desc=substr(Text,i+3)<br />
+&nbsp; &nbsp; Text=substr(Text,1,i-1)<br />
+&nbsp; &nbsp; i=index(Desc,"\" \"")<br />
+&nbsp; &nbsp; Desc=substr(Desc,1,i-1)<br />
+<br />
+&nbsp; &nbsp; print Text<br />
+&nbsp; &nbsp; print Desc<br />
+&nbsp; &nbsp; exit<br />
+&nbsp; }' $File | \<br />
+&nbsp; sed -e 's/\"\"/\"/'<br />
+} # Msg()<br />
+<br />
+#------------------------------------------------------------------------------<br />
+#<br />
+<br />
+# Set the default interval for login/logout statistics:<br />
+#<br />
+Options=6&nbsp; # per hour<br />
+<br />
+FileList=""<br />
+while [ $# -gt 0 ]<br />
+do<br />
+&nbsp; case $1 in<br />
+&nbsp; &nbsp; -m) Msg $2; exit;;<br />
+&nbsp; &nbsp; -h*|-help|--help) Usage;;<br />
+&nbsp; &nbsp; [0-9]*|-*) Options="$Options $1";;<br />
+&nbsp; &nbsp; *) test ! -f "$1" &amp;&amp; echo "Input file $1 does not exist!" &amp;&amp; exit 1<br />
+&nbsp; &nbsp; &nbsp; &nbsp;FileList="$FileList $1"<br />
+&nbsp; &nbsp; ;;<br />
+&nbsp; esac # case $1<br />
+&nbsp; shift<br />
+done&nbsp; # while [ $# -gt 0 ]<br />
+<br />
+# Trim the spaces:<br />
+FileList=`echo $FileList`<br />
+test "$Options" || \<br />
+Options="-prs" # = Params Remains Summary<br />
+<br />
+echo "$THIS Release $Release"<br />
+<br />
+test -z "$FileList" &amp;&amp; \<br />
+LogParser $Options || \<br />
+for File in $FileList<br />
+do<br />
+&nbsp; Size=`ls -l $File | awk '{print $5}' 2&gt;/dev/null`<br />
+&nbsp; echo "<br />
+Log File: $File<br />
+Log Size: $Size"<br />
+&nbsp; test $Size -gt 20000000 &amp;&amp; \<br />
+&nbsp; echo "Wait..."<br />
+&nbsp; cat $File | LogParser $Options<br />
+done 2&gt;&amp;1<br />
+<br />
+#<br />
+#------------------------------------------------------------------------------<br />
+<br />
+<div>
+<br /></div>
+<br /></div>

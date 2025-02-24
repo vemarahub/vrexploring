@@ -1,0 +1,38 @@
+---
+layout: post
+title: Fake Service in Angular
+date: '2020-04-16T06:31:00.002-07:00'
+author: Rajesh Nair
+tags:
+- faker service
+- rest api
+- angular
+modified_time: '2020-04-16T06:31:51.534-07:00'
+blogger_id: tag:blogger.com,1999:blog-8827475125741824309.post-5317726572489025042
+blogger_orig_url: https://csrepo.blogspot.com/2020/04/fake-service-in-angular.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<br />
+To call a fake rest api service from our angular application , we can use a fake service using angular.Follow the below steps to create a fake server hosting a json database for angular service calls:<br />
+<br />
+<b>1.</b> In the project path run the below command from cmd:<br />
+npm install json-server --save<br />
+<br />
+<b>2.</b> Inside project folder create a folder "server" with a json file, database.json with below data<br />
+{<br />
+&nbsp; &nbsp; "books": [<br />
+<span style="color: #212121; font-family: Consolas, Lucida Console, Courier New, monospace;"><span style="font-size: 12px; white-space: nowrap;">{id: 1, title: "Lockdown Dairies", author: "raje"},</span></span><br />
+<span style="color: #212121; font-family: Consolas, Lucida Console, Courier New, monospace;"><span style="font-size: 12px; white-space: nowrap;">{id: 2, title: "who do", author: "qao"}</span></span><br />
+]<br />
+}<br />
+<br />
+<b>3.</b>Add the below lines in "scripts" tag of package.json of your project<br />
+"server": "json-server --watch ./server/database.json"<br />
+<b><br /></b>
+<b>4.</b>Run the below command to run the fake service<br />
+<b>npm run server</b><br />
+<br />
+<br />
+The resource would be available at :<br />
+http://localhost:3000/books</div>

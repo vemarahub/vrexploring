@@ -1,0 +1,261 @@
+---
+layout: post
+title: Mongo Indexes
+date: '2019-03-21T05:09:00.001-07:00'
+author: Rajesh Nair
+tags:
+- Mongo
+- index
+modified_time: '2019-03-22T04:29:22.656-07:00'
+blogger_id: tag:blogger.com,1999:blog-8827475125741824309.post-1877217391572793465
+blogger_orig_url: https://csrepo.blogspot.com/2019/03/indexes.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+Index in a database is what bookmark is to a book, it helps the fast traversal and retrieval of documents through indexing of each document of a collection.<br />
+Features of a mongo index are:<br />
+*Keys can be of any type<br />
+* _id is the default index and is unique<br />
+* other than _id we can explicitly declare an index<br />
+*array contents can be indexed<br />
+*subdocuments and subfields can be indexed<br />
+<div>
+* Generally more indexes means faster reads and slower writes</div>
+<div>
+*Less indexes means slower read and faster writes<br />*Also it is faster to build an index post import than pre import</div>
+<br />
+Finding a document using index will minimize the scanning on the collection as the indexed field would be traversed directly instead of scanning the entire collection.<br />
+<br />
+<b>Create Index</b><br />
+Indexes can be created in mongo using the createIndex method<br />
+<b>&gt; db.test1.createIndex({age:1})</b><br />
+<i>{</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "createdCollectionAutomatically" : false,</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "numIndexesBefore" : 1,</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "numIndexesAfter" : 2,</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "ok" : 1</i><br />
+<i>}</i><br />
+<div>
+<br /></div>
+<div>
+We can also create a composite index on two or more fields like:</div>
+<div>
+<b>&gt; db.sample.createIndex({a:1,b:1})</b></div>
+<div>
+<br /></div>
+<div>
+<b>List Indexes</b></div>
+<div>
+We can list all the created indexes on a collection by using:</div>
+<div>
+<div>
+<b>&gt; db.test1.getIndexes()</b></div>
+<div>
+<i>[</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; {</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "v" : 2,</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "key" : {</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "_id" : 1</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; },</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "name" : "_id_",</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "ns" : "sample1.test1"</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; },</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; {</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "v" : 2,</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "key" : {</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "age" : 1</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; },</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "name" : "age_1",</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "ns" : "sample1.test1"</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; }</i></div>
+<div>
+<i>]</i></div>
+</div>
+<div>
+<br /></div>
+<div>
+Here we can see the index _id which is the default index and age_1 index which is the index we created above on the field age.</div>
+<div>
+<br /></div>
+<div>
+<b>Drop Index</b></div>
+<div>
+To delete an index from a collection , we can use the drop index method by providing the index name, for example:</div>
+<div>
+<div>
+<b>&gt; db.test1.dropIndex("age_1");</b></div>
+<div>
+<i>{ "nIndexesWas" : 2, "ok" : 1 }</i></div>
+</div>
+<div>
+<br /></div>
+<div>
+We cannot delete the _id default index.</div>
+<div>
+<br /></div>
+<h3 style="text-align: left;">
+<b>Types Of Indexes in Mongo</b></h3>
+<div>
+<b>1. Unique Indexes</b></div>
+<div>
+If we create an index as unique ,we cannot insert duplicate values into the collection index field.</div>
+<div>
+<b>&gt; db.test1.ensureIndex({"emp_id":1},{unique:true})</b><br />
+<i>{</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "createdCollectionAutomatically" : false,</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "numIndexesBefore" : 1,</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "numIndexesAfter" : 2,</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "ok" : 1</i><br />
+<i>}</i><br />
+<br />
+If we now try to add a duplicate entry for the field added as unique index, it will throw error as below:<br />
+<b>&gt; db.test1.insert({"emp_id":1012})</b><br />
+<i>WriteResult({</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "nInserted" : 0,</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "writeError" : {</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "code" : 11000,</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "errmsg" : "E11000 duplicate key error collection: sample1.test1 index: emp_id_1 dup key: { : 1012.0 }"</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; }</i><br />
+<i>})</i><br />
+<i><br /></i>
+<b>2. Sparse Indexes</b></div>
+<div>
+<div class="MsoNormal">
+For documents with a field which sparsely ( rarely ) exists
+in a collections documents.<o:p></o:p><br />
+<br /></div>
+</div>
+<div>
+<b>3. TTL Indexes</b></div>
+<div>
+<div class="MsoNormal">
+Time to Live indexes, deleted after a certain number of
+secs.<o:p></o:p></div>
+<div class="MsoNormal">
+<b>&gt; db.test1.createIndex({"age":1},{expireAfterSeconds:3600})</b></div>
+<div class="MsoNormal">
+<i>{</i></div>
+<div class="MsoNormal">
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "createdCollectionAutomatically" : false,</i></div>
+<div class="MsoNormal">
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "numIndexesBefore" : 2,</i></div>
+<div class="MsoNormal">
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "numIndexesAfter" : 3,</i></div>
+<div class="MsoNormal">
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "ok" : 1</i></div>
+<div class="MsoNormal">
+<i>}</i></div>
+<div>
+&nbsp; &nbsp; &nbsp;&nbsp;</div>
+<div>
+<b>4. Geospatial Indexes</b></div>
+<div>
+These are the indexes for the fields storing Cartesian co-ordinates [x,y].<br />
+For example for a collection with below documents with loc as the location co-ordinate field<br />
+&gt; db.places.find()<br />
+<i>{ "_id" : ObjectId("5c94ae27e83be8854bda59a8"), "loc" : [ 2, 2 ] }</i><br />
+<i>{ "_id" : ObjectId("5c94ae2ae83be8854bda59a9"), "loc" : [ 2, 4 ] }</i><br />
+<i>{ "_id" : ObjectId("5c94ae2fe83be8854bda59aa"), "loc" : [ 4, 4 ] }</i><br />
+<i><br /></i>
+We can create a geospatial index for the field location as below:<br />
+<b>&gt; db.places.ensureIndex({loc:"2dsphere"})</b></div>
+<div>
+<br /></div>
+<div>
+When we list the index using getIndex method we can see the loc index as:</div>
+<div>
+<div>
+<i>&nbsp; &nbsp;"v" : 2,</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "key" : {</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "loc" : "2dsphere"</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; },</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "name" : "loc_2dsphere",</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "ns" : "sample1.places",</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "2dsphereIndexVersion" : 3</i></div>
+</div>
+<div>
+<br /></div>
+<div>
+<br /></div>
+<div>
+<b>5. Text Indexes</b></div>
+<div>
+Text index can be used where we want to keep text fields as index,.</div>
+<div>
+We can create a text index as:</div>
+<div>
+<div>
+<b>&gt;db.items.ensureIndex({name:"text"},{default_language:"english"})</b></div>
+</div>
+<div>
+<br /></div>
+<div>
+If we list the index using getIndex we can see it as:</div>
+<div>
+<div>
+<i>&nbsp; &nbsp;"v" : 2,</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "key" : {</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "_fts" : "text",</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "_ftsx" : 1</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; },</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "name" : "name_text",</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "ns" : "sample1.items",</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "default_language" : "english",</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "weights" : {</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "name" : 1</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; },</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "language_override" : "language",</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "textIndexVersion" : 3</i></div>
+</div>
+<div>
+<br /></div>
+<div>
+<br /></div>
+<div>
+<b>Background Index</b></div>
+<div>
+We can set an index to operate on background.Normally we would keep the primary index in background and rest secondary indexes in foreground.Background indexes would be slower than the foreground .We can set an index as background while creating them as:</div>
+<div>
+<div>
+<b>&gt; db.test1.ensureIndex({"name":1},{background:true})</b></div>
+</div>
+<div>
+<br /></div>
+<div>
+<br /></div>
+<b></b></div>
+</div>

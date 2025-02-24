@@ -1,0 +1,116 @@
+---
+layout: post
+title: MySQL Configuration & Setup
+date: '2019-07-08T06:38:00.000-07:00'
+author: Rajesh Nair
+tags:
+modified_time: '2020-02-19T08:25:07.837-08:00'
+blogger_id: tag:blogger.com,1999:blog-8827475125741824309.post-6689649280249404293
+blogger_orig_url: https://csrepo.blogspot.com/2019/07/mysql-configuration-setup.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<div class="sidenav">
+This blog will cover the various configuration and setups that can be performed over a mysql server for its operations.</div>
+<br />
+<b>Server command line options</b><br />
+<br />
+*We can control the way server launches<br />
+*specify how the server access resources<br />
+*We can set connection defaults<br />
+*some options are specified at launch and some can be specified later<br />
+<br />
+The various option specification techniques are:<br />
+*On command line for manual launch<br />
+*In shell script for auto launch, not used generally<br />
+*Compile version with custom default values, also not used<br />
+*Use of configuration file(s) is the preferred technique<br />
+<b><br /></b>
+<b>Global Server Variable</b><br />
+*Variables for server operation<br />
+*Apply only to server not to a connection - so only global scope<br />
+<br />
+<b>Config File Location</b><br />
+*Platform specific locations according to OS we use<br />
+*We can use more than one config files<br />
+*Accessed in order they are encountered in the config file i.e top to bottom<br />
+<br />
+<b>Config File Structure</b><br />
+Sections<br />
+-section heading enclosed in square bracket [mysqld]<br />
+-heading names or program group<br />
+-all specification lines following heading<br />
+Eg:<br />
+[mysqld]<br />
+option = value<br />
+option2<br />
+<br />
+[client]<br />
+otheroption<br />
+<br />
+[mysql]<br />
+otheroption = some values<br />
+<br />
+<b>Config File Structure</b><br />
+* One specification per line<br />
+* Full option name used<br />
+*No leading -- char<br />
+*value if needed,assigned using = with spaces<br />
+*char values enclosed in quotes<br />
+<br />
+Special char - leading and trailing spaces deleted, escape sequence for special char \s,\t,\n,\r,\b<br />
+comment begins with # or ;<br />
+<br />
+<b>Important server settings</b><br />
+<br />
+* Server identity and resource locations<br />
+&nbsp;<span style="white-space: pre;"> </span>server-id (numeric value)<br />
+<span style="white-space: pre;"> </span>port or bind-address (numeric value)<br />
+<span style="white-space: pre;"> </span>socket and pid-file (path value)<br />
+<span style="white-space: pre;"> </span>basedir,datadir,tmpdir,slave-load-tmpdir (path value)<br />
+<span style="white-space: pre;"> </span>log-bin,slow_query_log ,general_log (path value)<br />
+<span style="white-space: pre;"> </span>log-error (path value)<br />
+<span style="white-space: pre;"> </span>ft_stopword_file ( path value)-full text indexing<br />
+<br />
+*Operational Options<br />
+<span style="white-space: pre;"> </span>lower_case_table_names - push all table nd db names as lower case for operation<br />
+<span style="white-space: pre;"> </span>sql-mode (value)<br />
+<span style="white-space: pre;"> </span>concurrent_insert [MyISAM engine]<br />
+<span style="white-space: pre;"> </span>max_connections (value)<br />
+<span style="white-space: pre;"> </span>wait_timeout or interactive timeout (value)<br />
+<span style="white-space: pre;"> </span>connect_timeout (value)<br />
+<span style="white-space: pre;"> </span>event-scheduler<br />
+<br />
+<b>Server Startup Initialization</b><br />
+<b><i>init-file option</i></b><br />
+*used to designate path to a script to be executed at launch of server<br />
+*performs operations that config varaibles cant do<br />
+<span style="white-space: pre;"> </span>-populate memory tables<br />
+<span style="white-space: pre;"> </span>-Maintain custom startup log<br />
+<span style="white-space: pre;"> </span>-Other setup as needed<br />
+<br />
+<b>Syntax of script file</b><br />
+*Seperate line for each statement and no statement terminators<br />
+*Should not include comments<br />
+*Any error will abort launch<br />
+Eg:<br />
+use world<br />
+insert into memcity select * from city<br />
+insert into memcodes select * from codes<br />
+<br />
+<b>Connection Initialization</b><br />
+<b><i>init_connect Option</i></b><br />
+*used to contain a script to be executed at launch of any connection<br />
+*Statements in scripts are deliminated by semicolon<br />
+*no delimiter at end of script<br />
+*should not include comments<br />
+*script not executed for super user<br />
+Eg:<br />
+[mysqld]<br />
+init_connect="use world;set autocommit=1"<br />
+<br />
+<b>Replication Initialization</b><br />
+<b><i>init_slave option</i></b><br />
+*used to contain a script to be executed each time the SQL thread starts for slave<br />
+*same syntax rule as init_connect<br />
+*No guaranteed to have executed when the START SLAVE command returns its response because SQL thread may not have begun</div>

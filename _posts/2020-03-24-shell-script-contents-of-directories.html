@@ -1,0 +1,158 @@
+---
+layout: post
+title: Shell Script - Contents of Directories
+date: '2020-03-24T00:09:00.001-07:00'
+author: Rajesh Nair
+tags:
+- script
+- file commands
+- shell scripting
+- unix
+modified_time: '2020-03-24T02:58:02.491-07:00'
+blogger_id: tag:blogger.com,1999:blog-8827475125741824309.post-7802605543267836903
+blogger_orig_url: https://csrepo.blogspot.com/2020/03/shell-script-contents-of-directories.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<br />
+<b>Script :</b> Displaying the Contents of Directories<br />
+<br />
+<b>Script Name:</b> formatdir.sh<br />
+<br />
+<b>Script Function:&nbsp;</b>It generates a multi column listing of files and directories, showing files with their sizes and directories with the number of files they contain.<br />
+Eg:<br />
+# ./formatdir.sh<br />
+calculator.sh (4KB)|<br />
+formatdir.sh (4KB)|<br />
+mongo (5 entries)|<br />
+scripts (74 entries)|<br />
+server_t (11 entries)|<br />
+<br />
+<b>Script Usage:</b>&nbsp;./formatdir.sh &lt; directory path &gt;<br />
+<br />
+<b><u>Code:</u></b><br />
+<div>
+<br /></div>
+<div>
+<div>
+#!/bin/bash</div>
+<div>
+# formatdir--Outputs a directory listing in a friendly and useful format</div>
+<div>
+# Note that you need to ensure "scriptbc" (Script #9) is in your current path</div>
+<div>
+# because it's invoked within the script more than once.</div>
+<div>
+#scriptbc=$(which scriptbc)</div>
+<div>
+# Function to format sizes in KB to KB, MB, or GB for more readable output</div>
+<div>
+<br /></div>
+<div>
+scriptbc(){</div>
+<div>
+if ["$1" = "-p" ] ; then</div>
+<div>
+precision=$2</div>
+<div>
+shift 2</div>
+<div>
+else</div>
+<div>
+&nbsp; &nbsp; &nbsp; &nbsp; precision=2 # Default</div>
+<div>
+fi</div>
+<div>
+bc -q -l &lt;&lt; EOF</div>
+<div>
+scale=$precision</div>
+<div>
+$*</div>
+<div>
+quit</div>
+<div>
+EOF</div>
+<div>
+}</div>
+<div>
+readablesize()</div>
+<div>
+{</div>
+<div>
+if [ $1 -ge 1048576 ] ; then</div>
+<div>
+echo "$($scriptbc -p 2 $1 / 1048576)GB"</div>
+<div>
+elif [ $1 -ge 1024 ] ; then</div>
+<div>
+echo "$($scriptbc -p 2 $1 / 1024)MB"</div>
+<div>
+else</div>
+<div>
+echo "${1}KB"</div>
+<div>
+fi</div>
+<div>
+}</div>
+<div>
+#################</div>
+<div>
+## MAIN CODE</div>
+<div>
+<br /></div>
+<div>
+if [ $# -gt 1 ] ; then</div>
+<div>
+echo "Usage: $0 [dirname]" &gt;&amp;2</div>
+<div>
+exit 1</div>
+<div>
+elif [ $# -eq 1 ] ; then # Specified a directory other than the current one?</div>
+<div>
+&nbsp; &nbsp; &nbsp; &nbsp; cd "$@" # Then let's change to that one.</div>
+<div>
+&nbsp; &nbsp; &nbsp; &nbsp; if [ $? -ne 0 ] ; then # Or quit if the directory doesn't exist.</div>
+<div>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; exit 1</div>
+<div>
+&nbsp; &nbsp; &nbsp; &nbsp; fi</div>
+<div>
+fi</div>
+<div>
+<br /></div>
+<div>
+for file in *</div>
+<div>
+do</div>
+<div>
+&nbsp; &nbsp; &nbsp; &nbsp; if [ -d "$file" ] ; then</div>
+<div>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; size=$(ls "$file" | wc -l | sed 's/[^[:digit:]]//g')</div>
+<div>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; if [ $size -eq 1 ] ; then</div>
+<div>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; echo "$file ($size entry)|"</div>
+<div>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; else</div>
+<div>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; echo "$file ($size entries)|"</div>
+<div>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; fi</div>
+<div>
+&nbsp; &nbsp; &nbsp; &nbsp; else</div>
+<div>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; size="$(ls -sk "$file" | awk '{print $1}')"</div>
+<div>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; echo "$file ($(readablesize $size))|"</div>
+<div>
+&nbsp; &nbsp; &nbsp; &nbsp; fi</div>
+<div>
+done</div>
+<div>
+sed 's/ /^^^/g' |xargs -n 2 |sed 's/\^\^\^/ /g' |awk -F\| '{ printf "%-39s %-39s\n", $1, $2 }'</div>
+<div>
+exit 0</div>
+</div>
+<div>
+<br /></div>
+</div>

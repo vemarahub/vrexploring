@@ -1,0 +1,79 @@
+---
+layout: post
+title: Shell Script - Progress Vairable Extent Size
+date: '2020-03-25T22:43:00.002-07:00'
+author: Rajesh Nair
+tags:
+- extents
+- progress
+- shell scripting
+modified_time: '2020-03-25T22:43:52.731-07:00'
+blogger_id: tag:blogger.com,1999:blog-8827475125741824309.post-4178859442749285008
+blogger_orig_url: https://csrepo.blogspot.com/2020/03/shell-script-progress-vairable-extent.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<br />
+<b>Script :</b> Progress check Variable Extent Size<br />
+<br />
+<b>Script Name: </b>checkextent.sh<br />
+<br />
+<b>Script Function: </b>check the size of the variable extents (&lt; $extentMaxSize set in the script) and display the extents reaching threshold.<br />
+<br />
+<b>Script Usage: </b>./checkextent.sh &lt; db path &gt;<br />
+<br />
+<b><u>Code:</u></b><br />
+<b><u><br /></u></b>
+#!/bin/ksh<br />
+JOB_ID=checkext<br />
+set +x<br />
+. /pro/admin/ctl/setenv.pro<br />
+<br />
+#typeset -i extentMaxSize=$((1024 * 1024 * 1843))&nbsp; &nbsp; &nbsp;# 1,8 GB<br />
+#typeset -i extentMaxSize=$((1024 * 1024 * 1536))&nbsp; &nbsp; &nbsp;# 1,5 GB<br />
+#typeset -i extentMaxSize=$((1024 * 1024 * 1024))&nbsp; &nbsp; &nbsp;# 1GB<br />
+typeset -i extentMaxSize=$((1024*1024))&nbsp; &nbsp; &nbsp;# 1MB<br />
+#-----------------------------------------------------------------------------#<br />
+# create a .st file&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;#<br />
+#-----------------------------------------------------------------------------#<br />
+prostrct list ${1} ${1}.st &gt;/dev/null<br />
+maxrc=$?<br />
+<br />
+#-----------------------------------------------------------------------------#<br />
+# Multi volume DB&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;#<br />
+#-----------------------------------------------------------------------------#<br />
+if (( ${maxrc} == 0 ))<br />
+then<br />
+for file in $(grep "^d " ${1}.st | grep -v " f " | awk ' {print $NF} ')<br />
+&nbsp; &nbsp;do<br />
+&nbsp; &nbsp; &nbsp; cd ${_dbpath}<br />
+&nbsp; &nbsp; &nbsp; cd $(dirname $file)<br />
+&nbsp; &nbsp; &nbsp; fut=$(pwd)/$(basename $file)<br />
+&nbsp; &nbsp; &nbsp; fs=$(ls -ltr ${fut} | awk ' {print $5} ')<br />
+<br />
+&nbsp; &nbsp; &nbsp; if (( ${fs} &gt; $extentMaxSize ))<br />
+&nbsp; &nbsp; &nbsp; then<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;echo "ERROR: MaxSize ($extentMaxSize) reached for ${fut} (${fs})"<br />
+&nbsp; &nbsp; &nbsp;fi<br />
+&nbsp;done<br />
+#-----------------------------------------------------------------------------#<br />
+# Single volume DB&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; #<br />
+#-----------------------------------------------------------------------------#<br />
+elif (( ${maxrc} == 2 ))<br />
+then<br />
+&nbsp; &nbsp; &nbsp;fs=$(ls -ltr ${1e} | awk ' {print $5} ')<br />
+<br />
+&nbsp; &nbsp; &nbsp;if (( ${fs} &gt; $extentMaxSize ))<br />
+&nbsp; &nbsp; &nbsp;then<br />
+&nbsp; &nbsp; &nbsp; &nbsp; echo "ERROR: MaxSize ($extentMaxSize) reached for ${1e} (${fs})"<br />
+&nbsp; &nbsp; &nbsp;fi<br />
+else<br />
+&nbsp; &nbsp; &nbsp;exit 1<br />
+fi<br />
+<br />
+#-----------------------------------------------------------------------------#<br />
+# EOF ------------------------------------------------------------------------#<br />
+#-----------------------------------------------------------------------------#<br />
+<br />
+<br />
+<b><u><br /></u></b></div>

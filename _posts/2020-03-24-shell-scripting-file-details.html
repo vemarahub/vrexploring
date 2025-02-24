@@ -1,0 +1,81 @@
+---
+layout: post
+title: Shell Script - File Details
+date: '2020-03-24T02:54:00.000-07:00'
+author: Rajesh Nair
+tags:
+- file commands
+- shells
+- shell scripting
+- unix
+modified_time: '2020-03-24T23:06:48.849-07:00'
+blogger_id: tag:blogger.com,1999:blog-8827475125741824309.post-4601483024861077906
+blogger_orig_url: https://csrepo.blogspot.com/2020/03/shell-scripting-file-details.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<br />
+<b>Script : </b>Displaying a File with Additional Information<br />
+<br />
+<b>Script Name:</b> showfile.sh<br />
+<br />
+<b>Script Function:</b>Script as an alternative to cat displaying a files additional information.<br />
+Eg: ./showfile.sh test.txt<br />
+-----------------------------------------------------------------<br />
+File test.txt (3 lines, 48 characters, owned by root):<br />
+-----------------------------------------------------------------<br />
+&nbsp;khdkhwqkd<br />
+&nbsp;wqldkjwqldb<br />
+&nbsp;wndlwqndlbnwd';kbn';md;nl<br />
+-----------------------------------------------------------------<br />
+<div>
+<br /></div>
+<b><br /></b>
+<b>Script Usage:</b> ./showfile.sh &lt; filename &gt;<br />
+<br />
+<b><u>Code:</u></b><br />
+<b><u><br /></u></b>
+#!/bin/bash<br />
+# showfile--Shows the contents of a file, including additional useful info<br />
+width=72<br />
+<br />
+fmt(){<br />
+while getopts "hw:" opt; do<br />
+&nbsp; &nbsp; &nbsp; &nbsp; case $opt in<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; h ) hyph=1 ;;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; w ) width="$OPTARG" ;;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; esac<br />
+done<br />
+shift $(($OPTIND - 1))<br />
+nroff &lt;&lt; EOF<br />
+.ll ${width:-72}<br />
+.na<br />
+.hy ${hyph:-0}<br />
+.pl 1<br />
+$(cat "$@")<br />
+EOF<br />
+exit<br />
+}<br />
+<br />
+input=$1<br />
+<br />
+&nbsp; &nbsp; &nbsp; &nbsp; lines="$(wc -l &lt; $input | sed 's/ //g')"<br />
+&nbsp; &nbsp; &nbsp; &nbsp; chars="$(wc -c &lt; $input | sed 's/ //g')"<br />
+&nbsp; &nbsp; &nbsp; &nbsp; owner="$(ls -ld $input | awk '{print $3}')"<br />
+&nbsp; &nbsp; &nbsp; &nbsp; echo "-----------------------------------------------------------------"<br />
+&nbsp; &nbsp; &nbsp; &nbsp; echo "File $input ($lines lines, $chars characters, owned by $owner):"<br />
+&nbsp; &nbsp; &nbsp; &nbsp; echo "-----------------------------------------------------------------"<br />
+&nbsp; &nbsp; &nbsp; &nbsp; while read line<br />
+&nbsp; &nbsp; &nbsp; &nbsp; do<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; if [ ${#line} -gt $width ] ; then<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; echo "$line" | fmt | sed -e '1s/^/ /' -e '2,$s/^/+ /'<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; else<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; echo " $line"<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; fi<br />
+&nbsp; &nbsp; &nbsp; &nbsp; done &lt; $input<br />
+&nbsp; &nbsp; &nbsp; &nbsp; echo "-----------------------------------------------------------------"<br />
+<br />
+exit 0<br />
+<div>
+<br /></div>
+</div>

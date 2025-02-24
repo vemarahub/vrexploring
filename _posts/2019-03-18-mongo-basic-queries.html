@@ -1,0 +1,67 @@
+---
+layout: post
+title: Mongo Basic Queries
+date: '2019-03-18T01:59:00.001-07:00'
+author: Rajesh Nair
+tags:
+- Mongo
+- basic queries
+modified_time: '2020-02-06T04:44:12.891-08:00'
+blogger_id: tag:blogger.com,1999:blog-8827475125741824309.post-6356456573198883423
+blogger_orig_url: https://csrepo.blogspot.com/2019/03/mongo-basic-queries.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+Mongo database supports a data driven style of deceleration in the form of JSON and BSON.To run the various queries in mongo , first start&nbsp;the mongo database instance with either the config file or by using dbpath paramter for mongod.<br />
+<br />
+Once the mongo database is started, run the mongo command to open mongo shell.Once the mongo shell has started you would get a prompt<br />
+<b>&gt;mongo</b><br />
+<i>MongoDB shell version: 3.0.12</i><br />
+<i>connecting to: test</i><br />
+<b>&gt;</b><br />
+<br />
+1. To see all the databases in the mongo instance use:<br />
+&gt;<b>show dbs</b><br />
+<i>local 0.078GB</i><br />
+<i>test 0.028GB</i><br />
+<b><br /></b>
+When there is no other database created, we would have only local database and test database.<br />
+<br />
+2.To create a database in mongo, we just need to use the command for switching database<br />
+<b>use myDB</b><br />
+<b><br /></b>
+This wont create the database, we need to create a collection in this database by inserting at least one document in the collection<br />
+&gt;<b>db.Employee.insert</b><br />
+<b>(</b><br />
+<b><span style="white-space: pre;"> </span>{</b><br />
+<b><span style="white-space: pre;">  </span>"Employeeid" : 1,</b><br />
+<b><span style="white-space: pre;">  </span>"EmployeeName" : "Martin"</b><br />
+<b><span style="white-space: pre;"> </span>}</b><br />
+<b>)</b><br />
+<i>WriteResult({ "nInserted" : 1 })</i><br />
+<br />
+Now if we try show dbs, we can see the database myDB also listed.<br />
+<br />
+If we try the below command we can see all the collections in the database myDB, currently it will show Employee collection and system.indexes collection which is the default collection.<br />
+<b>&gt;show collections</b><br />
+<i>Employee</i><br />
+<span style="line-height: 107%;"><span style="font-family: inherit;"><i>system.indexes&nbsp;</i></span></span><br />
+<b><br /></b>
+<b><br /></b>
+3.To return the first match in the collection use,<br />
+<span style="line-height: 107%;"><b><span style="font-family: inherit;">db.products.findOne()&nbsp;</span></b></span><br />
+<br />
+If no data is present in the products collection it will return null.<br />
+<br />
+4.To skip any document in the result set we can use skip method<br />
+<span style="line-height: 107%;"><b><span style="font-family: inherit;">db.products.find().limit(4).skip(2)</span></b></span><br />
+<span style="line-height: 107%;"><b><span style="font-family: inherit;"><br /></span></b></span>
+<span style="line-height: 107%;"><span style="font-family: inherit;">5.If we want to test our collection with some data, we can write a for loop to insert multiple documents at one go</span></span><br />
+<span style="line-height: 107%;"><span style="font-family: inherit;"><b>for( var i =0;i &lt; 20000; i++ ) {</b></span></span><br />
+<span style="line-height: 107%;"><span style="font-family: inherit;"><b>db.test.insert({x:i,y:"hi"});</b></span></span><br />
+<span style="line-height: 107%;"><span style="font-family: inherit;"><b>}</b></span></span><br />
+<br />
+6.If we want to check if any errors were reported in the last executed command we can use<br />
+<b>db.getLastError()</b><br />
+<b><br /></b>
+<b><br /></b></div>

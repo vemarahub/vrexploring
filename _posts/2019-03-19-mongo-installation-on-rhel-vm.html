@@ -1,0 +1,93 @@
+---
+layout: post
+title: Mongo Installation on RHEL VM
+date: '2019-03-19T23:44:00.003-07:00'
+author: Rajesh Nair
+tags:
+- RHEL
+- Mongo
+- VM
+- Installation
+modified_time: '2020-04-06T04:27:54.061-07:00'
+blogger_id: tag:blogger.com,1999:blog-8827475125741824309.post-2813652945002503144
+blogger_orig_url: https://csrepo.blogspot.com/2019/03/mongo-installation-on-rhel-vm.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<div class="sidenav">
+To install mongo on a red hat VM , download the rpm files from mongo website according to the RHEL version you are using and the mongo version you want:</div>
+<div dir="ltr" style="text-align: left;" trbidi="on">
+https://repo.mongodb.org/yum/redhat/<br />
+<br />
+For my case, i am using a RHEL 7 VM here and installing mongo 4.0.6 version,<br />
+<br />
+1. Download the&nbsp; below rpm files from website and copy to VM<br />
+<b>mongodb-org-4.0.6-1.el7.x86_64.rpm</b><br />
+<b>mongodb-org-mongos-4.0.6-1.el7.x86_64.rpm</b><br />
+<b>mongodb-org-server-4.0.6-1.el7.x86_64.rpm</b><br />
+<b>mongodb-org-shell-4.0.6-1.el7.x86_64.rpm</b><br />
+<b>mongodb-org-tools-4.0.6-1.el7.x86_64.rpm</b><br />
+<div>
+<br /></div>
+2.Install the rpms on the VM in the below order:<br />
+<b>&nbsp; a. rpm -ivh mongodb-org-shell-4.0.6-1.el7.x86_64.rpm</b><br />
+<b>&nbsp; b.&nbsp; rpm -ivh mongodb-org-tools-4.0.6-1.el7.x86_64.rpm</b><br />
+<b>&nbsp; c.&nbsp; rpm -ivh mongodb-org-server-4.0.6-1.el7.x86_64.rpm</b><br />
+<b>&nbsp; d. rpm -ivh mongodb-org-mongos-4.0.6-1.el7.x86_64.rpm</b><br />
+<b>&nbsp; e. rpm -ivh mongodb-org-4.0.6-1.el7.x86_64.rpm</b><br />
+<div>
+<br /></div>
+<div>
+3.Start the mongod process to start working with mongo</div>
+<div>
+<div>
+<b>systemctl start mongod</b></div>
+</div>
+<div>
+<br /></div>
+<div>
+4.Check if the mongod process has started by :</div>
+<div>
+<div>
+<b>systemctl status mongod</b></div>
+</div>
+<div>
+<div>
+<i>&nbsp; &nbsp;Loaded: loaded (/usr/lib/systemd/system/mongod.service; enabled)</i></div>
+<div>
+<i>&nbsp; &nbsp;Active: active (running) since Wed 2010-09-15 04:30:14 PDT; 3min 22s ago</i></div>
+<div style="font-weight: bold;">
+<br /></div>
+</div>
+<div>
+<b><br /></b></div>
+<div>
+<b>ps -ef |grep mongod</b></div>
+<div>
+<div>
+<i>mongod&nbsp; &nbsp; &nbsp;4696&nbsp; &nbsp; &nbsp; 1&nbsp; 0 04:30 ?&nbsp; &nbsp; &nbsp; &nbsp; 00:00:01 /usr/bin/mongod -f /etc/mongod.conf</i><br />
+<i><br /></i>
+5. If you want to edit any default startup parameters like port, db path etc, you can do it by editing /etc/mongod.conf file and restarting mongod process by using systemctl restart mongod</div>
+<div style="font-weight: bold;">
+<br /></div>
+</div>
+<div>
+6.Start a mongo shell to start working on mongo database</div>
+<div>
+<div>
+<b>[root@localhost ~]# mongo</b></div>
+<div>
+<b><br /></b></div>
+<div>
+<i>MongoDB shell version v4.0.6</i></div>
+<div>
+<i>connecting to: mongodb://127.0.0.1:27017/?gssapiServiceName=mongodb</i></div>
+<div>
+<i>Implicit session: session { "id" : UUID("036d0f9a-7fe7-4b11-9555-750f50d75dea") }</i></div>
+<div>
+<i>MongoDB server version: 4.0.6</i></div>
+</div>
+<div>
+<i>&gt;</i></div>
+</div>
+</div>

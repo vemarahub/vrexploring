@@ -1,0 +1,51 @@
+---
+layout: post
+title: Basic Prompt Commands
+date: '2019-03-07T01:35:00.000-08:00'
+author: Rajesh Nair
+tags:
+- MySQL
+- MySQL commands
+modified_time: '2019-03-12T03:11:38.113-07:00'
+blogger_id: tag:blogger.com,1999:blog-8827475125741824309.post-1028466080578142383
+blogger_orig_url: https://csrepo.blogspot.com/2019/03/prompt-basic-commands.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<br />
+<br />
+<br />
+To login to a particular database use the below command:<br />
+<br />
+<b>mysql -u root -p &lt;dbname&gt;</b><br />
+<b><br /></b>To connect to mysql server installed on a remote machine<br />
+<br />
+<b>mysql -u root -p &lt;dbname&gt;&nbsp;-h 192.168.1.200</b><br />
+<b><br /></b><b><u>Create Database</u></b><br />
+<b><br /></b>To create a new database in the mysql server , login to mysql prompt and use:<br />
+<br />
+<b>mysql&gt; create database publications;</b><br />
+<b><br /></b><b>mysql&gt;&nbsp;</b><b>show databases;</b><br />
+<b><br /></b><b>mysql&gt;&nbsp;use publications;</b><br />
+<b><br /></b><b>select database();</b><br />
+<b>select user();</b><br />
+<br />
+<b>select version();</b><br />
+<b><br /></b><b><u>Establish Remote Connection</u></b><br />
+<b><br /></b><b>ON VM1</b><br />
+systemctl stop firewalld<br />
+systemctl disable firewalld<br />
+ifconfig<br />
+<br />
+mysql -u root -p<br />
+grant all on publications.* to 'ilg'@'192.168.197.130' identified by 'My20SQL@2019';<br />
+<br />
+<b>ON VM2</b><br />
+ifconfig<br />
+su<br />
+yum install mariadb.x86_64<br />
+<br />
+mysql -h '192.168.197.131' -u ilg -p<br />
+<br />
+<br />
+<b><br /></b></div>

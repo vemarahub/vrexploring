@@ -1,0 +1,97 @@
+---
+layout: post
+title: MySQL Percona
+date: '2019-03-07T03:50:00.000-08:00'
+author: Rajesh Nair
+tags:
+- MySQL
+- Percona
+modified_time: '2019-03-12T04:38:01.608-07:00'
+blogger_id: tag:blogger.com,1999:blog-8827475125741824309.post-7936931508446940022
+blogger_orig_url: https://csrepo.blogspot.com/2019/03/mysql-percona.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<br />
+<br />
+Percona is a third party tool used for taking physical backup of the entire MySQL Server to a backup path.<br />
+<br />
+<h3 style="text-align: left;">
+<b><u>Installation of Percona</u></b></h3>
+<b><u><br /></u></b>1. Download the percona rpm from the below path<br />
+<b>https://repo.percona.com/yum/percona-release-latest.noarch.rpm</b><br />
+<br />
+2. Install the rpm to the server<br />
+<b>rpm -ivh percona-release-latest.noarch.rpm</b><br />
+<br />
+3. Search the percona tool in server using yum<br />
+<b>yum search percona</b><br />
+<b>yum list|grep percona</b><br />
+<br />
+4. Install the percona using yum<br />
+<br />
+<b>yum install percona-xtrabackup-24.x86_64</b><br />
+<b><br /></b><b><br /></b><br />
+<h3 style="text-align: left;">
+<b><u>User Addition for Percona Backup</u></b></h3>
+<b><u><br /></u></b>1. Add new user ilg for taking percona backup<br />
+<b>useradd ilg</b><br />
+<b><br /></b>2.Create a password for ilg user<br />
+<b>passwd ilg</b><br />
+<b><br /></b>3.Add the ilg user to mysql group<br />
+<b>gpasswd -a ilg mysql</b><br />
+<br />
+4.Create a new folder for taking backup and give ownership to&nbsp; ilg<br />
+<b>mkdir -p /data/backups</b><br />
+<b>chown -R ilg: /data</b><br />
+<br />
+5.Login to mysql and create a new user for taking backup and provide required privilges<br />
+<b>mysql -u root -p</b><br />
+<b>create user 'bkpadmin'@'localhost' identified by '!@#Ilg007';</b><br />
+<b>grant reload,process,lock tables,replication client on *.* to 'bkpadmin'@'localhost';</b><br />
+<br />
+<b>flush privileges;</b><br />
+<b><br /></b>
+<h3 style="text-align: left;">
+<b><u>Copy Files &amp; Applying Logs</u></b></h3>
+<b><u><br /></u></b>1. Use innobackupex utility to copy the mysql server completely to<b>&nbsp;</b>/data/backup/new_data path<br />
+<b>innobackupex --user=bkpadmin --password='!@#Ilg007' --notimestamp /data/backup/new_data</b><br />
+<b><br /></b>2. Apply latest logs to the backup path<br />
+<br />
+<b>innobackupex --apply-log /data/backup/new_backup/2019-03-07_03-36-23/</b><br />
+<b><br /></b><b><br /></b><br />
+<h3 style="text-align: left;">
+<b><u>Restore</u></b></h3>
+<div>
+<div>
+1. Stop the mysqld service before taking backup</div>
+<div>
+<b>systemctl stop mysqld.service</b></div>
+<div>
+<b><br /></b></div>
+<div>
+2. Check for any active mysql service to verify server has been stopped</div>
+<div>
+<b>ps -ef|grep mysql</b></div>
+<div>
+<b><br /></b></div>
+<div>
+3.Move the existing mysql to a temp path to empty the existing mysql server path before restoration</div>
+<div>
+<b>mkdir /tmp/mysql-l</b></div>
+<div>
+<b>mv /var/lib/mysql/* /tmp/mysql-l</b></div>
+<div>
+<br /></div>
+<div>
+4.use below command to restore the mysql server from the backup path</div>
+<div>
+<b>innobackupex --copy-back /data/backup/new_backup/2019-03-07_03-36-23/</b></div>
+<div>
+<br /></div>
+<div>
+5.Start the mysql service and verify the restoration</div>
+<div>
+<b>systemctl start mysqld</b></div>
+</div>
+</div>

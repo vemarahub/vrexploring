@@ -1,0 +1,137 @@
+---
+layout: post
+title: Replication
+date: '2019-03-08T03:15:00.000-08:00'
+author: Rajesh Nair
+tags:
+- MySQL
+- MySQL Replication
+modified_time: '2019-03-12T04:38:25.564-07:00'
+blogger_id: tag:blogger.com,1999:blog-8827475125741824309.post-4714057747642338496
+blogger_orig_url: https://csrepo.blogspot.com/2019/03/replication.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<br />
+<br />
+Follow the below steps to configure MySQL Replication in the Linux servers :<br />
+<br />
+1. For VM systems firewall has to be disabled&nbsp; to enable replication connections between the servers<br />
+<b>cat /etc/selinux/config</b><br />
+<b>set&nbsp;SELINUX = disabled</b><br />
+<b><br /></b>2. Check selinux status by using:<br />
+<b>sestatus</b><br />
+<br />
+3. Stop and disable firewalld<br />
+<b>systemctl stop firewalld</b><br />
+<b>systemctl disable firewalld</b><br />
+<b><br /></b>4. Set hostname for the two VMs to identify uniquely<br />
+<b>hostnamectl set-hostname db01</b><br />
+<b>hostnamectl set-hostname db02</b><br />
+<b><br /></b>5. Edit hosts file to add ip and hostname<br />
+<b>/etc/hosts</b><br />
+<b>&lt;ip&gt; db01</b><br />
+<b>&lt;ip&gt; db02</b><br />
+<b><br /></b>6. Follow the below steps on master and slave as below:<br />
+<br />
+<b>ON MASTER</b><br />
+<b>--------------</b><br />
+7. grant slave access to a new replication user<br />
+<b>mysql -u root -p</b><br />
+<b>prompt master&gt;</b><br />
+<b>grant replication slave on *.* to 'repadmin'@'%' identified by '!@#Ilg007';&nbsp;</b><br />
+<b>flush privileges;</b><br />
+<br />
+8. Ediy my.cnf file to add replication parameters on Master<br />
+<b>vi /etc/my.cnf</b><br />
+<b>#Replication Parameters</b><br />
+<b>bind-address=0.0.0.0</b><br />
+<b>server-id=1</b><br />
+<b>log-bin=mysql-bin</b><br />
+<b>binlog-ignore-db="mysql"</b><br />
+<br />
+9. Restart mysqld server<br />
+<b>systemctl stop mysqld</b><br />
+<b>systemctl start mysqld</b><br />
+<b><br /></b><b>tail /var/log/mysqld.log</b><br />
+<br />
+10. Dump database from master to copy to slave to provode initial sync<br />
+<b>mysqldump -u root -p --databases publications &gt; publications.sql</b><br />
+<b>scp publications.sql db02:/root</b><br />
+<br />
+<b>ON SLAVE</b><br />
+<b>-----------</b><br />
+<b><br /></b>11. ssh to second VM from first VM and set prompt as slave<br />
+<b>ssh db02</b><br />
+<b>prompt slave&gt;</b><br />
+<br />
+12. Edit my.cnf file to add replication parameters and restart mysqld server<br />
+<b>vi /etc/my.cnf</b><br />
+<br />
+<b>#Replication parameters</b><br />
+<b>bind-address=0.0.0.0</b><br />
+<b>server-id=2</b><br />
+<b>#master-host=db01</b><br />
+<b>#master-user=repadmin</b><br />
+<b>#master-password=!@#Ilg007</b><br />
+<b>#master-connect-retry=60</b><br />
+<b><br /></b><b>systemctl stop mysqld</b><br />
+<b>systemctl start mysqld</b><br />
+<br />
+13. Restore th master database to slave after scp<br />
+<b>slave&gt;create database publications;</b><br />
+<b>mysql -u root -p -D publications &lt; publications.sql</b><br />
+<br />
+14. Use the below query in mysql prompt setup replication parameters<br />
+<b>change master to master_host='db01',</b><br />
+<b>master_port=3306,master_user='repadmin',master_password='!@#Ilg007';</b><br />
+<br />
+15. Start slave on MySQL prompt<br />
+<b>start slave;</b><br />
+<br />
+16. Check slave status to see of syncing has started on slave<br />
+<b>show slave status;</b><br />
+<b><br /></b>17. Login to master and create a new table and add entries and check in slave if it is getting added through replication<br />
+<br />
+Some other commands used are:<br />
+flush logs<br />
+show binlog events<br />
+show master status<br />
+show master logs<br />
+reset master<br />
+reset slave<br />
+<h4 style="text-align: left;">
+<div style="font-weight: 400;">
+The logs which are used for replication are called binary logs in master and relay logs on slave.</div>
+<div style="font-weight: 400;">
+replication user account will pull up bin logs and write to slave relay logs for replication to take&nbsp;</div>
+<div style="font-weight: 400;">
+place.Multiple binary files created one after another when size reaches.</div>
+<div style="font-weight: 400;">
+<br /></div>
+<div style="font-weight: 400;">
+When a statement is about to finish executing ,&nbsp;it writes an entry to the end of the binary log and sends the statement parser a notification that it has completed statement.</div>
+</h4>
+<div>
+<br /></div>
+<h4 style="text-align: left;">
+<b></b><b>Types of replication</b></h4>
+<br />
+<b>Statement Based</b> - (SBR) - whichever sql statements executed in master is executed in slave as well using bin logs<br />
+<b>Row Based</b>- where each row updated in master is copied to slave row by row<br />
+<b>Mix - </b>This is mixed type of replication which contains both statement based and row based replication.<br />
+<br />
+<br />
+<h4 style="text-align: left;">
+<b>Replication Topology</b></h4>
+-Master to multiple replica<br />
+-Master to Master in active active mode<br />
+-Master to Master with slaves<br />
+-Does not support multisource replication<br />
+-Ring Replication<br />
+-Master distribution master with replicas<br />
+<br />
+Percona tool kit can be used for managing replication in MySQL servers.Some commands for percona tool are:<br />
+percona tool kit - pt-table-checksum<br />
+pt-table-checksum --replica-set<br />
+pt-table-sync</div>

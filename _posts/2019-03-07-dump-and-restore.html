@@ -1,0 +1,25 @@
+---
+layout: post
+title: Dump and Restore
+date: '2019-03-07T03:36:00.000-08:00'
+author: Rajesh Nair
+tags:
+- MySQL Restore
+- MySQL
+- MySQL Dump
+modified_time: '2019-03-12T04:37:45.520-07:00'
+blogger_id: tag:blogger.com,1999:blog-8827475125741824309.post-6465704593401728244
+blogger_orig_url: https://csrepo.blogspot.com/2019/03/dump-and-restore.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<br />
+<br />
+The logical dump of&nbsp; all database can be done using mysqldump utility as below:<br />
+<b>mysqldump -u root -p --all-databases &gt; all_databases.sql</b><br />
+<b><br /></b>The logical dump of a particular database can be done using mysqldump utility as below:<br />
+<b>mysqldump -u root -p publications &gt; publications.sql</b><br />
+<b><br /></b><b><br /></b>The restore the dumped sql flat file can be done for all databases can be done as<br />
+<b>mysql -u root -p &lt; all_databases.sql</b><br />
+<b><br /></b>The restore for a particular database can be done as below<br />
+<b>mysql -u root -p -D publications &lt; publications.sql</b></div>

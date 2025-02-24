@@ -1,0 +1,120 @@
+---
+layout: post
+title: Shell Script - Check Area Utilization
+date: '2020-03-24T07:23:00.000-07:00'
+author: Rajesh Nair
+tags:
+- progress
+- shell scripting
+- storage area
+modified_time: '2020-03-24T23:07:10.795-07:00'
+blogger_id: tag:blogger.com,1999:blog-8827475125741824309.post-2654610371190368115
+blogger_orig_url: https://csrepo.blogspot.com/2020/03/shell-scripting-check-area-utilization.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<br />
+<b>Script :</b> Progress database area utilization<br />
+<br />
+<b>Script Name:</b> progress_area_rpt.sh<br />
+<br />
+<b>Script Function:</b> Get the Actual DB Size,get Max area size &amp; current utilization per area.Get the current utilization of all the file system where the database files resides. Sent mail to specified group as per the configuration.<br />
+<br />
+<b>Script Usage: </b>./progress_area_rpt.sh <all name=""></all><br />
+<br />
+<b><u>Code:</u></b><br />
+<b><u><br /></u></b>
+<b><u><br /></u></b>
+DB_NAME="${1%%\.db}"<br />
+MAIL_ID="xxxxxxx@xxx.com"<br />
+CNT=0<br />
+<br />
+if [ $# != 1 ]<br />
+then<br />
+&nbsp; echo "Shuld run in format $0 <all atabase="" name="">"</all><br />
+&nbsp; exit<br />
+fi<br />
+<br />
+if [ ! -f ${DB_NAME}.db ]; then<br />
+&nbsp; &nbsp;if [ "${DB_NAME}" = "ALL" ]; then<br />
+&nbsp; &nbsp; &nbsp; echo "Running for all the DBs"<br />
+&nbsp; &nbsp;else<br />
+&nbsp; &nbsp; &nbsp; echo "Database ${DB_NAME} doesn't exist. Pass parameter as ALL or please enter the correct DB. Exiting..."<br />
+&nbsp; &nbsp; &nbsp; exit<br />
+&nbsp; &nbsp;fi<br />
+fi<br />
+<br />
+DATE=`date +%Y-%m-%d:%H:%M:%S`<br />
+<br />
+echo "Report Time:$DATE"&gt;/tmp/area_rpt.txt<br />
+echo "============================"&gt;&gt;/tmp/area_rpt.txt<br />
+<br />
+#Below Function for statistics calculation<br />
+#below for the area utilization check<br />
+area_util()<br />
+{<br />
+&nbsp; &nbsp;DB_NM="${1%%\.db}"<br />
+&nbsp; &nbsp;echo "Database Name: ${DB_NM}"&gt;&gt;/tmp/area_rpt.txt<br />
+&nbsp; &nbsp;prostrct statistics ${DB_NM}&gt;/tmp/stat_rpt.txt<br />
+&nbsp; &nbsp;DB_BLK_SIZE=`cat /tmp/stat_rpt.txt|grep "Primary data block size:"|awk -F":" '{print $2}'| sed 's,^ *,,; s, *$,,'`<br />
+&nbsp; &nbsp;TOT_BLK_USD=`cat /tmp/stat_rpt.txt|egrep "Database Block Usage for Area|Data blocks"|tail -1|awk -F":" '{print $2}'| sed 's,^ *,,; s, *$,,'`<br />
+&nbsp; &nbsp;TOT_DB_SIZE=`echo "scale=4;(${TOT_BLK_USD}*${DB_BLK_SIZE})/(1024*1024*1024)"|bc`<br />
+&nbsp; &nbsp;if [ ${TOT_DB_SIZE} -lt 1 ]; then<br />
+&nbsp; &nbsp; &nbsp; TOT_DB_SIZE="0${TOT_DB_SIZE}"<br />
+&nbsp; &nbsp;fi<br />
+&nbsp; &nbsp;cat /tmp/stat_rpt.txt|egrep "Database Block Usage for Area|Data blocks"|awk 'NR&gt;2'|sed '$ d'&gt;/tmp/area_rpt<br />
+&nbsp; &nbsp;echo "Total DB Size:${TOT_DB_SIZE} GB"&gt;&gt;/tmp/area_rpt.txt<br />
+&nbsp; &nbsp;echo ""&gt;&gt;/tmp/area_rpt.txt<br />
+exec<br />
+&nbsp; &nbsp;while read LINE; do<br />
+&nbsp; &nbsp; &nbsp; if [ "$CNT" = "0" ]; then<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;AREA_NAM=`echo $LINE|awk -F":" '{print $2}'| sed 's,^ *,,; s, *$,,'`<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;CNT=1<br />
+&nbsp; &nbsp; &nbsp; else<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;CNT=0<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;USED_BLK=`echo $LINE|awk -F":" '{print $2}'| sed 's,^ *,,; s, *$,,'`<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;USED_SIZE=`echo "scale=4;(${USED_BLK}*${DB_BLK_SIZE})/(1024*1024*1024)"|bc`<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;if [ ${USED_SIZE} -lt 1 ]; then<br />
+<span style="white-space: pre;"> </span>&nbsp; &nbsp; USED_SIZE="0${USED_SIZE}"<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;fi<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;REC_PER_BLK=`cat ${DB_NM}.st|grep -w "${AREA_NAM}"|tail -1|awk -F":" '{print $2}'|awk -F" " '{print $1}'|awk -F";" '{print $1}'|awk -F"," '{print $2}'`<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;CLUST_SIZE=`cat ${DB_NM}.st|grep -w "${AREA_NAM}"|tail -1|awk -F":" '{print $2}'|awk -F" " '{print $1}'|awk -F";" '{print $2}'`<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;if [ "${CLUST_SIZE}" = "1" -o "${CLUST_SIZE}" = "" ]; then<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; MAX_AREA_SIZE=`echo "((2147483648/${REC_PER_BLK})*${DB_BLK_SIZE})/(1024*1024*1024)"|bc`<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; MAX_AREA_SIZE="${MAX_AREA_SIZE} GB"<br />
+&nbsp; <span style="white-space: pre;"> </span> else<br />
+<span style="white-space: pre;"> </span>&nbsp; &nbsp; MAX_AREA_SIZE="1024 TB"<br />
+&nbsp; &nbsp; &nbsp;<span style="white-space: pre;"> </span> fi<br />
+<span style="white-space: pre;"> </span> echo "${AREA_NAM}"&gt;&gt;/tmp/area_rpt.txt<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;echo "-----------------"&gt;&gt;/tmp/area_rpt.txt<br />
+<span style="white-space: pre;"> </span> echo "Max Area Size:${MAX_AREA_SIZE}"&gt;&gt;/tmp/area_rpt.txt<br />
+&nbsp; &nbsp; &nbsp; &nbsp;<span style="white-space: pre;"> </span> echo "Area Utilized:${USED_SIZE} GB"&gt;&gt;/tmp/area_rpt.txt<br />
+&nbsp; &nbsp; &nbsp;fi<br />
+&nbsp; done<br />
+&nbsp; echo ""&gt;&gt;/tmp/area_rpt.txt<br />
+&nbsp; echo "Database Filesystem Utilization"&gt;&gt;/tmp/area_rpt.txt<br />
+&nbsp; echo "-----------------------------------"&gt;&gt;/tmp/area_rpt.txt<br />
+&nbsp; cat ${DB_NM}.st|grep "^d"|awk -F":" '{print $2}'|awk -F" " '{print $2}'|awk -F"_" '{print $1}'|awk -F"." '{print $1}'|sort -u&gt;/tmp/db_files.txt<br />
+&nbsp; for LINE in `cat /tmp/db_files.txt`; do<br />
+&nbsp; &nbsp; &nbsp;df -k ${LINE}*|sort -u|grep -v "Filesystem"|sed '$d'|awk -F" " '{print $5 "--" $4 " Used"}'&gt;&gt;/tmp/file_util.txt<br />
+&nbsp; done<br />
+&nbsp; cat /tmp/file_util.txt|sort -u&gt;&gt;/tmp/area_rpt.txt<br />
+&nbsp; rm /tmp/file_util.txt<br />
+}<br />
+if [ "${DB_NAME}" = "ALL" ]; then<br />
+&nbsp; &nbsp;for i in `cat /pro/admin/ctl/protab|grep -v "#"|awk 'NF&gt;0'|awk -F" " '{print $3"/"$1}'|awk -F"," '{print $1}'`; do<br />
+&nbsp; &nbsp; &nbsp; area_util $i<br />
+&nbsp; &nbsp; &nbsp; echo "************************************************************************"&gt;&gt;/tmp/area_rpt.txt<br />
+&nbsp; &nbsp; &nbsp; echo ""&gt;&gt;/tmp/area_rpt.txt<br />
+&nbsp; &nbsp;done<br />
+else<br />
+&nbsp; &nbsp;area_util ${DB_NAME}<br />
+fi<br />
+echo ""&gt;&gt;/tmp/area_rpt.txt<br />
+echo "Regards,"&gt;&gt;/tmp/area_rpt.txt<br />
+echo "Progress DBA"&gt;&gt;/tmp/area_rpt.txt<br />
+<br />
+cat /tmp/area_rpt.txt|mailx -r xxxx@xxx.com -s "NOTIFY:: AREA UTILIZATION REPORT -- ${DB_NAME} -- `hostname`" ${MAIL_ID}<br />
+<div>
+<br /></div>
+</div>

@@ -1,0 +1,194 @@
+---
+layout: post
+title: JS Script for Shard Setup in Mongo
+date: '2019-03-29T07:12:00.001-07:00'
+author: Rajesh Nair
+tags:
+- JS
+- Mongo
+- Shard
+modified_time: '2019-04-02T03:31:17.817-07:00'
+blogger_id: tag:blogger.com,1999:blog-8827475125741824309.post-4587751246466740977
+blogger_orig_url: https://csrepo.blogspot.com/2019/03/js-script-for-shard-setup-in-mongo.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+Instead of setting up each shard replica set and adding them to shard in the mongos shell we can use the below js script and load it to mongos to add mongo shards without much hassle:<br />
+<br />
+db = db.getSisterDB("config");<br />
+<br />
+var mongosConn = db; // assume we connected to a mongos to get going<br />
+<br />
+var res = null;<br />
+<br />
+function check() {<br />
+&nbsp; &nbsp; &nbsp; &nbsp; printjson(res);<br />
+&nbsp; &nbsp; &nbsp; &nbsp; if( !res || !res.ok ) {<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; throw "check(): not ok, stopping";<br />
+&nbsp; &nbsp; &nbsp; &nbsp; }<br />
+}<br />
+<br />
+function waitForSetHealthy() {<br />
+&nbsp; &nbsp; &nbsp; &nbsp; print("waiting for repl set initiate to complete...");<br />
+&nbsp; &nbsp; &nbsp; &nbsp; while( 1 ) {<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; sleep(250);<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; var res = rs.status();<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; if( !res.ok )<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; continue;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; var bad = false;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; for (var i = 0; i &lt; res.members.length; i++ ) {<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; var state = res.members[i].state;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; if( state != 1 &amp;&amp; state != 2 ) // primary or secondary?<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; bad = true;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; }<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; if( !bad )<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; break;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; }<br />
+}<br />
+<br />
+function ourAddShard(setname,port) {<br />
+&nbsp; &nbsp; &nbsp; &nbsp; db = connect("localhost:"+port+"/test");<br />
+&nbsp; &nbsp; &nbsp; &nbsp; print(db.isMaster().me);<br />
+&nbsp; &nbsp; &nbsp; &nbsp; res = rs.initiate(<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; {<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "_id" : setname,<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "members" : [<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { _id: 0, host: "localhost:" + port },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { _id: 1, host: "localhost:" + (port+1) },<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { _id: 2, host: "localhost:" + (port+2) }<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ]<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; }<br />
+&nbsp; &nbsp; &nbsp; &nbsp; );<br />
+&nbsp; &nbsp; &nbsp; &nbsp; check();<br />
+&nbsp; &nbsp; &nbsp; &nbsp; waitForSetHealthy();<br />
+<br />
+&nbsp; &nbsp; &nbsp; &nbsp; print("adding shard...");<br />
+&nbsp; &nbsp; &nbsp; &nbsp; db = mongosConn;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; res = sh.addShard(setname+"/localhost:"+port);<br />
+&nbsp; &nbsp; &nbsp; &nbsp; check();<br />
+&nbsp; &nbsp; &nbsp; &nbsp; print("done; run sh.status()");<br />
+}<br />
+<br />
+print("setup.js loaded.");<br />
+print("list of existing shards before doing anything:");<br />
+printjson( db.shards.find().toArray() );<br />
+print()<br />
+print("You can invoke:");<br />
+print("ourAddShard(setname,port)");<br />
+print()<br />
+<div>
+<br /></div>
+<div>
+Just save the js to a&nbsp;initiateShard.js file and load to the mongos</div>
+<div>
+<b>&nbsp;mongo -shell initiateShard.js</b></div>
+<div>
+<b><br /></b></div>
+<div>
+Now we can simple add any new shard replica set to existing shards by invoking:</div>
+<div>
+<br /></div>
+<div>
+ourAddShard(setname,port)</div>
+<div>
+<br /></div>
+<div>
+e g:</div>
+<div>
+&gt;<b>ourAddShard("d",27300)</b></div>
+<div>
+<div>
+<i>connecting to: mongodb://localhost:27300/test</i></div>
+<div>
+<i>Implicit session: session { "id" : UUID("666f3569-f12b-4d6b-87bf-58325ec616bb") }</i></div>
+<div>
+<i>MongoDB server version: 4.0.6</i></div>
+<div>
+<i>[unknown type]</i></div>
+<div>
+<i>{</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "ok" : 1,</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "operationTime" : Timestamp(1284551107, 1),</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "$clusterTime" : {</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "clusterTime" : Timestamp(1284551107, 1),</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "signature" : {</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "hash" : BinData(0,"AAAAAAAAAAAAAAAAAAAAAAAAAAA="),</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "keyId" : NumberLong(0)</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; }</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; }</i></div>
+<div>
+<i>}</i></div>
+<div>
+<i>waiting for repl set initiate to complete...</i></div>
+<div>
+<i>adding shard...</i></div>
+<div>
+<i>{</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "shardAdded" : "d",</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "ok" : 1,</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "operationTime" : Timestamp(1284551121, 3),</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "$clusterTime" : {</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "clusterTime" : Timestamp(1284551121, 3),</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "signature" : {</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "hash" : BinData(0,"AAAAAAAAAAAAAAAAAAAAAAAAAAA="),</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "keyId" : NumberLong(0)</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; }</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; }</i></div>
+<div>
+<i>}</i></div>
+<div>
+<i>done; run sh.status()</i><br />
+<i><br /></i>
+If you run sh.status() after adding the shards you will get the below response:<br />
+<b>mongos&gt;sh.status()</b><br />
+<i>--- Sharding Status ---</i><br />
+<i>&nbsp; sharding version: {</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "_id" : 1,</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "minCompatibleVersion" : 5,</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "currentVersion" : 6,</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "clusterId" : ObjectId("4c90af09e7e0f635a571e413")</i><br />
+<i>&nbsp; }</i><br />
+<i>&nbsp; shards:</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; {&nbsp; "_id" : "a",&nbsp; "host" : "a/localhost:27000,localhost:27001,localhost:27002",&nbsp; "state" : 1 }</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; {&nbsp; "_id" : "b",&nbsp; "host" : "b/localhost:27100,localhost:27101,localhost:27102",&nbsp; "state" : 1 }</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; {&nbsp; "_id" : "c",&nbsp; "host" : "c/localhost:27200,localhost:27201,localhost:27202",&nbsp; "state" : 1 }</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; {&nbsp; "_id" : "d",&nbsp; "host" : "d/localhost:27300,localhost:27301,localhost:27302",&nbsp; "state" : 1 }</i><br />
+<i>&nbsp; active mongoses:</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "4.0.6" : 4</i><br />
+<i>&nbsp; autosplit:</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; Currently enabled: yes</i><br />
+<i>&nbsp; balancer:</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; Currently enabled:&nbsp; yes</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; Currently running:&nbsp; no</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; Failed balancer rounds in last 5 attempts:&nbsp; 0</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; Migration Results for the last 24 hours:</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; No recent migrations</i><br />
+<i>&nbsp; databases:</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; {&nbsp; "_id" : "config",&nbsp; "primary" : "config",&nbsp; "partitioned" : true }</i><br />
+<i><br /></i><br />
+<div>
+<br /></div>
+<br /></div>
+<div style="font-weight: bold;">
+<br /></div>
+</div>
+</div>

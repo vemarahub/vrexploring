@@ -1,0 +1,87 @@
+---
+layout: post
+title: Shell Script - Progress Add Extents
+date: '2020-03-26T05:33:00.000-07:00'
+author: Rajesh Nair
+tags:
+- database
+- extents
+- progress
+- shell scripting
+modified_time: '2020-03-26T05:35:26.392-07:00'
+blogger_id: tag:blogger.com,1999:blog-8827475125741824309.post-8389479033372454246
+blogger_orig_url: https://csrepo.blogspot.com/2020/03/shell-script-progress-add-extents.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<br />
+<b>Script : </b>Progress add&nbsp; new extents<br />
+<br />
+<b>Script Name: </b>addextent.sh<br />
+<br />
+<b>Script Function:</b> Add new extent to the database provided in the add.st file in database path after shutting down the database and restarting after extents are added.<br />
+<br />
+<b>Required Files:&nbsp; </b>stoppro.sh, startpro.sh, add.st<br />
+<br />
+<b>Script Usage: </b>./addextent.sh &lt; path to db &gt; &lt; db name &gt;<dbname></dbname><br />
+<br />
+<b><u>Code:</u></b><br />
+<b><u><br /></u></b>
+#!/bin/bash<br />
+JOB_ID=autoextent<br />
+set +x<br />
+<br />
+. /pro/admin/ctl/setenv.pro<br />
+dbpath=$1<br />
+dbname=$2<br />
+db=$1"/"$2<br />
+<br />
+echo "You are going to shutdown the database and add follow extents to the database"<br />
+echo ""<br />
+cat $dbpath/add.st<br />
+echo ""<br />
+echo "Do you want to Continue? Y/N"<br />
+read ip<br />
+<br />
+if [ ${ip} = "Y" ]<br />
+then<br />
+#-----------------------------------------------------------------------------#<br />
+#&nbsp; update structure description file&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; #<br />
+#-----------------------------------------------------------------------------#<br />
+prostrct list $db $db.st<br />
+<br />
+#-----------------------------------------------------------------------------#<br />
+#&nbsp; stop db&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; #<br />
+#-----------------------------------------------------------------------------#<br />
+<br />
+stoppro.sh $db -t<br />
+<br />
+#-----------------------------------------------------------------------------#<br />
+#&nbsp; add extent&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;#<br />
+#-----------------------------------------------------------------------------#<br />
+prostrct add $db $dbpath/add.st<br />
+<br />
+#-----------------------------------------------------------------------------#<br />
+#&nbsp; start db&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;#<br />
+#-----------------------------------------------------------------------------#<br />
+startpro.sh $db $db.pf<br />
+<br />
+#-----------------------------------------------------------------------------#<br />
+#&nbsp; update structure description file&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; #<br />
+#-----------------------------------------------------------------------------#<br />
+prostrct list $db $db.st<br />
+<br />
+#-----------------------------------------------------------------------------#<br />
+# Perform backup&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; #<br />
+#-----------------------------------------------------------------------------#<br />
+#/pro/admin/bin/backup.sh /pro/admin/gall/prd/multistore/pmultistore cold -s -fok<br />
+echo "Extent addition completed Succesfully!!"<br />
+<br />
+fi<br />
+#=============================================================================#<br />
+# EOF&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;#<br />
+<br />
+#=============================================================================#<br />
+<div>
+<br /></div>
+</div>

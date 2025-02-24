@@ -1,0 +1,95 @@
+---
+layout: post
+title: Routing in Angular
+date: '2020-04-10T00:07:00.000-07:00'
+author: Rajesh Nair
+tags:
+- routing
+- bootstrap
+- angular
+modified_time: '2020-04-10T00:09:52.615-07:00'
+blogger_id: tag:blogger.com,1999:blog-8827475125741824309.post-7083665165464162622
+blogger_orig_url: https://csrepo.blogspot.com/2020/04/routing-in-angular.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<br />
+We can route hyperlinks to route to any of the components based on url changes using single page application at client side instead of loading whole page.So basically what routing does is:<br />
+<br />
+* Page navigation, to create " Single Page Application"<br />
+* Route maps a URL to its component<br />
+<br />
+<h3 style="text-align: left;">
+Steps for routing:</h3>
+<div>
+<br /></div>
+<div>
+<b>1.</b> Importing @angular/router package in package.json ( already present when ng new is created )</div>
+<div>
+<br /></div>
+<div>
+<b>2. </b>Define base url in index.html<br />
+<div style="background-color: #1e1e1e; color: #d4d4d4; font-family: Consolas, &quot;Courier New&quot;, monospace; font-size: 14px; line-height: 19px; white-space: pre;">
+&nbsp;&nbsp;<span style="color: grey;">&lt;</span><span style="color: #569cd6;">base</span>&nbsp;<span style="color: #9cdcfe;">href</span>=<span style="color: #ce9178;">"/"</span><span style="color: grey;">&gt;</span></div>
+</div>
+<div>
+<base href="/"></base></div>
+<br />
+<b>3. </b>Create hyperlink for route ( in app.component.html)<br />
+<br />
+eg:<br />
+<div style="background-color: #1e1e1e; color: #d4d4d4; font-family: Consolas, &quot;Courier New&quot;, monospace; font-size: 14px; line-height: 19px; white-space: pre;">
+<span style="color: grey;">&lt;</span><span style="color: #569cd6;">a</span>&nbsp;<span style="color: #9cdcfe;">class</span>=<span style="color: #ce9178;">"nav-link"</span>&nbsp;<span style="color: #9cdcfe;">routerLink</span>=<span style="color: #ce9178;">"dashboard"</span><span style="color: grey;">&gt;</span>Dashboard<span style="color: grey;">&lt;/</span><span style="color: #569cd6;">a</span><span style="color: grey;">&gt;</span></div>
+<br />
+<b>4.</b>Create router module in app-routing.module.ts ( add path and component for components to be added like dashboard, rest will already be created by ng new initially)<br />
+<div style="background-color: #1e1e1e; color: #d4d4d4; font-family: Consolas, &quot;Courier New&quot;, monospace; font-size: 14px; line-height: 19px; white-space: pre;">
+<div>
+<span style="color: #c586c0;">import</span>&nbsp;{&nbsp;<span style="color: #9cdcfe;">NgModule</span>&nbsp;}&nbsp;<span style="color: #c586c0;">from</span>&nbsp;<span style="color: #ce9178;">'@angular/core'</span>;</div>
+<div>
+<span style="color: #c586c0;">import</span>&nbsp;{&nbsp;<span style="color: #9cdcfe;">Routes</span>,&nbsp;<span style="color: #9cdcfe;">RouterModule</span>&nbsp;}&nbsp;<span style="color: #c586c0;">from</span>&nbsp;<span style="color: #ce9178;">'@angular/router'</span>;</div>
+<div>
+<span style="color: #c586c0;">import</span>&nbsp;{&nbsp;<span style="color: #9cdcfe;">DashboardComponent</span>&nbsp;}&nbsp;<span style="color: #c586c0;">from</span>&nbsp;<span style="color: #ce9178;">'./dashboard/dashboard.component'</span>;</div>
+<div>
+<span style="color: #c586c0;">import</span>&nbsp;{&nbsp;<span style="color: #9cdcfe;">AboutComponent</span>&nbsp;}&nbsp;<span style="color: #c586c0;">from</span>&nbsp;<span style="color: #ce9178;">'./about/about.component'</span>;</div>
+<br />
+<br />
+<div>
+<span style="color: #569cd6;">const</span>&nbsp;<span style="color: #9cdcfe;">routes</span>:&nbsp;<span style="color: #4ec9b0;">Routes</span>&nbsp;=&nbsp;[</div>
+<div>
+&nbsp;&nbsp;{</div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #9cdcfe;">path</span><span style="color: #9cdcfe;">:</span><span style="color: #ce9178;">"dashboard"</span>,<span style="color: #4ec9b0;">component</span><span style="color: #9cdcfe;">:</span><span style="color: #4ec9b0;">DashboardComponent</span></div>
+<div>
+&nbsp;&nbsp;},</div>
+<div>
+&nbsp;&nbsp;{</div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #9cdcfe;">path</span><span style="color: #9cdcfe;">:</span><span style="color: #ce9178;">"about"</span>,<span style="color: #4ec9b0;">component</span><span style="color: #9cdcfe;">:</span><span style="color: #4ec9b0;">AboutComponent</span></div>
+<div>
+&nbsp;&nbsp;}</div>
+<div>
+];</div>
+<br />
+<div>
+@<span style="color: #4ec9b0;">NgModule</span>({</div>
+<div>
+&nbsp;&nbsp;<span style="color: #9cdcfe;">imports</span><span style="color: #9cdcfe;">:</span>&nbsp;[<span style="color: #4ec9b0;">RouterModule</span>.<span style="color: #dcdcaa;">forRoot</span>(<span style="color: #9cdcfe;">routes</span>)],</div>
+<div>
+&nbsp;&nbsp;<span style="color: #9cdcfe;">exports</span><span style="color: #9cdcfe;">:</span>&nbsp;[<span style="color: #4ec9b0;">RouterModule</span>]</div>
+<div>
+})</div>
+<div>
+<span style="color: #c586c0;">export</span>&nbsp;<span style="color: #569cd6;">class</span>&nbsp;<span style="color: #4ec9b0;">AppRoutingModule</span>&nbsp;{&nbsp;}</div>
+</div>
+<br />
+<br />
+<b>5. </b>Create router outlet in app.component.html<br />
+<div style="background-color: #1e1e1e; color: #d4d4d4; font-family: Consolas, &quot;Courier New&quot;, monospace; font-size: 14px; line-height: 19px; white-space: pre;">
+<div>
+<span style="color: grey;">&lt;</span><span style="color: #569cd6;">div</span>&nbsp;<span style="color: #9cdcfe;">class</span>=<span style="color: #ce9178;">"container-fluid"</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;<span style="color: grey;">&lt;</span><span style="color: #569cd6;">router-outlet</span><span style="color: grey;">&gt;&lt;/</span><span style="color: #569cd6;">router-outlet</span><span style="color: grey;">&gt;</span></div>
+<div>
+<span style="color: grey;">&lt;/</span><span style="color: #569cd6;">div</span><span style="color: grey;">&gt;</span></div>
+</div>
+</div>

@@ -1,0 +1,56 @@
+---
+layout: post
+title: Tablespace in MySQL
+date: '2019-03-12T21:23:00.000-07:00'
+author: Rajesh Nair
+tags:
+- MySQL
+- Tablespace
+modified_time: '2019-03-12T23:57:31.083-07:00'
+blogger_id: tag:blogger.com,1999:blog-8827475125741824309.post-5875158097870326090
+blogger_orig_url: https://csrepo.blogspot.com/2019/03/tablespaces.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+In MySQL table space can be created to store tables of the MySQL server.<br />
+If we don't create a tablespace of our own the default tablespace for any new table created would be "innodb_system".<br />
+<br />
+To create a new tablespace in the MySQL server use the below command:<br />
+<br />
+<b>create tablespace ts3 add datafile 'ts3.ibd' engine=innodb;</b><br />
+<b><br /></b>
+The data file is the physical file location of the tablespace , we can create in a custom location we want or by default it will be created in /var/lib/mysql path<br />
+<br />
+To create the tablespace in a custom path, create the new folder and change the ownership of the folder to mysql.<br />
+<b>mkdir /var/lib/tabsc/</b><br />
+<b>chown -R mysql: /var/lib/tabsc/</b><br />
+<br />
+Then the new tablespace can be created on the new path as below:<br />
+<b>create tablespace ts4 add datafile '/var/lib/tabsc/ts4.ibd' file_block_size=8192 engine=innodb;</b><br />
+<b><br /></b>
+The file_block_size refers to the block size for the tablespace created.By default it is 16kb.<br />
+Even if the tablespace is created in a seperate path, a .isl (innodb symbolic link) will be created in the default /var/lib/mysql path.The file .isl will have the custom path of the tablespace.<br />
+<br />
+We can see all the tables under a particular tablespaces in MySQL using the below query :<br />
+<span style="font-family: inherit;"><b>SELECT FILE_ID, FILE_NAME, FILE_TYPE, TABLESPACE_NAME, FREE_EXTENTS, TOTAL_EXTENTS,&nbsp;&nbsp;</b></span><br />
+<span style="font-family: inherit;"><b>EXTENT_SIZE, INITIAL_SIZE, MAXIMUM_SIZE, AUTOEXTEND_SIZE,DATA_FREE, STATUS ENGINE&nbsp;</b></span><br />
+<span style="font-family: inherit;"><b>FROM INFORMATION_SCHEMA.FILES WHERE TABLESPACE_NAME LIKE 'innodb_system' \G</b></span><br />
+<span style="font-family: inherit;"><b><br /></b></span>
+<span style="font-family: inherit;">While creating a new table , we can specify the tablespace it should fall as below:</span><br />
+<br />
+<b>create table t1 (c1 int primary key) tablespace ts4 row_format=compressed key_block_size=8;</b><br />
+<div>
+<br /></div>
+<div>
+We can change the tablespace of a particular table to another tablespace using the alter query:</div>
+<div>
+<div>
+<b>alter table t1 tablespace t5;</b></div>
+</div>
+<div>
+<b><br /></b></div>
+<div>
+<br /></div>
+<div>
+<br /></div>
+</div>

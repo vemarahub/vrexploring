@@ -1,0 +1,254 @@
+---
+layout: post
+title: MySQL Architecture
+date: '2019-07-02T03:16:00.002-07:00'
+author: Rajesh Nair
+tags:
+modified_time: '2020-02-19T08:26:03.060-08:00'
+blogger_id: tag:blogger.com,1999:blog-8827475125741824309.post-3010218068664195728
+blogger_orig_url: https://csrepo.blogspot.com/2019/07/mysql-architecture.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<div class="sidenav">
+MySQL follows a client server architecture where the mysqld programs which are the core programs of the database system act as the server and various agent programs like mysql act as client which communicates with the server using a communication protocol for example a socket connection for mysql , tcp/ip connection for a php client, namedpipe communication protocol for a mysqldump etc.</div>
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<br />
+A mysqld program is a single process multi threaded program in which each connection to the database is a thread.It has a modular design structure with various subsystems or modules :<br />
+&nbsp; &nbsp; &nbsp; <br />
+Below is the flow of data/query in a mysql architecture<br />
+<br />
+<b>Connection API</b>&nbsp;<b>=&gt;</b> <b>SQL Parser</b>&nbsp;<b>=&gt;</b> <b>Query Cache</b> (if has exact query returns result set) else&nbsp;<b>=&gt;</b><br />
+<b>SQL Parser</b> (converts query to Binary code)&nbsp;<b>=&gt;&nbsp;</b><b>Query Optimizer</b> (contains Index&amp;Table Statistics,performs calculation and generates execution plan)<b>=&gt;&nbsp;</b><b>Execution engine</b>&nbsp;<b>=&gt;</b><b>&nbsp;Storage Engine</b><br />
+<br />
+Each of the subsystems of MySQL architecture are:<br />
+<br />
+<h3 style="text-align: left;">
+<u>* Client Libraries</u></h3>
+<div>
+<div>
+<b>mysql connectors</b> - Application Programming Interface</div>
+<div>
+<span style="white-space: pre;">  </span> used to create client programs</div>
+<div>
+<span style="white-space: pre;">  </span>establish a connection to server</div>
+<div>
+<br /></div>
+<div>
+<b>connectors from oracle</b></div>
+<div>
+Native C client library(libmysqlclient)</div>
+<div>
+<span style="white-space: pre;"> </span>- Included with MySQL distrubition</div>
+<div>
+<span style="white-space: pre;"> </span>&nbsp; Connector/ODBC(based on C)</div>
+<div>
+<span style="white-space: pre;"> </span>&nbsp; connector/J(in Java)</div>
+<div>
+<span style="white-space: pre;"> </span> connector/NET(in C#)</div>
+<div>
+<span style="white-space: pre;"> </span> PHP(mysql &amp; mysqli extention)</div>
+<div>
+download from dev.mysql.com</div>
+<div>
+<br /></div>
+<div>
+<b>embedded connector from Oracle</b></div>
+<div>
+embedded C client library(libmysqld)</div>
+<div>
+connector/mxj(in java)</div>
+<div>
+<br /></div>
+<div>
+<b>third party connectors</b></div>
+<div>
+most are wrappers for basic C connector(written in perl,python,ruby,lua,schema..)</div>
+</div>
+<div>
+<br /></div>
+<h3 style="text-align: left;">
+<u>* Core Subsystem</u></h3>
+<div>
+These are&nbsp;shared subsystem as modules inside mysql server.These includes:</div>
+<div>
+<div>
+log management</div>
+<div>
+built in function library</div>
+<div>
+network communications</div>
+<div>
+thread process &amp; resource management</div>
+<div>
+access &amp; privilege management</div>
+<div>
+cache &amp; buffer&nbsp; management</div>
+</div>
+<div>
+<br /></div>
+<h3 style="text-align: left;">
+<u>* Performance Cache</u></h3>
+<div>
+<b>Query cache</b> is used&nbsp;to speed up data access in ready only parts of database.Not much use for tables where data changes.All cached queries for table are removed on insert ,update,delete on the table.</div>
+<div>
+<br /></div>
+<div>
+<b>Thread cache </b>is used for high volume,low persistent access to database server. It is used to re-use thread for new connection in constant log on/log off situation thus less time will be required to retrieve data as new thread is not created. Not useful for high persistence systems.</div>
+<div>
+<br /></div>
+<div>
+<b>MyISAM Index Page Cache&nbsp;</b>cached index pages can be read much faster.Maintained in most recently used order.Large tables where only recent rows are commonly retrieved.</div>
+<div>
+<br /></div>
+<div>
+<br />
+<h3 style="text-align: left;">
+<u>* Query Parsing</u></h3>
+</div>
+<div>
+<div>
+converts SQL text to binary</div>
+<div>
+two modules - lexical scanner,grammer rules module</div>
+<div>
+parses sql into tokens - keyword,field,etc.</div>
+<div>
+Applies grammer rule to check validity</div>
+<div>
+construct parse tree to pass to optimizer</div>
+</div>
+<h3 style="text-align: left;">
+<u>* Query Cache</u></h3>
+<div>
+<div>
+used to avoid full SQL execution</div>
+<div>
+caches 3 things for query:</div>
+<div>
+-hash of query statement</div>
+<div>
+-result set</div>
+<div>
+-list of tables used</div>
+<div>
+Only works for EXACT queries in cache</div>
+<div>
+best for high read,low write tables</div>
+</div>
+<div>
+<br /></div>
+<div>
+<div>
+How Query cache works</div>
+<div>
+incoming query is hashed -&gt; sought in cache -&gt; returned result set to client -&gt; if not found,execute and cache it.If table is updated all the queries are removed.</div>
+<h3 style="text-align: left;">
+<u>* Query Optimizer</u></h3>
+<div>
+<div>
+analyze parse tree and determine best execution plan.</div>
+<div>
+uses specialized resources&nbsp; - index &amp; table statistics.,cost based algo and rules</div>
+<div>
+execution plan developed to minimize reads, passed to execution engine</div>
+<div>
+Determine possible indexes to use</div>
+<div>
+balance cost of index use vs table scan</div>
+<div>
+determine table join order</div>
+<div>
+eliminates uneeded table and where info</div>
+<div>
+find indexes to handle GROUP &amp; ORDER</div>
+<div>
+educated guess of best path is needed.</div>
+</div>
+<div>
+<br /></div>
+<h3 style="text-align: left;">
+<u>* MYSQL Plugin Interface</u></h3>
+<div>
+<div>
+plugin types - storage engines,full text parser engines,information schema plugins,deamon plugins,replace UDF with pluggable functions.</div>
+<div>
+plug-in paths are stored in mysql database table.</div>
+</div>
+<div>
+<br /></div>
+<h3 style="text-align: left;">
+<u>*&nbsp;Storage Engines</u></h3>
+<div>
+<div>
+From version 5.5 are storage engines now plug-ins</div>
+<div>
+features dependent on Storage Engine</div>
+<div>
+*Transaction support</div>
+<div>
+*Locking level(row,page or table)</div>
+<div>
+*Storage medium (disk,memory or cluster)</div>
+<div>
+* Data type and index type support</div>
+<div>
+* Caching of data and indexes</div>
+<div>
+<br /></div>
+<div>
+MyISAM - myql db, implicit temp tables</div>
+<div>
+InnoDB - transaction support,row locking</div>
+<div>
+Memory - Fast,RAM based access,schema on disk</div>
+<div>
+<br /></div>
+<div>
+Engines assigned on table by table basis.</div>
+</div>
+<div>
+<br /></div>
+<h3 style="text-align: left;">
+<u>* Information Schema</u></h3>
+<div>
+<div>
+primary metadata repo - read only - mainly in RAM,some on disk.Dynamically updated with current server state</div>
+<div>
+draws from mysql tables and server info</div>
+<div>
+generated on server startup - system views</div>
+<div>
+more flexible than SHOW commands, but requires more effort - includes aggregation,joins.</div>
+</div>
+<div>
+<br /></div>
+<h3 style="text-align: left;">
+<u>*&nbsp;H/W and OS issues</u></h3>
+<div>
+<div>
+32 bit or 64 bit ( 32 limits addresses to 4GB)</div>
+<div>
+64 bit hardware with 32 bit OS aware</div>
+<div>
+Physical or virtual server</div>
+<div>
+multiple cores , but each thread can use only one core</div>
+<div>
+<br /></div>
+<div>
+Ask questions like: -</div>
+<div>
+expected data set size?</div>
+<div>
+how fast will storage needs to grow</div>
+<div>
+how much concurent traffic is expected</div>
+<div>
+SAN or RAID is usually good</div>
+<div>
+<br /></div>
+</div>
+</div>
+</div>
+</div>

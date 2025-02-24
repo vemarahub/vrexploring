@@ -1,0 +1,162 @@
+---
+layout: post
+title: MySQL Server
+date: '2019-07-04T23:48:00.000-07:00'
+author: Rajesh Nair
+tags:
+modified_time: '2020-02-19T08:27:21.707-08:00'
+blogger_id: tag:blogger.com,1999:blog-8827475125741824309.post-5947471298336719713
+blogger_orig_url: https://csrepo.blogspot.com/2019/07/mysql-server.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<div dir="ltr" style="text-align: left;" trbidi="on">
+MySQL Server has different types of distribution starting from the Original MySQL from Oracle who are the current owners of MySQL.In 2010 Oracle had merged their dev team for MySQL with innoDB team and have many mirror sites for downloading the official core product.<br />
+<br />
+Besides Oracle , we have other distributors which provide MySQL "forks" for example maria db , percona server etc.<br />
+<br />
+MySQL Forks are&nbsp;based on original source code , developed independently or in parallel.<br />
+There were also internal forks "drizzle" within MySQL.Some of the forks are<br />
+aira SE-<span style="white-space: pre;"> </span>improved crash safe MyISAM alternative,<span style="white-space: pre;"> </span>intended to eventually provide features of InnoDB while retaining MyISAM<br />
+<br />
+Percona Server fork-<span style="white-space: pre;"> </span>significant community contributor,<span style="white-space: pre;"> </span>XtraDB Storage Engine,<span style="white-space: pre;"> </span>replacement for InnoDB,<span style="white-space: pre;"> </span>superior performance,efficiency,scalability,ease of use<br />
+<br />
+<b>Distribution Methods&nbsp;</b><br />
+<div>
+The distribution method are broadly of types:</div>
+<div>
+* <b>Source Code</b></div>
+<div>
+<b><br /></b></div>
+<div>
+*<b>Binary Packages -</b> tarball or zip archives</div>
+<div>
+<div>
+archive package includes components + scripts</div>
+<div>
+we determine where to install</div>
+<div>
+set appropriate permissions</div>
+<div>
+manual work involved</div>
+<div>
+chances to make mistakes</div>
+</div>
+<div>
+<br /></div>
+<div>
+*<b>Scripted Installers -</b> for windows installation/config wizards ( msi ) or for unix as distro packages (rpm,deb,pkg,dmg).</div>
+<div>
+<div>
+preferred installation method</div>
+<div>
+performs most installation steps automatically</div>
+<div>
+prompts for options</div>
+<div>
+packages includes components and a script to follow for installation</div>
+<div>
+script is automatically performed</div>
+<div>
+installed components can still be moved</div>
+</div>
+<div>
+<br /></div>
+<div>
+<b>Versions</b></div>
+<div>
+<div>
+mysql 5.1 GA , 5.5 , 5.6</div>
+<div>
+maria db 5.1(aria SE-crash safe) ,5.2</div>
+<div>
+percona server(follows MySQL + extraDB SE )</div>
+</div>
+<div>
+<br /></div>
+<div>
+<b>MySQL on Windows</b></div>
+<div>
+<div>
+*Scripted installation -</div>
+<div>
+&nbsp;<span style="white-space: pre;"> </span>wizard installers in one .msi(installation &amp; configuration wizard)</div>
+<div>
+<span style="white-space: pre;"> </span>executables in program files directory tree</div>
+<div>
+<span style="white-space: pre;"> </span>Data directory in documents &amp; settings -&gt; all users -&gt; applicaton data</div>
+<div>
+<span style="white-space: pre;"> </span>Registry , env variables,windows service setup all performed</div>
+<div>
+*Unscripted installation -</div>
+<div>
+<span style="white-space: pre;"> </span>zip archive containing all components</div>
+<div>
+<span style="white-space: pre;"> </span>unzip and add the bin directory to PATH variable,handle registry setting as well as server as service.Must create and populate an options file(.ini or cnf).</div>
+<div>
+Remove any unnecessary default accounts</div>
+</div>
+<div>
+<br /></div>
+<div>
+<b>MySQL on Linux</b></div>
+<div>
+<div>
+*Scripted -&nbsp;native package manager, or use generic rpm on system that support glibc 2.3 <span style="white-space: pre;"> </span>standard C library.Separate packages for server and client</div>
+<div>
+*Unscripted -<span style="white-space: pre;"> </span>tarball installed using terminal pgm.lengthy and complex manual process</div>
+<div>
+*MySQL Optimized Configuration Architecture (MOCA )-<span style="white-space: pre;"> </span>setting up a host machine specifically as a dedicated MySQL server host.Optimizing for performance and ease of backup and maintenance</div>
+</div>
+<div>
+<br /></div>
+<div>
+<b>Upgrading MySQL</b></div>
+<div>
+Keep in mind the below points while performing an upgrade:</div>
+<div>
+*read manual for details</div>
+<div>
+<div>
+*perform each major upgrade until desired version is installed</div>
+<div>
+*Stop MySQL before upgrade</div>
+<div>
+*Always backup data before upgrading</div>
+<div>
+*Run mysql_upgrade after installation</div>
+<div>
+<br /></div>
+<div>
+Windows: using msi package for dot release, old version will be replaced by new version</div>
+<div>
+recommended for manual upgrade also except for data directory, all components should be replaced</div>
+<div>
+<br /></div>
+<div>
+Linux:upgrade all components to same version.If using rpms use same ones for new versions.</div>
+<div>
+<b><br /></b></div>
+<div>
+<b>Using Multiple MySQL Server</b></div>
+<div>
+A multiple MySQL Server might be required to be installed on a single host for&nbsp;testing new version while using existing, provide different servers on same host for different users(ISPs do this for hosting customers or companies having department service), main server and filtering server for replication(tables use black hole engine to filter).</div>
+<div>
+<br /></div>
+<div>
+<b>Setting up multiple server on one host</b></div>
+<div>
+<div>
+*each server is a seperate installation</div>
+<div>
+*each must have all its own resources ( data dr,logs etc)</div>
+<div>
+*important configuration variables ( --port,--basedir,--innodb_data_file_path,--bind-adress,--datadir,server name,--socket,--tempdir,--defaults-file,--pid-file,log files)</div>
+<div>
+*config file in each basedir or shared config file with mysqld name to each.</div>
+</div>
+<div>
+<br /></div>
+</div>
+</div>
+</div>

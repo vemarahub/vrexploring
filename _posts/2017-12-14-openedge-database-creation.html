@@ -1,0 +1,20 @@
+---
+layout: post
+title: OpenEdge Database Creation
+date: '2017-12-14T09:12:00.000-08:00'
+author: Rajesh Nair
+tags:
+- data dictionary
+- progress
+- openedge
+- database creation
+- procopy
+- prodb
+- prostrct
+- prorest
+modified_time: '2020-02-05T10:59:16.797-08:00'
+blogger_id: tag:blogger.com,1999:blog-8827475125741824309.post-1876361231498112272
+blogger_orig_url: https://csrepo.blogspot.com/2017/12/openedge-database-creation.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on"><br /><br />Since we are done with installation of the Progress Openedge product , now we are free to play around with the features of Openedge and explore the opertaions a DBA can perform on the database system.<br /><br /><br />First and Foremost , we need a database to start with.Once installation is completed, we are free to create our own databases and perform various operations on the same.<br /><br />As discussed in previous blogs, the installation directory on progress product for a Unix//LinuxSolaris/AIX environment would be by defaut "/usr/dlc" ,which can be set as environment variable , preferably DLC and set in PATH to utilize various utilities (present in /usr/dlc/bin) which progress provides for us to operate upon.<br /><br /><br /><br />Following are the various utilities using which we can create a database :<br /><br /><h3 style="text-align: left;"><b>1. Prostrct :&nbsp;</b></h3>&nbsp;Prostrct utility can be used to create a database with the help of a structure file (.st) (explained in further blogs).The following would be the command used:<br /><b>Eg:</b><br /><b>prostrct create abc abc.st -blocksize 8192</b><br /><br />By default blocksize would be 4K(4096).<br /><br />This would create a void db of the name "abc" in the OS path where the command is executed.<br /><br />We can make it a workable database by copying empty db(sample db ,comes along progress installation in installation path) to the newly created db.<br /><b><br /></b><b>procopy /usr/dlc/empty8 abc</b><br /><br />Now a database abc is available in single user mode and can be accessed by below command<br /><br /><b>pro abc</b><br /><b><br /></b><b><br /></b><b><br /></b><br /><h3><b>2. Prodb:&nbsp;</b></h3><div>When using prodb to create a copy of a database, all the database copy will reside in the same directory , unless a structure file (.st)</div><div><br /></div><div><b>prodb abc sports2000</b></div><div><b><br /></b></div><div>sports2000 is sample db which comes with openedge instllation.</div><div><br /></div><div>The new db abc will have all its documents in sports2000 path ,and would be a replica of the existing db.</div><div><br /></div><div><br /></div><div><br /></div><div><h3><b>3. Procopy:&nbsp;</b></h3></div><div>Using procopy utility we can copy an existing database into a newly created database (using prostrct).<br />This will create a database with schema replica of the database copied.<br /><br /><b>procopy testdb abc</b></div><div><br /><br /><h3><b>4. Prorest:</b></h3></div><div>We can restore a database backup ( taken using probkup utility ) and re create a database backup into a working system using prorest</div><div><br /></div><div><b>prorest abc abc.bkp</b></div><div><b><br /></b></div><div><b><br /></b></div><div><h3><b>5. Using Data Administration Tool:</b></h3></div><div>We can access the data administartion tool of an existing database and choose Database --&gt; Create&nbsp;</div><div>Then enter the database name ,enter appropriate information and choose OK to create a new db.</div><div><br /></div><div><br /></div><div><b><br /></b></div><div><b><br /></b></div><div><b><br /></b></div><div><b><br /></b></div></div>

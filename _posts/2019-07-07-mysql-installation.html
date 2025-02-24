@@ -1,0 +1,102 @@
+---
+layout: post
+title: MySQL Installation
+date: '2019-07-07T22:36:00.003-07:00'
+author: Rajesh Nair
+tags:
+modified_time: '2020-02-19T08:25:16.995-08:00'
+blogger_id: tag:blogger.com,1999:blog-8827475125741824309.post-6630227677748235163
+blogger_orig_url: https://csrepo.blogspot.com/2019/07/mysql-installation.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<b><br /></b>
+<b>What is Installed</b><br />
+&nbsp;*bin directory ( and sbin in some ) = contains server prgms (mysqld and others)<br />
+*data directory( contains db directory )<br />
+&nbsp;*innoDB tablespace file and transaction logs<br />
+* my.cnf file<br />
+<br />
+&nbsp;
+<b>What is tweaked:</b><br />
+* mysql db(containing administrative info) created on some systems<br />
+*Time zone tables ( optional )<br />
+*PATH env variable ( location of bin directory )<br />
+*setup server for auto launch<br />
+*update my.cnf to reflect setup changes<br />
+<br />
+&nbsp;
+
+<b>Windows Installation</b>
+
+program in Program File directory
+data in different location depending on version
+
+C:\prgm files\MySQL Server
+bin - pgm files including mysqld
+lib - libraries
+include - include header files
+share - support files - char set files,utility scripts
+data - "Template" data directory
+example my.ini files<br />
+<br />
+&nbsp;
+<b>Data directory [ windows XP &amp; 2003 Server ]</b>
+C:\Doc &amp; setting\all users\...<br />
+&nbsp;data - real data directory,db directories,innoDB tablespace files,innodb trans log files,various log files
+my.ini - real config file<br />
+<br />
+&nbsp;
+
+<b>Data directory [ windows 7 &amp; 2008 Server ]</b>
+C:\ProgramData\MySQL<br />
+<br />
+&nbsp;
+<b>Linux Installation</b>
+
+in rpm installation
+client pgms in /usr/bin
+server pgms /usr/sbin
+logs &amp; database /var/lib/mysql
+various supoprt files including charcter set,example config files,scripts etc in /usr/share/mysql
+other /usr directories /lib and /include
+/tmp<br />
+<b><br /></b>
+<b>
+Initailizing data directory</b>
+
+tar installation would require us to do initialize of data directory,since mysql db is required for operations.We have script to initialize it
+
+executing script:
+*use mysql_install_db from scripts directory
+*server should not be running
+scripts/mysql_install_db --user=mysql --bootstrap{run in min mode} --skip-grant-tables<br />
+<br />
+&nbsp;
+<b>Named Time Zone Tables</b>
+
+Optional, time zone setting affects TIMESTAMP values
+helps in daylight saving and local time zone variations
+Tables are already in mysql db
+
+Unix - copy OS time zone info to time zone table
+ use mysql_tzinto_to_sql pgm which generates SQL script
+mysql_tzinfo_to_sql /usr/share/zoneinfo | mysql -u root mysql
+
+Windows - retrieve complete time zone tables as zip from dev.mysql.com/downloads/timezones.html and replace existing files with complete ones<br />
+<br />
+&nbsp;
+
+<b>First Admin User account</b>
+
+most imp user - root
+remove all but root@localhost
+account should have all privs and grant option
+can rename the account from root
+login and create other users
+
+
+
+
+
+</div>

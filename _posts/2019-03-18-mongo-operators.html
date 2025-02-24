@@ -1,0 +1,215 @@
+---
+layout: post
+title: Mongo Operators
+date: '2019-03-18T06:40:00.002-07:00'
+author: Rajesh Nair
+tags:
+- Operators
+- updating
+- aggregate
+- Mongo
+- querying
+- sorting
+modified_time: '2020-03-11T04:32:10.481-07:00'
+blogger_id: tag:blogger.com,1999:blog-8827475125741824309.post-3523464900388418279
+blogger_orig_url: https://csrepo.blogspot.com/2019/03/mongo-operators.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+Mongo database provides various operators to support the querying on the mongo shell.<br />
+These are some of the operators used:<br />
+<br />
+<br />
+<h3 style="text-align: left;">
+<b>Querying :</b></h3>
+<b><br /></b>
+1. $gte,$gt,$lte,$lt<br />
+These operators can be used to place a condition in our find query with a comparison like ( &lt; ) $lt , ( &lt;= ) $lte , ( &gt;) $gt (&gt;=) $gte for our query.An example for searching documents in the inventory collection to find where quantity is greater than equal to 20 is:<br />
+<b>db.products.find({qty:{$gte:20}})</b><br />
+<br />
+2.$in<br />
+$in is used when we want to search the collection for all the documents whose value of that field equals any value in the specified array of the $in operator<br />
+<b>db.products.find( { qty: { $in: [ 5, 15 ] } } )</b><br />
+<b><br /></b>3.$nin<br />
+It selects documents where the field value is not in the specified array or the field does not exist<br />
+<b>db.inventory.find( { qty: { $nin: [ 5, 15 ] } } )</b><br />
+<b><br /></b>
+4.$type<br />
+It returns documents where the BSON type of the field matches the BSON type passed to $type<br />
+<b>db.addressBook.find( { "zipCode" : { $type : "string" } } );</b><br />
+This will return the documents with zip code field having a string data type values.<br />
+<br />
+5.$exists<br />
+This operator can be used to return all the documents in the collection where that particular field exists.<br />
+<b>db.records.find( { a: { $exists: true } } )</b><br />
+<b><br /></b>
+6.$or<br />
+Or operator can be used to perform a logical OR operation on an array of two or more expressions and select the documents which satisfy atleast one expression.<br />
+<b>db.inventory.find( { $or: [ { quantity: { $lt: 20 } }, { price: 10 } ] } )</b><br />
+<b><br /></b>
+7.$not<br />
+It will perform a logical not on the expression and return the documents which do not match the expression.<br />
+<b>db.inventory.find( { price: { $not: { $gt: 1.99 } } } )</b><br />
+<b><br /></b>
+<b><br /></b>
+<br />
+<h3 style="text-align: left;">
+<b>Updating:</b></h3>
+<br />
+<b><br /></b>
+1.$set<br />
+This operator can be used to replace the value of the field with the specified value<br />
+<b>db.products.update(</b><br />
+<b>&nbsp; &nbsp;{ _id: 100 },</b><br />
+<b>&nbsp; &nbsp;{ $set: { "details.make": "zzz" } }</b><br />
+<b>)</b><br />
+<b><br /></b>
+2.$inc<br />
+It can be used to increment the field value by the specified number .It accepts positive and negative values.<br />
+<b>db.products.update(</b><br />
+<b>&nbsp; &nbsp;{ sku: "abc123" },</b><br />
+<b>&nbsp; &nbsp;{ $inc: { quantity: -2, "metrics.orders": 1 } }</b><br />
+<b>)</b><br />
+The above query would search for all the documents with "sku"&nbsp;field as "abc123" and would reduce the value in the field quantity by 2 and increase the value of metrics.order field by 1.<br />
+<br />
+3.$addToSet<br />
+This operator would add a value to an array.If the value is already is present it would do nothing.<br />
+<b>db.foo.update(</b><br />
+<b>&nbsp; &nbsp;{ _id: 1 },</b><br />
+<b>&nbsp; &nbsp;{ $addToSet: { colors: [ "c", "d" ] } }</b><br />
+<b>)</b><br />
+This would add the colors c and d to colors array field.<br />
+<br />
+4.$elemMatch<br />
+{results:{$elemMatch:{'score': 7,'product': 'abc'}}}<br />
+<h3 style="text-align: left;">
+<b>Dot Notation:</b></h3>
+Dot notation can be used in mongo db to access the elements of an array and to access&nbsp; the fields of an embedded document.<br />
+For Arrays<br />
+<b>"&lt;array&gt;.&lt;index&gt;"</b><br />
+<br />
+For example for a document:<br />
+{<br />
+&nbsp; &nbsp;contribs: [ "Turing machine", "Turing test", "Turingery" ]<br />
+}<br />
+<br />
+The third element can be accessed as : cotribs.2<br />
+<br />
+For Embedded Documents<br />
+<b>"&lt;embedded document&gt;.&lt;field&gt;"</b><br />
+{<br />
+&nbsp;&nbsp;name: { first: "Alan", last: "Turing" },<br />
+&nbsp; contact: { phone: { type: "cell", number: "111-222-3333" } },<br />
+}<br />
+To access the field named last in the name field , we can access it as name.last<br />
+<br />
+<h3 style="text-align: left;">
+<b>Aggregate</b></h3>
+<span style="background-color: white; font-family: inherit; text-align: justify;">Aggregation operations group values from multiple documents together, and can perform a variety of operations on the grouped data to return a single result. In SQL count(*) and with group by is an equivalent of mongodb aggregation.</span><br />
+<span style="background-color: white; font-family: inherit; text-align: justify;">For example for the below collection :</span><br />
+<span style="background-color: white; font-family: inherit; text-align: justify;"><br /></span>
+<br />
+<div style="text-align: justify;">
+{</div>
+<div style="text-align: justify;">
+&nbsp; &nbsp;_id: ObjectId(7df78ad8s902c)</div>
+<div style="text-align: justify;">
+&nbsp; &nbsp;title: 'vayuputra',&nbsp;</div>
+<div style="text-align: justify;">
+&nbsp; &nbsp;description: 'Story of Shiva',</div>
+<div style="text-align: justify;">
+&nbsp; &nbsp;by_user: 'Amish',</div>
+<div style="text-align: justify;">
+&nbsp; &nbsp;tags: ['mythology', 'gods', 'fiction'],</div>
+<div style="text-align: justify;">
+&nbsp; &nbsp;likes: 100</div>
+<div style="text-align: justify;">
+},</div>
+<div style="text-align: justify;">
+{</div>
+<div style="text-align: justify;">
+&nbsp; &nbsp;_id: ObjectId(7df78ad89a02d)</div>
+<div style="text-align: justify;">
+&nbsp; &nbsp;title: 'nagas',&nbsp;</div>
+<div style="text-align: justify;">
+&nbsp; &nbsp;description: 'Story of shiva',</div>
+<div style="text-align: justify;">
+&nbsp; &nbsp;by_user: 'Amish',</div>
+<div style="text-align: justify;">
+&nbsp; &nbsp; &nbsp;tags: ['mythology', 'shiva', 'fiction'],</div>
+<div style="text-align: justify;">
+&nbsp; &nbsp;likes: 10</div>
+<div style="text-align: justify;">
+},</div>
+<div style="text-align: justify;">
+{</div>
+<div style="text-align: justify;">
+&nbsp; &nbsp;_id: ObjectId(7df78aad8902e)</div>
+<div style="text-align: justify;">
+&nbsp; &nbsp;title: 'Half Girlfriend',&nbsp;</div>
+<div style="text-align: justify;">
+&nbsp; &nbsp;description: 'Love Story',</div>
+<div style="text-align: justify;">
+&nbsp; &nbsp;by_user: 'Chetan',</div>
+<div style="text-align: justify;">
+&nbsp; &nbsp;tags: ['novel', 'fiction', 'romance'],</div>
+<div style="text-align: justify;">
+&nbsp; &nbsp;likes: 750</div>
+<span style="background-color: white; text-align: justify;"></span><br />
+<div style="text-align: justify;">
+},</div>
+<div style="text-align: justify;">
+&nbsp;if you want to display a list stating how many books are written by each user, then you will use the following aggregate() method −</div>
+<div style="text-align: justify;">
+<br /></div>
+<div style="text-align: justify;">
+<b>&gt; db.mycol.aggregate([{$group : {_id : "$by_user", num_books : {$sum : 1}}}])</b></div>
+<div style="text-align: justify;">
+{</div>
+<div style="text-align: justify;">
+&nbsp; &nbsp;"result" : [</div>
+<div style="text-align: justify;">
+&nbsp; &nbsp; &nbsp; {</div>
+<div style="text-align: justify;">
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;"_id" : "Amish",</div>
+<div style="text-align: justify;">
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;"num_books" : 2</div>
+<div style="text-align: justify;">
+&nbsp; &nbsp; &nbsp; },</div>
+<div style="text-align: justify;">
+&nbsp; &nbsp; &nbsp; {</div>
+<div style="text-align: justify;">
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;"_id" : "Chetan",</div>
+<div style="text-align: justify;">
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;"num_books" : 1</div>
+<div style="text-align: justify;">
+&nbsp; &nbsp; &nbsp; }</div>
+<div style="text-align: justify;">
+&nbsp; &nbsp;],</div>
+<div style="text-align: justify;">
+&nbsp; &nbsp;"ok" : 1</div>
+<div style="text-align: justify;">
+}</div>
+<div style="text-align: justify;">
+<br /></div>
+<h3 style="text-align: justify;">
+<b>Sorting</b></h3>
+<div>
+Sorting can be used to sort the output of our find query in ascending or descending order as per requirement.</div>
+<div>
+<b>db.colname.find().sort({fieldname:direction})</b></div>
+<div>
+direction can be 1 for sorting in ascending order or -1 for sorting the output in descending order.</div>
+<div>
+<br /></div>
+<div>
+<b>db.products.find({price:{$exists:true}},{name:1,price:1}).sort({price:1})</b></div>
+<br />
+The above example will sort the result set in ascending order of price.<br />
+<br />
+We can also have multiple sort keys for sorting which would be equivalant to order by clause in a RDBMS.<br />
+<br />
+<b>db.customers.find().sort({lastname:1,firstname:1})</b><br />
+<b><br /></b>
+This corresponds to order by lastname,firstname on the result set.<br />
+<br /></div>

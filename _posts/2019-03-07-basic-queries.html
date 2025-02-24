@@ -1,0 +1,75 @@
+---
+layout: post
+title: Basic Queries in MySQL
+date: '2019-03-07T01:49:00.000-08:00'
+author: Rajesh Nair
+tags:
+- MySQL Queries
+- MySQL
+modified_time: '2020-02-19T08:26:48.633-08:00'
+blogger_id: tag:blogger.com,1999:blog-8827475125741824309.post-3885512352424450749
+blogger_orig_url: https://csrepo.blogspot.com/2019/03/basic-queries.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<br />
+<br />
+After installing&nbsp; MySQL-Workbench , in the workbench or by opening mysql prompt in terminal use the below queries for different operations on the database<br />
+<br />
+1. To Create a database<br />
+<b>CREATE DATABASE &lt;dbname&gt;;</b><br />
+<br />
+2.To use a particular database<br />
+<b>USE &lt;dbname&gt;;</b><br />
+<br />
+3. To Create a new table in the selected database<br />
+<b>CREATE TABLE classics (</b><br />
+<b>author VARCHAR(128),</b><br />
+<b>title VARCHAR(128),</b><br />
+<b>type VARCHAR(16),</b><br />
+<b>year CHAR(4)) ENGINE MyISAM;</b><br />
+<br />
+4.To change the name of the table<br />
+<b>ALTER TABLE classics RENAME newName;</b><br />
+<b><br /></b>5.To change the field name in the database<br />
+<b>ALTER TABLE classics CHANGE type category varchar(16);</b><br />
+<br />
+6.To create a new index in table<br />
+<b>ALTER TABLE classics ADD INDEX(author(20));</b><br />
+<b>CREATE INDEX author ON classics (author(20));</b> --- cannot be used to create primary index<br />
+<br />
+7.To see all the indexes in a table<br />
+<b>SHOW INDEX FROM classics;</b><br />
+<br />
+8.To create a primary key for a table<br />
+<b>ALTER TABLE classics ADD PRIMARY KEY(isbn);</b><br />
+<b><br /></b>9.To see details of a table creation<br />
+<b>SHOW CREATE TABLE classics;</b><br />
+<b><br /></b>10.To see all the available database engines for mysql<br />
+<b>SHOW ENGINES;</b><br />
+<b><br /></b>11. Limit output for select query<br />
+<b>SELECT author,title FROM classics LIMIT 3;</b><br />
+<b>SELECT author,title FROM classics LIMIT 1,2;</b><br />
+<b>SELECT author,title FROM classics LIMIT 3,1;</b><br />
+<div>
+<br />
+12. Order By used to order the output based on the fields provided<br />
+<b>SELECT author,title,year FROM classics ORDER BY author,year DESC;</b><br />
+<b><br /></b>13. Group By used to group the output based on a field<br />
+<b>SELECT category,COUNT(author) FROM classics GROUP BY category;</b><br />
+<b><br /></b>14. Table joins to table two or more tables<br />
+<b>SELECT name,author,title from customers,classics WHERE customers.isbn=classics.isbn;</b><br />
+<b>SELECT name,author,title FROM customers NATURAL JOIN classics;</b><br />
+<b>SELECT name,author,title FROM customers JOIN classics ON customers.isbn=classics.isbn;</b><br />
+<br />
+15.Transaction in InnoDB<br />
+<b>BEGIN;</b><br />
+<b>UPDATE accounts SET balance=balance-250 WHERE number=12345;&nbsp;</b><br />
+<b>UPDATE accounts SET balance=balance+250 WHERE number=67890;</b><br />
+<b>COMMIT; / ROLLBACK;</b><br />
+<br />
+16. To get latest timestamp of the table<br />
+<b>SELECT create_time FROM INFORMATION_SCHEMA.TABLES</b><br />
+<b>&nbsp; WHERE table_name = 'your_table';</b><br />
+<b>show table status where name='tablename';</b></div>
+</div>

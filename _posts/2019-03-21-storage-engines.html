@@ -1,0 +1,74 @@
+---
+layout: post
+title: MMAPv1
+date: '2019-03-21T00:49:00.001-07:00'
+author: Rajesh Nair
+tags:
+- Mongo
+- mmapv1
+- storage engine
+modified_time: '2020-02-06T05:18:10.118-08:00'
+thumbnail: https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhesZm2h14OhOnYSq23HcakGdi2hYw_lC8W62zGJEzWX7je5KSjbi4hYwMbQMkGlHi83EetC5efR1U-YHPojuaXvLavSgLvOwPG8v5pUF5TTsGOr3glEqv_zHK_wE2pUWL4WSeuLPRHJMc/s72-c/11.jpg
+blogger_id: tag:blogger.com,1999:blog-8827475125741824309.post-2136384502135870440
+blogger_orig_url: https://csrepo.blogspot.com/2019/03/storage-engines.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<br />
+<div class="MsoNormal">
+Storage Engine determines data file format &amp; format of
+indexes and are key to performance for the mongo database.It is the middletier between the database and the underlying hardware.</div>
+&nbsp; <br />
+A storage engine effects:<br />
+* How data is written to disk<br />
+*How data is deleted/removed from disk<br />
+*How data is read from disk<br />
+* The data structure used to store data<br />
+<br />
+From mongo 3.0 we can choose from two storage engines:<br />
+<div class="MsoNormal">
+MMAPv1 and WiredTiger(opensource &amp; is used in other DBs)<o:p></o:p></div>
+<b><br /></b>
+<h3 style="text-align: left;">
+<b>&nbsp;MMAPv1</b></h3>
+•<span style="white-space: pre;"> </span>Grew from original Storage Engine &amp; Uses unix MMAP system call<br />
+•<span style="white-space: pre;"> </span>Maps data files directly into virtual memory<br />
+•<span style="white-space: pre;"> </span>mongod –storageEngine mmapv1 (we can check the storage engine using db.serverStatus())<br />
+•<span style="white-space: pre;"> </span>Collection level locking with Mongo 3.0<br />
+<div>
+<div>
+•<span style="white-space: pre;"> </span>Multiple reader and single writer lock on shared resources like data,metadata,index , journals etc in mongo db<span style="white-space: pre;"> </span></div>
+<div>
+•<span style="white-space: pre;"> </span>Journal – write ahead log (for&nbsp; consistency of data)</div>
+</div>
+<div>
+<br /></div>
+<div>
+<div>
+<b>MMAPv1:Documents &amp; Data Files</b></div>
+<div>
+<b><br /></b></div>
+<div>
+Within data files, different extents would be present to hold the documents.</div>
+<div>
+&nbsp;<a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhesZm2h14OhOnYSq23HcakGdi2hYw_lC8W62zGJEzWX7je5KSjbi4hYwMbQMkGlHi83EetC5efR1U-YHPojuaXvLavSgLvOwPG8v5pUF5TTsGOr3glEqv_zHK_wE2pUWL4WSeuLPRHJMc/s1600/11.jpg" imageanchor="1" style="margin-left: 1em; margin-right: 1em; text-align: center;"><img border="0" data-original-height="89" data-original-width="320" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhesZm2h14OhOnYSq23HcakGdi2hYw_lC8W62zGJEzWX7je5KSjbi4hYwMbQMkGlHi83EetC5efR1U-YHPojuaXvLavSgLvOwPG8v5pUF5TTsGOr3glEqv_zHK_wE2pUWL4WSeuLPRHJMc/s1600/11.jpg" /></a></div>
+<div>
+If D2 grows, it has to move after D4 leaving space in D2, we also have to update indexes( to update address of D2)</div>
+<div>
+Power of 2 sized allocation(padding factor is true by default):document is first given 32bytes, then 64,128..2 MB to grow</div>
+<div>
+Advantage of MMAPv1 padding and power of 2 sized allocation is:</div>
+<div>
+•<span style="white-space: pre;"> </span>Documents will not have to move as soon as they grow in size</div>
+<div>
+•<span style="white-space: pre;"> </span>Record spaces are likely to get re-used</div>
+<div>
+•<span style="white-space: pre;"> </span>Documents that grow at a constant rate will move less often as time goes on.&nbsp;</div>
+</div>
+<div>
+<br /></div>
+<div>
+Wired tiger storage engine will be discussed in next blog</div>
+<div>
+<br /></div>
+</div>

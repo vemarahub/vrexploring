@@ -1,0 +1,82 @@
+---
+layout: post
+title: Shell Script - Progress lk info
+date: '2020-03-29T22:49:00.000-07:00'
+author: Rajesh Nair
+tags:
+- progress
+- lk file
+- shell scripting
+modified_time: '2020-03-29T22:49:01.595-07:00'
+blogger_id: tag:blogger.com,1999:blog-8827475125741824309.post-5459576470869804888
+blogger_orig_url: https://csrepo.blogspot.com/2020/03/shell-script-progress-lk-info.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<br />
+<b>Script : </b>Progress database lk file information<br />
+<br />
+<b>Script Name: </b>lkinfo.sh<br />
+<br />
+<b>Script Function: </b>Information about the database status from lk file<br />
+<b><br /></b>
+<b>Script Usage: </b>./lkinfo.sh &lt; db path &gt;<br />
+<br />
+<b><u>Code:</u></b><br />
+<b><u><br /></u></b>
+#Info - script to check the contents of .lk file<br />
+<br />
+lkFile=$1".lk"<br />
+<br />
+GetLong()<br />
+{<br />
+# Returns 4-byte unsigned integer.<br />
+&nbsp; File=$1<br />
+&nbsp; Offset=$2<br />
+<br />
+# od -D&nbsp; Interpret long words in unsigned decimal:<br />
+&nbsp; od -D $File | \<br />
+&nbsp; awk '{ printf"%d",$2; exit }'<br />
+} # GetLong()<br />
+<br />
+if [ -f $lkFile ]<br />
+then<br />
+<br />
+# Database mode:<br />
+lkMode=`GetLong $lkFile 0`<br />
+case $lkMode in<br />
+&nbsp; 1) Desc="Single-user mode";;<br />
+&nbsp; 2) Desc="Multi-user mode" ;;<br />
+&nbsp;64) Desc="Crash recovery"&nbsp; ;;<br />
+&nbsp; *) Desc="Unknown mode"&nbsp; &nbsp; ;;<br />
+esac<br />
+<br />
+# ID of the process that opens database:<br />
+lkPID=`GetLong $lkFile 4`<br />
+<br />
+# Host where the process is running:<br />
+lkHost=`tail $lkFile`<br />
+<br />
+echo "Database mode: $lkMode ($Desc)"<br />
+echo "Opened by PID: $lkPID"<br />
+echo "&nbsp; &nbsp; &nbsp; On Host: $lkHost"<br />
+echo "&nbsp; &nbsp; This host: `uname -n`"<br />
+ps -fp $lkPID || echo "Process PID=$lkPID not found."<br />
+<br />
+else<br />
+&nbsp; echo "lk file not found"<br />
+&nbsp; if [ -f $1".db" ]<br />
+&nbsp; then<br />
+&nbsp; &nbsp;echo " Database $1 is down or in Single User mode"<br />
+&nbsp; else<br />
+&nbsp; &nbsp;echo "Database $1 does not exist"<br />
+&nbsp; &nbsp;fi<br />
+<br />
+&nbsp;exit 0<br />
+<br />
+fi<br />
+<div>
+<br /></div>
+<div>
+<br /></div>
+</div>

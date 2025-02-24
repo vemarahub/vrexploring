@@ -1,0 +1,329 @@
+---
+layout: post
+title: Sharding Setup in Mongo
+date: '2019-03-29T06:59:00.002-07:00'
+author: Rajesh Nair
+tags:
+- Config
+- Mongo
+- mongos
+- Sharding
+modified_time: '2020-02-19T08:23:26.552-08:00'
+blogger_id: tag:blogger.com,1999:blog-8827475125741824309.post-5615359983905459111
+blogger_orig_url: https://csrepo.blogspot.com/2019/03/sharding-setup-in-mongo.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<div class="sidenav">
+To setup mongo sharding environment we should be ideally having the below setups</div>
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<br />
+* A <b>Config </b>Databases Replica Set of 3 or more members<br />
+* Multiple <b>Shard </b>Database Replica Sets<br />
+* Multiple <b>Mongos </b>Database instances.<br />
+<br />
+To set up all the config , shard and mongos instances on a single linux server ( for a real production scenario all should be on different machines) follow the below steps:<br />
+<br />
+1. Create the folders cfg0 cfg1 cfg2 for storing config database replica sets<br />
+<b>mkdir cfg0 cfg1 cfg2</b><br />
+<b><br /></b>
+2. Create the folders a0,a1,a2,b0,b1,b2,c0,c1,c2,d0,d1,d2 for storing shards a,b,c,d replica sets<br />
+<b>mkdir a0 a1 a2 b0 b1 b2 c0 c1 c2 d0 d1 d2</b><br />
+<b><br /></b>
+3.Start the config server instances<br />
+<b>mongod --configsvr --dbpath cfg0 --port 26050 --fork --logpath log.cfg0 --logappend --replSet cfg</b><br />
+<b>mongod --configsvr --dbpath cfg1 --port 26051 --fork --logpath log.cfg1 --logappend --replSet cfg</b><br />
+<b>mongod --configsvr --dbpath cfg2 --port 26052 --fork --logpath log.cfg2 --logappend --replSet cfg</b><br />
+<div>
+<br /></div>
+<div>
+4. Initiate Replication in config servers</div>
+<div>
+<b>mongo -port 26050</b></div>
+<div>
+<b>&gt;rs.initiate()</b></div>
+<div>
+<b>&gt;rs.add("localhost:26051");</b></div>
+<div>
+<b>&gt;rs.add("localhost:26052");</b></div>
+<div>
+<b>&gt;rs.status()</b></div>
+<div>
+<b><br /></b></div>
+<div>
+5. Start the shard servers and mongos instances</div>
+<div>
+<div>
+# shard servers (mongod data servers)</div>
+<div>
+# note : not to use smallfiles on production nor such small oplogsize</div>
+<div>
+<b>mongod --shardsvr --replSet a --dbpath a0 --logpath log.a0 --port 27000 --fork --logappend --smallfiles --oplogSize 50</b></div>
+<div>
+<b>mongod --shardsvr --replSet a --dbpath a1 --logpath log.a1 --port 27001 --fork --logappend --smallfiles --oplogSize 50</b></div>
+<div>
+<b>mongod --shardsvr --replSet a --dbpath a2 --logpath log.a2 --port 27002 --fork --logappend --smallfiles --oplogSize 50</b></div>
+<div>
+<b>mongod --shardsvr --replSet b --dbpath b0 --logpath log.b0 --port 27100 --fork --logappend --smallfiles --oplogSize 50</b></div>
+<div>
+<b>mongod --shardsvr --replSet b --dbpath b1 --logpath log.b1 --port 27101 --fork --logappend --smallfiles --oplogSize 50</b></div>
+<div>
+<b>mongod --shardsvr --replSet b --dbpath b2 --logpath log.b2 --port 27102 --fork --logappend --smallfiles --oplogSize 50</b></div>
+<div>
+<b>mongod --shardsvr --replSet c --dbpath c0 --logpath log.c0 --port 27200 --fork --logappend --smallfiles --oplogSize 50</b></div>
+<div>
+<b>mongod --shardsvr --replSet c --dbpath c1 --logpath log.c1 --port 27201 --fork --logappend --smallfiles --oplogSize 50</b></div>
+<div>
+<b>mongod --shardsvr --replSet c --dbpath c2 --logpath log.c2 --port 27202 --fork --logappend --smallfiles --oplogSize 50</b></div>
+<div>
+<b>mongod --shardsvr --replSet d --dbpath d0 --logpath log.d0 --port 27300 --fork --logappend --smallfiles --oplogSize 50</b></div>
+<div>
+<b>mongod --shardsvr --replSet d --dbpath d1 --logpath log.d1 --port 27301 --fork --logappend --smallfiles --oplogSize 50</b></div>
+<div>
+<b>mongod --shardsvr --replSet d --dbpath d2 --logpath log.d2 --port 27302 --fork --logappend --smallfiles --oplogSize 50</b></div>
+<div>
+<br /></div>
+<div>
+<br /></div>
+<div>
+# mongos processes</div>
+<div>
+<b>mongos --configdb "cfg/localhost:26050,localhost:26051,localhost:26052" --fork --logpath log.mongos0</b></div>
+<div>
+<b>mongos --configdb "cfg/localhost:26050,localhost:26051,localhost:26052" --fork --logpath log.mongos1 --port 26061</b></div>
+<div>
+<b>mongos --configdb "cfg/localhost:26050,localhost:26051,localhost:26052" --fork --logpath log.mongos2 --port 26062</b></div>
+<div>
+<b>mongos --configdb "cfg/localhost:26050,localhost:26051,localhost:26052" --fork --logpath log.mongos3 --port 26063</b></div>
+</div>
+<div>
+<br /></div>
+<div>
+6. Start each shard replica sets</div>
+<div>
+<b>mongo -port 27000</b></div>
+<div>
+<b>&gt;rs.initiate()</b></div>
+<div>
+<b>&gt;rs.add("localhost:27001");</b></div>
+<div>
+<b>&gt;rs.add("localhost:27002");</b></div>
+<div>
+<b>&gt;rs.status()</b></div>
+<div>
+<br /></div>
+<div>
+7.After starting all the shard replica sets, add the shards using mongos</div>
+<div>
+<b>mongos</b></div>
+<div>
+<b>&gt;sh.addShard("a/localhost:27000");</b></div>
+<div>
+<b>&gt;sh.addShard("b/localhost:27100");</b></div>
+<div>
+<b>&gt;sh.addShard("c/localhost:27200");</b></div>
+<div>
+<b>&gt;sh.addShard("d/localhost:27300");</b></div>
+<div>
+<br />
+<b>&gt;sh.status();</b><br />
+<i>--- Sharding Status ---</i><br />
+<i>&nbsp; sharding version: {</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "_id" : 1,</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "minCompatibleVersion" : 5,</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "currentVersion" : 6,</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "clusterId" : ObjectId("4c90aebc081921bcddd87de8")</i><br />
+<i>&nbsp; }</i><br />
+<i>&nbsp; shards:</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; {&nbsp; "_id" : "a",&nbsp; "host" : "a/localhost:27000,localhost:27001,localhost:27002",&nbsp; "state" : 1 }</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; {&nbsp; "_id" : "b",&nbsp; "host" : "b/localhost:27100,localhost:27101,localhost:27102",&nbsp; "state" : 1 }</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; {&nbsp; "_id" : "c",&nbsp; "host" : "c/localhost:27200,localhost:27201,localhost:27202",&nbsp; "state" : 1 }</i><br />
+<i>&nbsp; active mongoses:</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "4.0.6" : 4</i><br />
+<i>&nbsp; autosplit:</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; Currently enabled: yes</i><br />
+<i>&nbsp; balancer:</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; Currently enabled:&nbsp; yes</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; Currently running:&nbsp; no</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; Failed balancer rounds in last 5 attempts:&nbsp; 0</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; Migration Results for the last 24 hours:</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; No recent migrations</i><br />
+<i>&nbsp; databases:</i><br />
+<br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; {&nbsp; "_id" : "config",&nbsp; "primary" : "config",&nbsp; "partitioned" : true }</i></div>
+<div>
+<br />
+To add a database as a sharded database :<br />
+<b>mongos&gt; sh.enableSharding("mydb")</b><br />
+<i>{</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "ok" : 1,</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "operationTime" : Timestamp(1284550849, 4),</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "$clusterTime" : {</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "clusterTime" : Timestamp(1284550849, 4),</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "signature" : {</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "hash" : BinData(0,"AAAAAAAAAAAAAAAAAAAAAAAAAAA="),</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "keyId" : NumberLong(0)</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; }</i><br />
+<i>&nbsp; &nbsp; &nbsp; &nbsp; }</i><br />
+<i>}</i></div>
+<div>
+<br /></div>
+<div>
+Now if we check sh.status, we can see the database as being sharded and can check to which server it is sharded to :</div>
+<div>
+<br /></div>
+<div>
+<div>
+<i>&nbsp; {&nbsp; "_id" : "mydb",&nbsp; "primary" : "b",&nbsp; "partitioned" : true,&nbsp; "version" : {&nbsp; "uuid" : UUID("f35e426a-e540-439b-b9ad-7d3d042e17d2"),&nbsp; "lastMod" : 1 } }</i></div>
+<div>
+<i><br /></i></div>
+<div>
+<i><br /></i></div>
+<div>
+We can even shard a particular collection of a database:</div>
+<div>
+<br /></div>
+<div>
+<div>
+<b>mongos&gt; sh.shardCollection("mydb.tester",{_id:1},true)</b></div>
+<div>
+<i>{</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "collectionsharded" : "mydb.tester",</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "collectionUUID" : UUID("b0027a1d-1e0c-4769-9b65-88eecb9808fc"),</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "ok" : 1,</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "operationTime" : Timestamp(1284551103, 10),</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; "$clusterTime" : {</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "clusterTime" : Timestamp(1284551103, 10),</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "signature" : {</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "hash" : BinData(0,"AAAAAAAAAAAAAAAAAAAAAAAAAAA="),</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; "keyId" : NumberLong(0)</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; }</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; }</i></div>
+<div>
+<i>}</i></div>
+</div>
+</div>
+<div>
+<br /></div>
+<div>
+Now if we check sh.status() , we can see which sharded server is the collection chunk placed</div>
+<div>
+<br /></div>
+<div>
+<div>
+<i>&nbsp;mydb.tester</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; shard key: { "_id" : 1 }</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; unique: true</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; balancing: true</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; chunks:</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; b&nbsp; &nbsp; &nbsp; &nbsp;1</i></div>
+<div>
+<i>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; { "_id" : { "$minKey" : 1 } } --&gt;&gt; { "_id" : { "$maxKey" : 1 } } on : b Timestamp(1, 0)</i></div>
+<div>
+<br />
+<br />
+You can also check the shards in the sharded cluster using:<br />
+<br />
+<b>mongos&gt; db.shards.find()</b><br />
+<i>{ "_id" : "a", "host" : "a/localhost:27000,localhost:27001,localhost:27002", "state" : 1 }</i><br />
+<i>{ "_id" : "b", "host" : "b/localhost:27100,localhost:27101,localhost:27102", "state" : 1 }</i><br />
+<i>{ "_id" : "c", "host" : "c/localhost:27200,localhost:27201,localhost:27202", "state" : 1 }</i><br />
+<i>{ "_id" : "d", "host" : "d/localhost:27300,localhost:27301,localhost:27302", "state" : 1 }</i><br />
+<i><br /></i>
+After we insert data into a collection, we can check to which shard the data has fallen by using getLastErrorObj<br />
+<br />
+<div class="MsoNormal">
+<b>mongos&gt;
+db.myCol.insert({a:-1})<o:p></o:p></b></div>
+<div class="MsoNormal">
+<i>WriteResult({ "nInserted" : 1 })</i><o:p></o:p></div>
+<div class="MsoNormal">
+<b>mongos&gt;
+db.getLastErrorObj()<o:p></o:p></b></div>
+<div class="MsoNormal">
+<i>{<o:p></o:p></i></div>
+<div class="MsoNormal">
+<i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "n"
+: 0,<o:p></o:p></i></div>
+<div class="MsoNormal">
+<b><i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "singleShard" :
+"localhost:27200",<o:p></o:p></i></b></div>
+<div class="MsoNormal">
+<i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+"err" : null,<o:p></o:p></i></div>
+<div class="MsoNormal">
+<i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "ok"
+: 1,<o:p></o:p></i></div>
+<div class="MsoNormal">
+<i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+"$clusterTime" : {<o:p></o:p></i></div>
+<div class="MsoNormal">
+<i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+"clusterTime" : Timestamp(1524570077, 611),<o:p></o:p></i></div>
+<div class="MsoNormal">
+<i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+"signature" : {<o:p></o:p></i></div>
+<div class="MsoNormal">
+<i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+"hash" : BinData(0,"AAAAAAAAAAAAAAAAAAAAAAAAAAA="),<o:p></o:p></i></div>
+<div class="MsoNormal">
+<i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+"keyId" : NumberLong(0)<o:p></o:p></i></div>
+<div class="MsoNormal">
+<i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<o:p></o:p></i></div>
+<div class="MsoNormal">
+<i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; },<o:p></o:p></i></div>
+<div class="MsoNormal">
+<i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+"operationTime" : Timestamp(1524570077, 611)<o:p></o:p></i></div>
+<br />
+<div class="MsoNormal">
+<i>}</i><o:p></o:p></div>
+<i><br /></i>
+<br />
+<h3 style="text-align: left;">
+<b style="mso-bidi-font-weight: normal;">Scatter/Gather</b></h3>
+<div class="MsoNormal">
+&gt;db.myCol.createIndex({x:1})<o:p></o:p></div>
+<div class="MsoNormal">
+&gt;db.myCol.find({x:1}).explain()<o:p></o:p></div>
+<div class="MsoNormal">
+<br /></div>
+<div class="MsoNormal">
+The queries that use either shard keys , or a shard key
+prefix, are not scatter gather.They will be targeted only at those shards that
+contain the documents that will be returned by the query.<o:p></o:p></div>
+<div class="MsoNormal">
+Example:<o:p></o:p></div>
+<div class="MsoNormal">
+For collection people , shard key : { friends:1,name:-1}.Index
+are : {name:1,phoneNumber:1}.<o:p></o:p></div>
+<div class="MsoNormal">
+<br /></div>
+<div class="MsoNormal">
+db.people.find({friends:”Bob”,name:”Emily”}) is not scatter
+/ gather query<o:p></o:p></div>
+<div class="MsoNormal">
+db.people.find({name:”Alice”}) is scatter gather<o:p></o:p></div>
+<div class="MsoNormal">
+<br /></div>
+<i></i></div>
+</div>
+</div>
+</div>

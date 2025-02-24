@@ -1,0 +1,42 @@
+---
+layout: post
+title: Starting Multiple Instances in MySQL
+date: '2019-03-15T22:13:00.003-07:00'
+author: Rajesh Nair
+tags:
+- Multiple instances
+- MySQL
+modified_time: '2019-03-15T22:14:41.198-07:00'
+blogger_id: tag:blogger.com,1999:blog-8827475125741824309.post-2014968721564186919
+blogger_orig_url: https://csrepo.blogspot.com/2019/03/starting-multiple-instances-in-mysql.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+We can start multiple MySQL instance in the same server by running them in different ports.<br />
+To configure multiple instances,<br />
+<br />
+1. add the below entries in /etc/my.cnf<br />
+<b>[mysqld@replica01]</b><br />
+<b>datadir=/var/lib/mysql-replica01</b><br />
+<b>socket=/var/lib/mysql-replica01/mysql.sock</b><br />
+<b>port=3307</b><br />
+<b>log-error=/var/log/mysqld-replica01.log</b><br />
+<b><br /></b>
+<b>[mysqld@replica02]</b><br />
+<b>datadir=/var/lib/mysql-replica02</b><br />
+<b>socket=/var/lib/mysql-replica02/mysql.sock</b><br />
+<b>port=3308</b><br />
+<b>log-error=/var/log/mysqld-replica02.log</b><br />
+<br />
+2.Start both instances separately as below<br />
+<b>systemctl start mysqld@replica01</b><br />
+<b>systemctl start mysqld@replica02</b><br />
+<br />
+3.To start all the instances together we can use wildcard<br />
+<b>systemctl start mysqld@replica*</b><br />
+<br />
+4.To login to the mysql instances separately we can use the specific socket file for the instance<br />
+<b>mysql -u root -p -S /var/lib/mysql-replica01/mysql.sock</b><br />
+<b>mysql -u root -p -S /var/lib/mysql-replica02/mysql.sock</b><br />
+<br />
+<br /></div>

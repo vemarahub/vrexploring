@@ -1,0 +1,50 @@
+---
+layout: post
+title: Unix Installation
+date: '2019-03-07T01:04:00.000-08:00'
+author: Rajesh Nair
+tags:
+- MySQL
+- unix Installation
+modified_time: '2020-02-19T08:27:12.638-08:00'
+blogger_id: tag:blogger.com,1999:blog-8827475125741824309.post-3602365454017351248
+blogger_orig_url: https://csrepo.blogspot.com/2019/03/unix-installation.html
+---
+
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<div class="sidenav">
+<br /></div>
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<h3 style="text-align: left;">
+To Install MySQL Server on a Unix server Follow the below steps:</h3>
+<br />
+1.&nbsp; Download rpm file for mysql.com website for yum installation for version&nbsp;MySQL 5.7.25<br />
+<br />
+2.&nbsp; Install rpm file to the unix machine using the below command:<br />
+&nbsp; &nbsp; &nbsp; <b>&nbsp; rpm -ivh {rpm_file}</b><br />
+<br />
+3. After rpm installation search for mysql using:<br />
+&nbsp; &nbsp; &nbsp; &nbsp;<b>yum search mysql</b><br />
+<br />
+4. Edit the yum.repos.d file to enable the 5.7.25 version and disable the default version 8.0<br />
+&nbsp; &nbsp; &nbsp;<b> &nbsp;vi&nbsp;/etc/yum.repos.d&nbsp;</b><br />
+<b><br /></b>5. Install the mysql server using yum install<br />
+&nbsp; &nbsp; &nbsp;&nbsp;<b>yum install mysql-community-server.x86_64</b><br />
+<b><br /></b>6. The mysql server will be downloaded in the below path:<br />
+&nbsp; &nbsp; &nbsp; &nbsp;<b>/var/lib/mysql</b><br />
+<b><br /></b>7. Start the mysql server deamon using the below&nbsp; &nbsp;command<br />
+&nbsp; &nbsp; &nbsp;&nbsp;<b>systemctl start mysqld</b><br />
+<b>&nbsp;&nbsp;</b><br />
+8. Check if the mysqld instance is running by using below commands<br />
+&nbsp; &nbsp; <b>&nbsp;ps -ef|grep mysql</b><br />
+<b>&nbsp; &nbsp; &nbsp;systemctl status mysqld</b><br />
+<br />
+9. Check the temporary password for root generated in log files:<br />
+&nbsp; &nbsp; &nbsp;<b>grep tempo /var/log/mysqld.log</b><br />
+<b><br /></b>10. Login to mysql prompt using the temp password from log file<br />
+&nbsp; &nbsp; &nbsp;<b>mysql -u root -p</b><br />
+<br />
+11.Change the temporary password for root after entering mysql prompt by setting a new password:<br />
+&nbsp; &nbsp;<b>mysql&gt;&nbsp;&nbsp;ALTER USER 'root'@'localhost' IDENTIFIED BY 'MyNewPass';</b><br />
+<b><br /></b><b><br /></b></div>
+</div>
