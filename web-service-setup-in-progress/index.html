@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Web Service Setup in Progress | VR Exploring</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Web Service Setup in Progress" />
+<meta name="author" content="Rajesh Nair" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Following are the steps to follow to setup web service in a progress environment: 1. First we would require a tomcat to deploy web service application, so copy or install apache tomcat for path say,&nbsp;(/usr/local/apache-tomcat-7.0.50). 2.&nbsp;&nbsp;&nbsp;Copy /usr/dlc/servlets/wsa folder from progress installation path to&nbsp; /usr/local/apache-tomcat-7.0.50/webapps 3. Edit&nbsp;the wsa entry in ubroker.properties by mentioning correct ip/port for wsaUrl entry. 3.1&nbsp;Edit setclasspath.sh to point to correct java paths JRE_HOME=/usr/jdk/jdk1.8.0_60/jre 1&nbsp; &nbsp; 3 .2&nbsp;&nbsp; Edit /usr/local/apache-tomcat-7.0.50/webapps/wsa/WEB-INF/web.xml and comment &lt;security-constraint&gt;&nbsp; tag 4.&nbsp;Start the apache tomcat server by below command: cd /usr/local/apache-tomcat-7.0.50 ./bin/startup.sh 5.&nbsp; &nbsp;Create a .wsm file for &nbsp;6. particular webservice required to be deployed . Eg: /emc/reale/apps/pseudo/input/WebServiceConfig/WSCRMultiComment.wsm (10.22.3.120) &nbsp;7.&nbsp;Edit wsm file to mention the following entry as per the specific environment: &lt;SoapEndpointURL&gt;http://{serverip}: {tomcat port}/wsa/wsa1&lt;/SoapEndpointURL&gt; &lt;Service&gt;{appserver name}&lt;/Service&gt; &lt;AppserverURL&gt;AppServerDC://{serverip}: {appserver port}&lt;/AppserverURL&gt; &nbsp;8.Deploy the required webservice by using below command: wsaman -name wsa1 -wsm /emc/reale/apps/pseudo/input/WebServiceConfig/WSCRMultiComment.wsm –deploy &nbsp;9.&nbsp;Enable the webservice using the below command: wsaman -name wsa1 -enable -appname WSCRMultiComment 10.We can list the deployed services to check if our service is deployed and enabled by using the below command: wsaman -name wsa1 -wsm /emc/reale/apps/pseudo/input/WebServiceConfig/WSCRMultiComment.wsm –list 11.&nbsp; &nbsp; &nbsp;Check if the service url is working by accessing the below ip in browser: http://{serverip}: {tomcat port}/wsa/wsa1 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;[default tomcat port =8080] &nbsp;&nbsp;12.For the given example webservice testing can be done by using below soap url: http://:8080/wsa/wsa1/wsdl?targetURI=urn:WSCRMultiComment" />
+<meta property="og:description" content="Following are the steps to follow to setup web service in a progress environment: 1. First we would require a tomcat to deploy web service application, so copy or install apache tomcat for path say,&nbsp;(/usr/local/apache-tomcat-7.0.50). 2.&nbsp;&nbsp;&nbsp;Copy /usr/dlc/servlets/wsa folder from progress installation path to&nbsp; /usr/local/apache-tomcat-7.0.50/webapps 3. Edit&nbsp;the wsa entry in ubroker.properties by mentioning correct ip/port for wsaUrl entry. 3.1&nbsp;Edit setclasspath.sh to point to correct java paths JRE_HOME=/usr/jdk/jdk1.8.0_60/jre 1&nbsp; &nbsp; 3 .2&nbsp;&nbsp; Edit /usr/local/apache-tomcat-7.0.50/webapps/wsa/WEB-INF/web.xml and comment &lt;security-constraint&gt;&nbsp; tag 4.&nbsp;Start the apache tomcat server by below command: cd /usr/local/apache-tomcat-7.0.50 ./bin/startup.sh 5.&nbsp; &nbsp;Create a .wsm file for &nbsp;6. particular webservice required to be deployed . Eg: /emc/reale/apps/pseudo/input/WebServiceConfig/WSCRMultiComment.wsm (10.22.3.120) &nbsp;7.&nbsp;Edit wsm file to mention the following entry as per the specific environment: &lt;SoapEndpointURL&gt;http://{serverip}: {tomcat port}/wsa/wsa1&lt;/SoapEndpointURL&gt; &lt;Service&gt;{appserver name}&lt;/Service&gt; &lt;AppserverURL&gt;AppServerDC://{serverip}: {appserver port}&lt;/AppserverURL&gt; &nbsp;8.Deploy the required webservice by using below command: wsaman -name wsa1 -wsm /emc/reale/apps/pseudo/input/WebServiceConfig/WSCRMultiComment.wsm –deploy &nbsp;9.&nbsp;Enable the webservice using the below command: wsaman -name wsa1 -enable -appname WSCRMultiComment 10.We can list the deployed services to check if our service is deployed and enabled by using the below command: wsaman -name wsa1 -wsm /emc/reale/apps/pseudo/input/WebServiceConfig/WSCRMultiComment.wsm –list 11.&nbsp; &nbsp; &nbsp;Check if the service url is working by accessing the below ip in browser: http://{serverip}: {tomcat port}/wsa/wsa1 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;[default tomcat port =8080] &nbsp;&nbsp;12.For the given example webservice testing can be done by using below soap url: http://:8080/wsa/wsa1/wsdl?targetURI=urn:WSCRMultiComment" />
+<link rel="canonical" href="https://vemarahub.github.io/vrexploring/web-service-setup-in-progress/" />
+<meta property="og:url" content="https://vemarahub.github.io/vrexploring/web-service-setup-in-progress/" />
+<meta property="og:site_name" content="VR Exploring" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2019-03-22T11:55:00+00:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Web Service Setup in Progress" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Rajesh Nair"},"dateModified":"2019-03-22T11:55:00+00:00","datePublished":"2019-03-22T11:55:00+00:00","description":"Following are the steps to follow to setup web service in a progress environment: 1. First we would require a tomcat to deploy web service application, so copy or install apache tomcat for path say,&nbsp;(/usr/local/apache-tomcat-7.0.50). 2.&nbsp;&nbsp;&nbsp;Copy /usr/dlc/servlets/wsa folder from progress installation path to&nbsp; /usr/local/apache-tomcat-7.0.50/webapps 3. Edit&nbsp;the wsa entry in ubroker.properties by mentioning correct ip/port for wsaUrl entry. 3.1&nbsp;Edit setclasspath.sh to point to correct java paths JRE_HOME=/usr/jdk/jdk1.8.0_60/jre 1&nbsp; &nbsp; 3 .2&nbsp;&nbsp; Edit /usr/local/apache-tomcat-7.0.50/webapps/wsa/WEB-INF/web.xml and comment &lt;security-constraint&gt;&nbsp; tag 4.&nbsp;Start the apache tomcat server by below command: cd /usr/local/apache-tomcat-7.0.50 ./bin/startup.sh 5.&nbsp; &nbsp;Create a .wsm file for &nbsp;6. particular webservice required to be deployed . Eg: /emc/reale/apps/pseudo/input/WebServiceConfig/WSCRMultiComment.wsm (10.22.3.120) &nbsp;7.&nbsp;Edit wsm file to mention the following entry as per the specific environment: &lt;SoapEndpointURL&gt;http://{serverip}: {tomcat port}/wsa/wsa1&lt;/SoapEndpointURL&gt; &lt;Service&gt;{appserver name}&lt;/Service&gt; &lt;AppserverURL&gt;AppServerDC://{serverip}: {appserver port}&lt;/AppserverURL&gt; &nbsp;8.Deploy the required webservice by using below command: wsaman -name wsa1 -wsm /emc/reale/apps/pseudo/input/WebServiceConfig/WSCRMultiComment.wsm –deploy &nbsp;9.&nbsp;Enable the webservice using the below command: wsaman -name wsa1 -enable -appname WSCRMultiComment 10.We can list the deployed services to check if our service is deployed and enabled by using the below command: wsaman -name wsa1 -wsm /emc/reale/apps/pseudo/input/WebServiceConfig/WSCRMultiComment.wsm –list 11.&nbsp; &nbsp; &nbsp;Check if the service url is working by accessing the below ip in browser: http://{serverip}: {tomcat port}/wsa/wsa1 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;[default tomcat port =8080] &nbsp;&nbsp;12.For the given example webservice testing can be done by using below soap url: http://:8080/wsa/wsa1/wsdl?targetURI=urn:WSCRMultiComment","headline":"Web Service Setup in Progress","mainEntityOfPage":{"@type":"WebPage","@id":"https://vemarahub.github.io/vrexploring/web-service-setup-in-progress/"},"url":"https://vemarahub.github.io/vrexploring/web-service-setup-in-progress/"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/vrexploring/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://vemarahub.github.io/vrexploring/feed.xml" title="VR Exploring" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/vrexploring/">VR Exploring</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/vrexploring/about/">About</a><a class="page-link" href="/vrexploring/">Home</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Web Service Setup in Progress</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2019-03-22T11:55:00+00:00" itemprop="datePublished">Mar 22, 2019
+      </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">Rajesh Nair</span></span></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <div dir="ltr" style="text-align: left;" trbidi="on">
+<div class="sidenav">
+Following are the steps to follow to setup web service in a progress environment:</div>
+<div dir="ltr" style="text-align: left;" trbidi="on">
+<br />
+1. First we would require a tomcat to deploy web service application, so copy or install apache tomcat for path say,&nbsp;<span style="font-family: &quot;calibri&quot; , sans-serif; font-size: 11pt;">(/usr/local/apache-tomcat-7.0.50).</span><br />
+<span style="font-family: &quot;calibri&quot; , sans-serif; font-size: 11pt;"><br /></span>
+<span style="font-family: &quot;calibri&quot; , sans-serif; font-size: 11pt;">2.&nbsp;</span><span style="text-indent: -0.25in;"><span style="font-size: 7pt; font-stretch: normal; font-variant-east-asian: normal; font-variant-numeric: normal; line-height: normal;">&nbsp;&nbsp;</span></span><span style="text-indent: -0.25in;">Copy /usr/dlc/servlets/wsa folder from progress installation path to</span><span style="text-indent: -0.25in;">&nbsp; </span><span style="text-indent: -0.25in;">/usr/local/apache-tomcat-7.0.50/webapps</span><br />
+<span style="text-indent: -0.25in;"><br /></span>
+<span style="text-indent: -0.25in;">3. Edit</span><span style="font-size: 7pt; font-stretch: normal; font-variant-east-asian: normal; font-variant-numeric: normal; line-height: normal; text-indent: -0.25in;">&nbsp;</span><span style="text-indent: -0.25in;">the wsa entry in ubroker.properties by
+mentioning correct ip/port for wsaUrl entry.</span><br />
+<span style="text-indent: -0.25in;"><br /></span>
+<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEifD330wjaJ78QudDo3CIAXJPCUAIXplfEHBhajP2V427VZb6QwA6XdI0TwsdrxisFKIcnKZcfFxO19dNrfXiFFHhpAqAXt9W4X5smkoIOmfztZZEnDbdY4JBORZ7XEonaMa03LH8gDfVA/s1600/aq.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" data-original-height="912" data-original-width="727" height="640" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEifD330wjaJ78QudDo3CIAXJPCUAIXplfEHBhajP2V427VZb6QwA6XdI0TwsdrxisFKIcnKZcfFxO19dNrfXiFFHhpAqAXt9W4X5smkoIOmfztZZEnDbdY4JBORZ7XEonaMa03LH8gDfVA/s640/aq.png" width="510" /></a></div>
+<span style="text-indent: -0.25in;"><br /></span>
+<span style="text-indent: -0.25in;"><br /></span>
+<span style="text-indent: -0.25in;">3.1</span><span style="font-size: 7pt; font-stretch: normal; font-variant-east-asian: normal; font-variant-numeric: normal; line-height: normal; text-indent: -0.25in;">&nbsp;</span><span style="text-indent: -0.25in;">Edit setclasspath.sh to point to correct java
+paths JRE_HOME=/usr/jdk/jdk1.8.0_60/jre</span><br />
+<div class="MsoListParagraphCxSpFirst" style="mso-list: l0 level2 lfo1; text-indent: -.25in;">
+<o:p></o:p></div>
+<div class="MsoListParagraphCxSpMiddle">
+<br /></div>
+<div class="MsoListParagraphCxSpMiddle" style="mso-list: l0 level2 lfo1; text-indent: -.25in;">
+<!--[if !supportLists]-->1&nbsp; &nbsp; 3 .2<span style="font-size: 7pt; font-stretch: normal; font-variant-east-asian: normal; font-variant-numeric: normal; line-height: normal;">&nbsp;&nbsp;
+</span><!--[endif]-->Edit /usr/local/apache-tomcat-7.0.50/webapps/wsa/WEB-INF/web.xml
+and comment <o:p></o:p></div>
+<div class="MsoListParagraphCxSpMiddle">
+<br /></div>
+<div class="MsoListParagraphCxSpMiddle">
+&lt;security-constraint&gt;&nbsp; tag<o:p></o:p></div>
+<div class="MsoListParagraphCxSpMiddle">
+<br /></div>
+<div class="MsoListParagraphCxSpMiddle">
+<o:p>4.</o:p><span style="font-size: 7pt; font-stretch: normal; font-variant-east-asian: normal; font-variant-numeric: normal; line-height: normal; text-indent: -0.25in;">&nbsp;</span><span style="text-indent: -0.25in;">Start the apache tomcat server by below command:</span></div>
+<div class="MsoListParagraphCxSpMiddle" style="mso-list: l0 level1 lfo1; text-indent: -.25in;">
+<o:p></o:p></div>
+<div class="MsoListParagraphCxSpMiddle">
+cd /usr/local/apache-tomcat-7.0.50<o:p></o:p></div>
+<div class="MsoListParagraphCxSpMiddle">
+./bin/startup.sh<o:p></o:p></div>
+<div class="MsoListParagraphCxSpMiddle">
+<br /></div>
+<div class="MsoListParagraphCxSpMiddle" style="text-indent: 0px;">
+<span style="font-stretch: normal; font-variant-east-asian: normal; font-variant-numeric: normal; line-height: normal; text-indent: -0.25in;">5.</span><span style="font-size: 7pt; font-stretch: normal; font-variant-east-asian: normal; font-variant-numeric: normal; line-height: normal; text-indent: -0.25in;">&nbsp; &nbsp;</span><span style="text-indent: -0.25in;">Create a .wsm file for</span></div>
+<div class="MsoListParagraphCxSpMiddle" style="text-indent: 0px;">
+<span style="font-size: 7pt; font-stretch: normal; font-variant-east-asian: normal; font-variant-numeric: normal; line-height: normal; text-indent: -0.25in;"><br /></span></div>
+<div class="MsoListParagraphCxSpMiddle" style="text-indent: 0px;">
+<span style="font-size: 7pt; font-stretch: normal; font-variant-east-asian: normal; font-variant-numeric: normal; line-height: normal; text-indent: -0.25in;">&nbsp;</span><span style="text-indent: -0.25in;">6. p</span><span style="text-indent: -0.25in;">articular webservice required to be deployed .</span></div>
+<div class="MsoListParagraphCxSpMiddle" style="mso-list: l0 level1 lfo1; text-indent: -.25in;">
+<o:p></o:p></div>
+<div class="MsoListParagraphCxSpMiddle">
+Eg: /emc/reale/apps/pseudo/input/WebServiceConfig/WSCRMultiComment.wsm
+(10.22.3.120)<o:p></o:p></div>
+<div class="MsoListParagraphCxSpMiddle">
+<br /></div>
+<div class="MsoListParagraphCxSpMiddle">
+<o:p>&nbsp;7.</o:p><span style="font-size: 7pt; font-stretch: normal; font-variant-east-asian: normal; font-variant-numeric: normal; line-height: normal; text-indent: -0.25in;">&nbsp;</span><span style="text-indent: -0.25in;">Edit wsm file to mention the following entry as
+per the specific environment:</span></div>
+<div class="MsoListParagraphCxSpMiddle" style="mso-list: l0 level1 lfo1; text-indent: -.25in;">
+<o:p></o:p></div>
+<div class="MsoListParagraphCxSpMiddle">
+&lt;SoapEndpointURL&gt;<span class="MsoHyperlink">http://{serverip}:
+{tomcat</span> port}/wsa/wsa1&lt;/SoapEndpointURL&gt;<o:p></o:p></div>
+<div class="MsoListParagraphCxSpMiddle">
+&lt;Service&gt;{appserver name}&lt;/Service&gt;
+<o:p></o:p></div>
+<div class="MsoListParagraphCxSpMiddle">
+&lt;AppserverURL&gt;AppServerDC://{serverip}:
+{appserver port}&lt;/AppserverURL&gt;<o:p></o:p></div>
+<div class="MsoListParagraphCxSpMiddle">
+<br /></div>
+<div class="MsoListParagraphCxSpMiddle">
+<o:p>&nbsp;8.</o:p><span style="text-indent: -0.25in;">Deploy the required webservice by using below
+command:</span></div>
+<div class="MsoListParagraphCxSpMiddle" style="mso-list: l0 level1 lfo1; text-indent: -.25in;">
+<o:p></o:p></div>
+<div class="MsoListParagraphCxSpMiddle">
+<br /></div>
+<div class="MsoListParagraphCxSpMiddle" style="margin-bottom: 10.0pt; margin-left: 0in; margin-right: -1.0in; margin-top: 0in; mso-add-space: auto; text-indent: .25in;">
+wsaman
+-name wsa1 -wsm /emc/reale/apps/pseudo/input/WebServiceConfig/WSCRMultiComment.wsm
+–deploy<o:p></o:p></div>
+<div class="MsoListParagraphCxSpMiddle" style="margin-bottom: 10.0pt; margin-left: 0in; margin-right: -1.0in; margin-top: 0in; mso-add-space: auto;">
+<o:p>&nbsp;9.&nbsp;</o:p><span style="text-indent: -0.25in;">Enable the webservice using the below command:</span></div>
+<div class="MsoListParagraphCxSpLast" style="margin-right: -1.0in; mso-add-space: auto; mso-list: l0 level1 lfo1; text-indent: -.25in;">
+<o:p></o:p></div>
+<div class="MsoNormal" style="margin-bottom: 10.0pt; margin-left: .25in; margin-right: -1.0in; margin-top: 0in;">
+wsaman -name wsa1 -enable -appname WSCRMultiComment</div>
+<div class="MsoNormal" style="margin-bottom: 10.0pt; margin-left: .25in; margin-right: -1.0in; margin-top: 0in;">
+<span style="text-indent: -24px;">10.We can list the deployed services to check if our service is deployed and enabled by using the below command:</span></div>
+<div class="MsoNormal" style="margin-bottom: 10.0pt; margin-left: .25in; margin-right: -1.0in; margin-top: 0in;">
+wsaman -name wsa1 -wsm
+/emc/reale/apps/pseudo/input/WebServiceConfig/WSCRMultiComment.wsm –list</div>
+<div class="MsoListParagraphCxSpMiddle" style="margin-right: -1.0in; mso-add-space: auto;">
+<o:p></o:p></div>
+<div class="MsoListParagraphCxSpMiddle" style="margin-right: -1.0in; mso-add-space: auto;">
+<br /></div>
+<div class="MsoListParagraphCxSpMiddle" style="margin-right: -1.0in; mso-add-space: auto;">
+<o:p>11.</o:p><span style="font-size: 7pt; font-stretch: normal; font-variant-east-asian: normal; font-variant-numeric: normal; line-height: normal; text-indent: -0.25in;">&nbsp; &nbsp; &nbsp;</span><span style="text-indent: -0.25in;">Check if the service url is working by accessing
+the below ip in browser:</span></div>
+<div class="MsoListParagraphCxSpMiddle" style="margin-right: -1.0in; mso-add-space: auto; mso-list: l0 level1 lfo1; text-indent: -.25in;">
+<o:p></o:p></div>
+<div class="MsoListParagraphCxSpMiddle" style="margin-right: -1.0in; mso-add-space: auto;">
+<br /></div>
+<div class="MsoListParagraphCxSpMiddle">
+<span class="MsoHyperlink">http://{serverip}: {tomcat</span> port}/wsa/wsa1 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;[default tomcat port =8080]</div>
+<div class="MsoListParagraphCxSpMiddle">
+<span style="font-size: 7pt; font-stretch: normal; font-variant-east-asian: normal; font-variant-numeric: normal; line-height: normal; text-indent: -0.25in;"><br /></span></div>
+<div class="MsoListParagraphCxSpMiddle">
+<span style="font-size: 7pt; font-stretch: normal; font-variant-east-asian: normal; font-variant-numeric: normal; line-height: normal; text-indent: -0.25in;">&nbsp;&nbsp;</span><span style="text-indent: -0.25in;">12.For the given example webservice testing can be
+done by using below soap url:</span></div>
+<div class="MsoListParagraphCxSpMiddle" style="mso-list: l0 level1 lfo1; text-indent: -.25in;">
+<o:p></o:p></div>
+<div class="MsoListParagraphCxSpMiddle">
+http://<hostname>:8080/wsa/wsa1/wsdl?targetURI=urn:WSCRMultiComment<span style="color: #1f497d;"><o:p></o:p></span></hostname></div>
+<div class="MsoListParagraphCxSpLast">
+<br /></div>
+<div class="separator" style="clear: both; text-align: center;">
+<br /></div>
+<div class="separator" style="clear: both; text-align: center;">
+</div>
+<span style="text-indent: -0.25in;"><br /></span>
+<br />
+<div class="MsoListParagraph" style="mso-list: l0 level1 lfo1; text-indent: -.25in;">
+<o:p></o:p></div>
+<div class="MsoListParagraph" style="mso-list: l0 level1 lfo1; text-indent: -.25in;">
+<o:p></o:p></div>
+</div>
+</div>
+
+  </div><a class="u-url" href="/vrexploring/web-service-setup-in-progress/" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/vrexploring/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">VR Exploring</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">VR Exploring</li><li><a class="u-email" href="mailto:vrexploring@gmail.com">vrexploring@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/vemarahub"><svg class="svg-icon"><use xlink:href="/vrexploring/assets/minima-social-icons.svg#github"></use></svg> <span class="username">vemarahub</span></a></li><li><a href="https://www.twitter.com/vrexploring"><svg class="svg-icon"><use xlink:href="/vrexploring/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">vrexploring</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>A space where i share my thoughts and experiences about technology , science, life, family and everything in between.</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

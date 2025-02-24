@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>OpenEdge Database Creation | VR Exploring</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="OpenEdge Database Creation" />
+<meta name="author" content="Rajesh Nair" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Since we are done with installation of the Progress Openedge product , now we are free to play around with the features of Openedge and explore the opertaions a DBA can perform on the database system.First and Foremost , we need a database to start with.Once installation is completed, we are free to create our own databases and perform various operations on the same.As discussed in previous blogs, the installation directory on progress product for a Unix//LinuxSolaris/AIX environment would be by defaut &quot;/usr/dlc&quot; ,which can be set as environment variable , preferably DLC and set in PATH to utilize various utilities (present in /usr/dlc/bin) which progress provides for us to operate upon.Following are the various utilities using which we can create a database :1. Prostrct :&nbsp;&nbsp;Prostrct utility can be used to create a database with the help of a structure file (.st) (explained in further blogs).The following would be the command used:Eg:prostrct create abc abc.st -blocksize 8192By default blocksize would be 4K(4096).This would create a void db of the name &quot;abc&quot; in the OS path where the command is executed.We can make it a workable database by copying empty db(sample db ,comes along progress installation in installation path) to the newly created db.procopy /usr/dlc/empty8 abcNow a database abc is available in single user mode and can be accessed by below commandpro abc2. Prodb:&nbsp;When using prodb to create a copy of a database, all the database copy will reside in the same directory , unless a structure file (.st)prodb abc sports2000sports2000 is sample db which comes with openedge instllation.The new db abc will have all its documents in sports2000 path ,and would be a replica of the existing db.3. Procopy:&nbsp;Using procopy utility we can copy an existing database into a newly created database (using prostrct).This will create a database with schema replica of the database copied.procopy testdb abc4. Prorest:We can restore a database backup ( taken using probkup utility ) and re create a database backup into a working system using prorestprorest abc abc.bkp5. Using Data Administration Tool:We can access the data administartion tool of an existing database and choose Database --&gt; Create&nbsp;Then enter the database name ,enter appropriate information and choose OK to create a new db." />
+<meta property="og:description" content="Since we are done with installation of the Progress Openedge product , now we are free to play around with the features of Openedge and explore the opertaions a DBA can perform on the database system.First and Foremost , we need a database to start with.Once installation is completed, we are free to create our own databases and perform various operations on the same.As discussed in previous blogs, the installation directory on progress product for a Unix//LinuxSolaris/AIX environment would be by defaut &quot;/usr/dlc&quot; ,which can be set as environment variable , preferably DLC and set in PATH to utilize various utilities (present in /usr/dlc/bin) which progress provides for us to operate upon.Following are the various utilities using which we can create a database :1. Prostrct :&nbsp;&nbsp;Prostrct utility can be used to create a database with the help of a structure file (.st) (explained in further blogs).The following would be the command used:Eg:prostrct create abc abc.st -blocksize 8192By default blocksize would be 4K(4096).This would create a void db of the name &quot;abc&quot; in the OS path where the command is executed.We can make it a workable database by copying empty db(sample db ,comes along progress installation in installation path) to the newly created db.procopy /usr/dlc/empty8 abcNow a database abc is available in single user mode and can be accessed by below commandpro abc2. Prodb:&nbsp;When using prodb to create a copy of a database, all the database copy will reside in the same directory , unless a structure file (.st)prodb abc sports2000sports2000 is sample db which comes with openedge instllation.The new db abc will have all its documents in sports2000 path ,and would be a replica of the existing db.3. Procopy:&nbsp;Using procopy utility we can copy an existing database into a newly created database (using prostrct).This will create a database with schema replica of the database copied.procopy testdb abc4. Prorest:We can restore a database backup ( taken using probkup utility ) and re create a database backup into a working system using prorestprorest abc abc.bkp5. Using Data Administration Tool:We can access the data administartion tool of an existing database and choose Database --&gt; Create&nbsp;Then enter the database name ,enter appropriate information and choose OK to create a new db." />
+<link rel="canonical" href="https://vemarahub.github.io/vrexploring/openedge-database-creation/" />
+<meta property="og:url" content="https://vemarahub.github.io/vrexploring/openedge-database-creation/" />
+<meta property="og:site_name" content="VR Exploring" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-12-14T17:12:00+00:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="OpenEdge Database Creation" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Rajesh Nair"},"dateModified":"2017-12-14T17:12:00+00:00","datePublished":"2017-12-14T17:12:00+00:00","description":"Since we are done with installation of the Progress Openedge product , now we are free to play around with the features of Openedge and explore the opertaions a DBA can perform on the database system.First and Foremost , we need a database to start with.Once installation is completed, we are free to create our own databases and perform various operations on the same.As discussed in previous blogs, the installation directory on progress product for a Unix//LinuxSolaris/AIX environment would be by defaut &quot;/usr/dlc&quot; ,which can be set as environment variable , preferably DLC and set in PATH to utilize various utilities (present in /usr/dlc/bin) which progress provides for us to operate upon.Following are the various utilities using which we can create a database :1. Prostrct :&nbsp;&nbsp;Prostrct utility can be used to create a database with the help of a structure file (.st) (explained in further blogs).The following would be the command used:Eg:prostrct create abc abc.st -blocksize 8192By default blocksize would be 4K(4096).This would create a void db of the name &quot;abc&quot; in the OS path where the command is executed.We can make it a workable database by copying empty db(sample db ,comes along progress installation in installation path) to the newly created db.procopy /usr/dlc/empty8 abcNow a database abc is available in single user mode and can be accessed by below commandpro abc2. Prodb:&nbsp;When using prodb to create a copy of a database, all the database copy will reside in the same directory , unless a structure file (.st)prodb abc sports2000sports2000 is sample db which comes with openedge instllation.The new db abc will have all its documents in sports2000 path ,and would be a replica of the existing db.3. Procopy:&nbsp;Using procopy utility we can copy an existing database into a newly created database (using prostrct).This will create a database with schema replica of the database copied.procopy testdb abc4. Prorest:We can restore a database backup ( taken using probkup utility ) and re create a database backup into a working system using prorestprorest abc abc.bkp5. Using Data Administration Tool:We can access the data administartion tool of an existing database and choose Database --&gt; Create&nbsp;Then enter the database name ,enter appropriate information and choose OK to create a new db.","headline":"OpenEdge Database Creation","mainEntityOfPage":{"@type":"WebPage","@id":"https://vemarahub.github.io/vrexploring/openedge-database-creation/"},"url":"https://vemarahub.github.io/vrexploring/openedge-database-creation/"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/vrexploring/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://vemarahub.github.io/vrexploring/feed.xml" title="VR Exploring" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/vrexploring/">VR Exploring</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/vrexploring/about/">About</a><a class="page-link" href="/vrexploring/">Home</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">OpenEdge Database Creation</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-12-14T17:12:00+00:00" itemprop="datePublished">Dec 14, 2017
+      </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">Rajesh Nair</span></span></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <div dir="ltr" style="text-align: left;" trbidi="on"><br /><br />Since we are done with installation of the Progress Openedge product , now we are free to play around with the features of Openedge and explore the opertaions a DBA can perform on the database system.<br /><br /><br />First and Foremost , we need a database to start with.Once installation is completed, we are free to create our own databases and perform various operations on the same.<br /><br />As discussed in previous blogs, the installation directory on progress product for a Unix//LinuxSolaris/AIX environment would be by defaut "/usr/dlc" ,which can be set as environment variable , preferably DLC and set in PATH to utilize various utilities (present in /usr/dlc/bin) which progress provides for us to operate upon.<br /><br /><br /><br />Following are the various utilities using which we can create a database :<br /><br /><h3 style="text-align: left;"><b>1. Prostrct :&nbsp;</b></h3>&nbsp;Prostrct utility can be used to create a database with the help of a structure file (.st) (explained in further blogs).The following would be the command used:<br /><b>Eg:</b><br /><b>prostrct create abc abc.st -blocksize 8192</b><br /><br />By default blocksize would be 4K(4096).<br /><br />This would create a void db of the name "abc" in the OS path where the command is executed.<br /><br />We can make it a workable database by copying empty db(sample db ,comes along progress installation in installation path) to the newly created db.<br /><b><br /></b><b>procopy /usr/dlc/empty8 abc</b><br /><br />Now a database abc is available in single user mode and can be accessed by below command<br /><br /><b>pro abc</b><br /><b><br /></b><b><br /></b><b><br /></b><br /><h3><b>2. Prodb:&nbsp;</b></h3><div>When using prodb to create a copy of a database, all the database copy will reside in the same directory , unless a structure file (.st)</div><div><br /></div><div><b>prodb abc sports2000</b></div><div><b><br /></b></div><div>sports2000 is sample db which comes with openedge instllation.</div><div><br /></div><div>The new db abc will have all its documents in sports2000 path ,and would be a replica of the existing db.</div><div><br /></div><div><br /></div><div><br /></div><div><h3><b>3. Procopy:&nbsp;</b></h3></div><div>Using procopy utility we can copy an existing database into a newly created database (using prostrct).<br />This will create a database with schema replica of the database copied.<br /><br /><b>procopy testdb abc</b></div><div><br /><br /><h3><b>4. Prorest:</b></h3></div><div>We can restore a database backup ( taken using probkup utility ) and re create a database backup into a working system using prorest</div><div><br /></div><div><b>prorest abc abc.bkp</b></div><div><b><br /></b></div><div><b><br /></b></div><div><h3><b>5. Using Data Administration Tool:</b></h3></div><div>We can access the data administartion tool of an existing database and choose Database --&gt; Create&nbsp;</div><div>Then enter the database name ,enter appropriate information and choose OK to create a new db.</div><div><br /></div><div><br /></div><div><b><br /></b></div><div><b><br /></b></div><div><b><br /></b></div><div><b><br /></b></div></div>
+  </div><a class="u-url" href="/vrexploring/openedge-database-creation/" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/vrexploring/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">VR Exploring</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">VR Exploring</li><li><a class="u-email" href="mailto:vrexploring@gmail.com">vrexploring@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/vemarahub"><svg class="svg-icon"><use xlink:href="/vrexploring/assets/minima-social-icons.svg#github"></use></svg> <span class="username">vemarahub</span></a></li><li><a href="https://www.twitter.com/vrexploring"><svg class="svg-icon"><use xlink:href="/vrexploring/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">vrexploring</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>A space where i share my thoughts and experiences about technology , science, life, family and everything in between.</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

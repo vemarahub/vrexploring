@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Bootstrap in Angular | VR Exploring</title>
+<meta name="generator" content="Jekyll v4.4.1" />
+<meta property="og:title" content="Bootstrap in Angular" />
+<meta name="author" content="Rajesh Nair" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="To implement bootstrap in an angular application after creating it with ng new command , follow the below steps: 1. Open command prompt and cd to the project directory and run&nbsp; below commands npm install jquery –save npm install popper.js – save npm install bootstrap –save npm install font-awesome –save 2.&nbsp;Open project folder in visual studio and in the angular.json file of the project add the below styles and scripts: &nbsp; &nbsp; &quot;styles&quot;: [ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &quot;src/styles.scss&quot;, &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &quot;node_modules/bootstrap/dist/css/bootstrap.css&quot;, &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &quot;node_modules/font-awesome/css/font-awesome.css&quot; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ], &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &quot;scripts&quot;: [ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &quot;node_modules/jquery/dist/jquery.js&quot;, &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;node_modules/popper.js/dist/umd/popper.js&quot;, &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &quot;node_modules/bootstrap/dist/js/bootstrap.js&quot; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ] 3. To add a nav bar with dashboard and about as two menu options and a search bar, add the below code in app.component.html &lt;nav&nbsp;class=&quot;navbar&nbsp;navbar-expand-sm&nbsp;bg-success&nbsp;navbar-dark&quot;&gt; &nbsp;&nbsp;&lt;a&nbsp;class=&quot;navbar-brand&quot;&nbsp;href=&quot;#&quot;&gt; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Angular&nbsp;Task&nbsp;Manager &nbsp;&nbsp;&lt;/a&gt; &nbsp;&nbsp;&lt;button&nbsp;class=&quot;navbar-toggler&quot;&nbsp;type=&quot;button&quot;&nbsp;data-toggle=&quot;collapse&quot;&nbsp;data-target=&quot;#mynav&quot;&gt; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;span&nbsp;class=&quot;navbar-toggler-icon&quot;&gt;&lt;/span&gt; &nbsp;&nbsp;&lt;/button&gt; &nbsp;&nbsp;&lt;div&nbsp;class=&quot;collapse&nbsp;navbar-collapse&quot;&nbsp;id=&quot;mynav&quot;&gt; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;ul&nbsp;class=&quot;navbar-nav&nbsp;mr-auto&quot;&gt; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;li&nbsp;class=&quot;nav-item&quot;&gt; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;a&nbsp;class=&quot;nav-link&quot;&nbsp;routerLink=&quot;Dashboard&quot;&gt;Dashboard&lt;/a&gt; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/li&gt; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;li&nbsp;class=&quot;nav-item&quot;&gt; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;a&nbsp;class=&quot;nav-link&quot;&nbsp;routerLink=&quot;About&quot;&gt;About&lt;/a&gt; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/li&gt; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/ul&gt; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;form&nbsp;class=&quot;form-inline&nbsp;my-2&nbsp;my-lg-0&quot;&gt; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;div&nbsp;class=&quot;input-group&quot;&gt; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;div&nbsp;class=&quot;input-group-prepend&quot;&gt; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;span&nbsp;class=&quot;input-group-text&quot;&nbsp;id=&quot;search&quot;&gt;&lt;i&nbsp;class=&quot;fa&nbsp;fa-search&quot;&gt;&lt;/i&gt;&lt;/span&gt; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/div&gt; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;input&nbsp;type=&quot;text&quot;&nbsp;class=&quot;form-control&quot;&nbsp;placeholder=&quot;Search&quot;&gt; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/div&gt; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;button&nbsp;class=&quot;btn&nbsp;btn-warning&nbsp;my2-&nbsp;my-sm-0&quot;&nbsp;type=&quot;button&quot;&gt;Search&lt;/button&gt; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/form&gt; &nbsp;&nbsp;&lt;/div&gt; &lt;/nav&gt; 4. Create a component for each dashboard and about using command prompt and running below commands: ng g component dashboard ng g component about This will create folders dashboard and about inside your main project folder with all related files for angular.eg: dashboard.component.html dashboard.component.scss dashboard.component.spec.ts dashboard.component.ts 5. Open dashboard.component.ts and the name given for selector field in @Component tag can be edited and used in our app.component.html file to add that component to our app. For eg:&nbsp;app-dashboard This can be used in app.component .html as:" />
+<meta property="og:description" content="To implement bootstrap in an angular application after creating it with ng new command , follow the below steps: 1. Open command prompt and cd to the project directory and run&nbsp; below commands npm install jquery –save npm install popper.js – save npm install bootstrap –save npm install font-awesome –save 2.&nbsp;Open project folder in visual studio and in the angular.json file of the project add the below styles and scripts: &nbsp; &nbsp; &quot;styles&quot;: [ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &quot;src/styles.scss&quot;, &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &quot;node_modules/bootstrap/dist/css/bootstrap.css&quot;, &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &quot;node_modules/font-awesome/css/font-awesome.css&quot; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ], &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &quot;scripts&quot;: [ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &quot;node_modules/jquery/dist/jquery.js&quot;, &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;node_modules/popper.js/dist/umd/popper.js&quot;, &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &quot;node_modules/bootstrap/dist/js/bootstrap.js&quot; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ] 3. To add a nav bar with dashboard and about as two menu options and a search bar, add the below code in app.component.html &lt;nav&nbsp;class=&quot;navbar&nbsp;navbar-expand-sm&nbsp;bg-success&nbsp;navbar-dark&quot;&gt; &nbsp;&nbsp;&lt;a&nbsp;class=&quot;navbar-brand&quot;&nbsp;href=&quot;#&quot;&gt; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Angular&nbsp;Task&nbsp;Manager &nbsp;&nbsp;&lt;/a&gt; &nbsp;&nbsp;&lt;button&nbsp;class=&quot;navbar-toggler&quot;&nbsp;type=&quot;button&quot;&nbsp;data-toggle=&quot;collapse&quot;&nbsp;data-target=&quot;#mynav&quot;&gt; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;span&nbsp;class=&quot;navbar-toggler-icon&quot;&gt;&lt;/span&gt; &nbsp;&nbsp;&lt;/button&gt; &nbsp;&nbsp;&lt;div&nbsp;class=&quot;collapse&nbsp;navbar-collapse&quot;&nbsp;id=&quot;mynav&quot;&gt; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;ul&nbsp;class=&quot;navbar-nav&nbsp;mr-auto&quot;&gt; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;li&nbsp;class=&quot;nav-item&quot;&gt; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;a&nbsp;class=&quot;nav-link&quot;&nbsp;routerLink=&quot;Dashboard&quot;&gt;Dashboard&lt;/a&gt; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/li&gt; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;li&nbsp;class=&quot;nav-item&quot;&gt; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;a&nbsp;class=&quot;nav-link&quot;&nbsp;routerLink=&quot;About&quot;&gt;About&lt;/a&gt; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/li&gt; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/ul&gt; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;form&nbsp;class=&quot;form-inline&nbsp;my-2&nbsp;my-lg-0&quot;&gt; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;div&nbsp;class=&quot;input-group&quot;&gt; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;div&nbsp;class=&quot;input-group-prepend&quot;&gt; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;span&nbsp;class=&quot;input-group-text&quot;&nbsp;id=&quot;search&quot;&gt;&lt;i&nbsp;class=&quot;fa&nbsp;fa-search&quot;&gt;&lt;/i&gt;&lt;/span&gt; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/div&gt; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;input&nbsp;type=&quot;text&quot;&nbsp;class=&quot;form-control&quot;&nbsp;placeholder=&quot;Search&quot;&gt; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/div&gt; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;button&nbsp;class=&quot;btn&nbsp;btn-warning&nbsp;my2-&nbsp;my-sm-0&quot;&nbsp;type=&quot;button&quot;&gt;Search&lt;/button&gt; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/form&gt; &nbsp;&nbsp;&lt;/div&gt; &lt;/nav&gt; 4. Create a component for each dashboard and about using command prompt and running below commands: ng g component dashboard ng g component about This will create folders dashboard and about inside your main project folder with all related files for angular.eg: dashboard.component.html dashboard.component.scss dashboard.component.spec.ts dashboard.component.ts 5. Open dashboard.component.ts and the name given for selector field in @Component tag can be edited and used in our app.component.html file to add that component to our app. For eg:&nbsp;app-dashboard This can be used in app.component .html as:" />
+<link rel="canonical" href="https://vemarahub.github.io/vrexploring/bootstrap-in-angular/" />
+<meta property="og:url" content="https://vemarahub.github.io/vrexploring/bootstrap-in-angular/" />
+<meta property="og:site_name" content="VR Exploring" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-04-10T06:04:00+00:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Bootstrap in Angular" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Rajesh Nair"},"dateModified":"2020-04-10T06:04:00+00:00","datePublished":"2020-04-10T06:04:00+00:00","description":"To implement bootstrap in an angular application after creating it with ng new command , follow the below steps: 1. Open command prompt and cd to the project directory and run&nbsp; below commands npm install jquery –save npm install popper.js – save npm install bootstrap –save npm install font-awesome –save 2.&nbsp;Open project folder in visual studio and in the angular.json file of the project add the below styles and scripts: &nbsp; &nbsp; &quot;styles&quot;: [ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &quot;src/styles.scss&quot;, &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &quot;node_modules/bootstrap/dist/css/bootstrap.css&quot;, &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &quot;node_modules/font-awesome/css/font-awesome.css&quot; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ], &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &quot;scripts&quot;: [ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &quot;node_modules/jquery/dist/jquery.js&quot;, &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;node_modules/popper.js/dist/umd/popper.js&quot;, &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &quot;node_modules/bootstrap/dist/js/bootstrap.js&quot; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ] 3. To add a nav bar with dashboard and about as two menu options and a search bar, add the below code in app.component.html &lt;nav&nbsp;class=&quot;navbar&nbsp;navbar-expand-sm&nbsp;bg-success&nbsp;navbar-dark&quot;&gt; &nbsp;&nbsp;&lt;a&nbsp;class=&quot;navbar-brand&quot;&nbsp;href=&quot;#&quot;&gt; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Angular&nbsp;Task&nbsp;Manager &nbsp;&nbsp;&lt;/a&gt; &nbsp;&nbsp;&lt;button&nbsp;class=&quot;navbar-toggler&quot;&nbsp;type=&quot;button&quot;&nbsp;data-toggle=&quot;collapse&quot;&nbsp;data-target=&quot;#mynav&quot;&gt; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;span&nbsp;class=&quot;navbar-toggler-icon&quot;&gt;&lt;/span&gt; &nbsp;&nbsp;&lt;/button&gt; &nbsp;&nbsp;&lt;div&nbsp;class=&quot;collapse&nbsp;navbar-collapse&quot;&nbsp;id=&quot;mynav&quot;&gt; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;ul&nbsp;class=&quot;navbar-nav&nbsp;mr-auto&quot;&gt; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;li&nbsp;class=&quot;nav-item&quot;&gt; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;a&nbsp;class=&quot;nav-link&quot;&nbsp;routerLink=&quot;Dashboard&quot;&gt;Dashboard&lt;/a&gt; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/li&gt; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;li&nbsp;class=&quot;nav-item&quot;&gt; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;a&nbsp;class=&quot;nav-link&quot;&nbsp;routerLink=&quot;About&quot;&gt;About&lt;/a&gt; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/li&gt; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/ul&gt; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;form&nbsp;class=&quot;form-inline&nbsp;my-2&nbsp;my-lg-0&quot;&gt; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;div&nbsp;class=&quot;input-group&quot;&gt; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;div&nbsp;class=&quot;input-group-prepend&quot;&gt; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;span&nbsp;class=&quot;input-group-text&quot;&nbsp;id=&quot;search&quot;&gt;&lt;i&nbsp;class=&quot;fa&nbsp;fa-search&quot;&gt;&lt;/i&gt;&lt;/span&gt; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/div&gt; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;input&nbsp;type=&quot;text&quot;&nbsp;class=&quot;form-control&quot;&nbsp;placeholder=&quot;Search&quot;&gt; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/div&gt; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;button&nbsp;class=&quot;btn&nbsp;btn-warning&nbsp;my2-&nbsp;my-sm-0&quot;&nbsp;type=&quot;button&quot;&gt;Search&lt;/button&gt; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/form&gt; &nbsp;&nbsp;&lt;/div&gt; &lt;/nav&gt; 4. Create a component for each dashboard and about using command prompt and running below commands: ng g component dashboard ng g component about This will create folders dashboard and about inside your main project folder with all related files for angular.eg: dashboard.component.html dashboard.component.scss dashboard.component.spec.ts dashboard.component.ts 5. Open dashboard.component.ts and the name given for selector field in @Component tag can be edited and used in our app.component.html file to add that component to our app. For eg:&nbsp;app-dashboard This can be used in app.component .html as:","headline":"Bootstrap in Angular","mainEntityOfPage":{"@type":"WebPage","@id":"https://vemarahub.github.io/vrexploring/bootstrap-in-angular/"},"url":"https://vemarahub.github.io/vrexploring/bootstrap-in-angular/"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/vrexploring/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://vemarahub.github.io/vrexploring/feed.xml" title="VR Exploring" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/vrexploring/">VR Exploring</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/vrexploring/about/">About</a><a class="page-link" href="/vrexploring/">Home</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Bootstrap in Angular</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2020-04-10T06:04:00+00:00" itemprop="datePublished">Apr 10, 2020
+      </time>• <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">Rajesh Nair</span></span></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <div dir="ltr" style="text-align: left;" trbidi="on">
+<br />
+To implement bootstrap in an angular application after creating it with ng new command , follow the below steps:<br />
+<br />
+<b>1. </b>Open command prompt and cd to the project directory and run&nbsp; below commands<br />
+<br />
+<div class="MsoNormal">
+<br /></div>
+<div class="MsoNormal">
+npm install jquery –save<o:p></o:p></div>
+<div class="MsoNormal">
+npm install popper.js – save<o:p></o:p></div>
+<div class="MsoNormal">
+npm install bootstrap –save<o:p></o:p></div>
+<div class="MsoNormal">
+npm install font-awesome –save<o:p></o:p></div>
+<br /><br />
+<b>2.</b>&nbsp;Open project folder in visual studio and in the angular.json file of the project add the below styles and scripts:<br />
+<div class="MsoNormal">
+&nbsp; &nbsp; "styles": [<o:p></o:p></div>
+<div class="MsoNormal">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+"src/styles.scss",<o:p></o:p></div>
+<div class="MsoNormal">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+"node_modules/bootstrap/dist/css/bootstrap.css",<o:p></o:p></div>
+<div class="MsoNormal">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+"node_modules/font-awesome/css/font-awesome.css"<o:p></o:p></div>
+<div class="MsoNormal">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ],<o:p></o:p></div>
+<div class="MsoNormal">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+"scripts": [<o:p></o:p></div>
+<div class="MsoNormal">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+"node_modules/jquery/dist/jquery.js",<o:p></o:p></div>
+<div class="MsoNormal">
+&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"node_modules/popper.js/dist/umd/popper.js",<o:p></o:p></div>
+<div class="MsoNormal">
+<br /></div>
+<div class="MsoNormal">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+"node_modules/bootstrap/dist/js/bootstrap.js"<o:p></o:p></div>
+<br />
+<div class="MsoNormal">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ]<o:p></o:p></div>
+<div class="MsoNormal">
+<br /></div>
+<div class="MsoNormal">
+<b>3. </b>To add a nav bar with dashboard and about as two menu options and a search bar, add the below code in app.component.html</div>
+<div style="background-color: #1e1e1e; color: #d4d4d4; font-family: Consolas, &quot;Courier New&quot;, monospace; font-size: 14px; line-height: 19px; white-space: pre;">
+<div>
+<span style="color: grey;">&lt;</span><span style="color: #569cd6;">nav</span>&nbsp;<span style="color: #9cdcfe;">class</span>=<span style="color: #ce9178;">"navbar&nbsp;navbar-expand-sm&nbsp;bg-success&nbsp;navbar-dark"</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;<span style="color: grey;">&lt;</span><span style="color: #569cd6;">a</span>&nbsp;<span style="color: #9cdcfe;">class</span>=<span style="color: #ce9178;">"navbar-brand"</span>&nbsp;<span style="color: #9cdcfe;">href</span>=<span style="color: #ce9178;">"#"</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Angular&nbsp;Task&nbsp;Manager</div>
+<div>
+&nbsp;&nbsp;<span style="color: grey;">&lt;/</span><span style="color: #569cd6;">a</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;<span style="color: grey;">&lt;</span><span style="color: #569cd6;">button</span>&nbsp;<span style="color: #9cdcfe;">class</span>=<span style="color: #ce9178;">"navbar-toggler"</span>&nbsp;<span style="color: #9cdcfe;">type</span>=<span style="color: #ce9178;">"button"</span>&nbsp;<span style="color: #9cdcfe;">data-toggle</span>=<span style="color: #ce9178;">"collapse"</span>&nbsp;<span style="color: #9cdcfe;">data-target</span>=<span style="color: #ce9178;">"#mynav"</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;</span><span style="color: #569cd6;">span</span>&nbsp;<span style="color: #9cdcfe;">class</span>=<span style="color: #ce9178;">"navbar-toggler-icon"</span><span style="color: grey;">&gt;&lt;/</span><span style="color: #569cd6;">span</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;<span style="color: grey;">&lt;/</span><span style="color: #569cd6;">button</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;<span style="color: grey;">&lt;</span><span style="color: #569cd6;">div</span>&nbsp;<span style="color: #9cdcfe;">class</span>=<span style="color: #ce9178;">"collapse&nbsp;navbar-collapse"</span>&nbsp;<span style="color: #9cdcfe;">id</span>=<span style="color: #ce9178;">"mynav"</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;</span><span style="color: #569cd6;">ul</span>&nbsp;<span style="color: #9cdcfe;">class</span>=<span style="color: #ce9178;">"navbar-nav&nbsp;mr-auto"</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;</span><span style="color: #569cd6;">li</span>&nbsp;<span style="color: #9cdcfe;">class</span>=<span style="color: #ce9178;">"nav-item"</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;</span><span style="color: #569cd6;">a</span>&nbsp;<span style="color: #9cdcfe;">class</span>=<span style="color: #ce9178;">"nav-link"</span>&nbsp;<span style="color: #9cdcfe;">routerLink</span>=<span style="color: #ce9178;">"Dashboard"</span><span style="color: grey;">&gt;</span>Dashboard<span style="color: grey;">&lt;/</span><span style="color: #569cd6;">a</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;/</span><span style="color: #569cd6;">li</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;</span><span style="color: #569cd6;">li</span>&nbsp;<span style="color: #9cdcfe;">class</span>=<span style="color: #ce9178;">"nav-item"</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;</span><span style="color: #569cd6;">a</span>&nbsp;<span style="color: #9cdcfe;">class</span>=<span style="color: #ce9178;">"nav-link"</span>&nbsp;<span style="color: #9cdcfe;">routerLink</span>=<span style="color: #ce9178;">"About"</span><span style="color: grey;">&gt;</span>About<span style="color: grey;">&lt;/</span><span style="color: #569cd6;">a</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;/</span><span style="color: #569cd6;">li</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;/</span><span style="color: #569cd6;">ul</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;</span><span style="color: #569cd6;">form</span>&nbsp;<span style="color: #9cdcfe;">class</span>=<span style="color: #ce9178;">"form-inline&nbsp;my-2&nbsp;my-lg-0"</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;</span><span style="color: #569cd6;">div</span>&nbsp;<span style="color: #9cdcfe;">class</span>=<span style="color: #ce9178;">"input-group"</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;</span><span style="color: #569cd6;">div</span>&nbsp;<span style="color: #9cdcfe;">class</span>=<span style="color: #ce9178;">"input-group-prepend"</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;</span><span style="color: #569cd6;">span</span>&nbsp;<span style="color: #9cdcfe;">class</span>=<span style="color: #ce9178;">"input-group-text"</span>&nbsp;<span style="color: #9cdcfe;">id</span>=<span style="color: #ce9178;">"search"</span><span style="color: grey;">&gt;&lt;</span><span style="color: #569cd6;">i</span>&nbsp;<span style="color: #9cdcfe;">class</span>=<span style="color: #ce9178;">"fa&nbsp;fa-search"</span><span style="color: grey;">&gt;&lt;/</span><span style="color: #569cd6;">i</span><span style="color: grey;">&gt;&lt;/</span><span style="color: #569cd6;">span</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;/</span><span style="color: #569cd6;">div</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;</span><span style="color: #569cd6;">input</span>&nbsp;<span style="color: #9cdcfe;">type</span>=<span style="color: #ce9178;">"text"</span>&nbsp;<span style="color: #9cdcfe;">class</span>=<span style="color: #ce9178;">"form-control"</span>&nbsp;<span style="color: #9cdcfe;">placeholder</span>=<span style="color: #ce9178;">"Search"</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;/</span><span style="color: #569cd6;">div</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;</span><span style="color: #569cd6;">button</span>&nbsp;<span style="color: #9cdcfe;">class</span>=<span style="color: #ce9178;">"btn&nbsp;btn-warning&nbsp;my2-&nbsp;my-sm-0"</span>&nbsp;<span style="color: #9cdcfe;">type</span>=<span style="color: #ce9178;">"button"</span><span style="color: grey;">&gt;</span>Search<span style="color: grey;">&lt;/</span><span style="color: #569cd6;">button</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: grey;">&lt;/</span><span style="color: #569cd6;">form</span><span style="color: grey;">&gt;</span></div>
+<div>
+&nbsp;&nbsp;<span style="color: grey;">&lt;/</span><span style="color: #569cd6;">div</span><span style="color: grey;">&gt;</span></div>
+<div>
+<span style="color: grey;">&lt;/</span><span style="color: #569cd6;">nav</span><span style="color: grey;">&gt;</span></div>
+<br /><br /></div>
+<br />
+<b>4. </b>Create a component for each dashboard and about using command prompt and running below commands:<br />
+<div class="MsoNormal">
+ng g component dashboard<o:p></o:p></div>
+<div class="MsoNormal">
+ng g component about<o:p></o:p></div>
+<div class="MsoNormal">
+<br /></div>
+<div class="MsoNormal">
+This will create folders dashboard and about inside your main project folder with all related files for angular.eg:</div>
+<div class="MsoNormal">
+dashboard.component.html</div>
+<div class="MsoNormal">
+dashboard.component.scss</div>
+<div class="MsoNormal">
+dashboard.component.spec.ts</div>
+<div class="MsoNormal">
+dashboard.component.ts</div>
+<div class="MsoNormal">
+<br /></div>
+<div class="MsoNormal">
+<b>5. </b>Open dashboard.component.ts and the name given for selector field in @Component tag can be edited and used in our app.component.html file to add that component to our app.</div>
+<div class="MsoNormal">
+For eg:&nbsp;app-dashboard</div>
+<div class="MsoNormal">
+This can be used in app.component .html as:</div>
+<div class="MsoNormal">
+<div>
+<app-dashboard></app-dashboard></div>
+</div>
+<div class="MsoNormal">
+<br /></div>
+<div class="MsoNormal">
+<br /></div>
+<br />
+<br /></div>
+
+  </div><a class="u-url" href="/vrexploring/bootstrap-in-angular/" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/vrexploring/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">VR Exploring</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">VR Exploring</li><li><a class="u-email" href="mailto:vrexploring@gmail.com">vrexploring@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/vemarahub"><svg class="svg-icon"><use xlink:href="/vrexploring/assets/minima-social-icons.svg#github"></use></svg> <span class="username">vemarahub</span></a></li><li><a href="https://www.twitter.com/vrexploring"><svg class="svg-icon"><use xlink:href="/vrexploring/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">vrexploring</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>A space where i share my thoughts and experiences about technology , science, life, family and everything in between.</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>
