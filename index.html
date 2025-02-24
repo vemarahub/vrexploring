@@ -3,23 +3,3 @@ layout: default
 title: Home
 ---
 
-<header class="site-header">
-  <h1>Welcome to {{ site.title }}</h1>
-  <p>{{ site.description }}</p>
-</header>
-
-<section>
-  <h2>Recent Posts</h2>
-  <ul class="post-list">
-    {% for post in site.posts limit: 5 %}
-    <li>
-      <h2><a href="{{ site.baseurl }}{{ post.url }}">{{ post.title }}</a></h2>
-      <p>{{ post.excerpt | strip_html | truncatewords: 30 }}</p>
-    </li>
-    {% endfor %}
-  </ul>
-</section>
-
-<footer class="site-footer">
-  <p>&copy; {{ site.time | date: '%Y' }} {{ site.title }}</p>
-</footer>
