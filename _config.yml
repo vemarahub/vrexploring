@@ -28,7 +28,7 @@ twitter_username: vrexploring
 github_username:  vemarahub
 
 # Build settings
-remote_theme: "mmistakes/minimal-mistakes"
+theme: minima
 plugins:
   - jekyll-feed
 
