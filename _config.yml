@@ -22,7 +22,7 @@ title: VR Exploring
 email: vrexploring@gmail.com
 description: >- # this means to ignore newlines until "baseurl:"
   A space where i share my thoughts and experiences about technology , science, life, family and everything in between.
-baseurl: "/vrexploring" # the subpath of your site, e.g. /blog
+baseurl: "" # the subpath of your site, e.g. /blog
 url: "https://vemarahub.github.io" # the base hostname & protocol for your site, e.g. http://example.com
 twitter_username: vrexploring
 github_username:  vemarahub
