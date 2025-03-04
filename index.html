@@ -1,21 +1,33 @@
----
-layout: default
-title: Home
----
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VR Exploring</title>
+</head>
+<body>
+<h1>Welcome to VR Exploring</h1>
+<p>A space where I share my thoughts and experiences about tech stacks, how-tos, hacks & shortcuts, and some deep thoughts.</p>
 
-<h2>Categories</h2>
 <ul>
-    <li><a href="{{ site.baseurl }}/categories/databases/">Databases</a></li>
-    <li><a href="{{ site.baseurl }}/categories/os/">OS</a></li>
-    <li><a href="{{ site.baseurl }}/categories/cloud/">Cloud</a></li>
-</ul>
-
-<h2>Recent Posts</h2>
-<ul class="post-list">
-    {% for post in site.posts limit: 5 %}
-    <li>
-        <h2><a href="{{ site.baseurl }}{{ post.url }}">{{ post.title }}</a></h2>
-        <p>{{ post.excerpt | strip_html | truncatewords: 30 }}</p>
+    <li><a href="/databases/">Databases</a>
+        <ul>
+            <li><a href="/mongo/">Mongo</a></li>
+            <li><a href="/mysql/">MySQL</a></li>
+            <li><a href="/progress/">Progress</a></li>
+        </ul>
     </li>
-    {% endfor %}
+    <li><a href="/os/">OS</a>
+        <ul>
+            <li><a href="/linux/">Linux</a></li>
+        </ul>
+    </li>
+    <li><a href="/cloud/">Cloud</a>
+        <ul>
+            <li><a href="/aws/">AWS</a></li>
+            <li><a href="/azure/">Azure</a></li>
+        </ul>
+    </li>
 </ul>
+</body>
+</html>
