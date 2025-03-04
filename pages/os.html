@@ -1,0 +1,19 @@
+---
+layout: page
+title: "OS"
+permalink: /categories/os/
+---
+
+<h1>Operating Systems</h1>
+
+<ul>
+    <li><a href="{{ site.baseurl }}/categories/os/linux/">Linux</a></li>
+</ul>
+
+<h2>All Posts</h2>
+{% for post in site.posts %}
+{% if post.categories contains "OS" %}
+<h3><a href="{{ post.url }}">{{ post.title }}</a></h3>
+<p>{{ post.excerpt }}</p>
+{% endif %}
+{% endfor %}

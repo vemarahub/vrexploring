@@ -1,0 +1,22 @@
+---
+layout: page
+title: "Databases"
+permalink: /categories/databases/
+---
+
+<h1>Databases</h1>
+
+<h2>Subcategories</h2>
+<ul>
+    <li><a href="{{ site.baseurl }}/categories/databases/mongo/">Mongo</a></li>
+    <li><a href="{{ site.baseurl }}/categories/databases/mysql/">MySQL</a></li>
+    <li><a href="{{ site.baseurl }}/categories/databases/progress/">Progress</a></li>
+</ul>
+
+<h2>All Posts</h2>
+{% for post in site.posts %}
+{% if post.categories contains "Databases" %}
+<h3><a href="{{ post.url }}">{{ post.title }}</a></h3>
+<p>{{ post.excerpt }}</p>
+{% endif %}
+{% endfor %}

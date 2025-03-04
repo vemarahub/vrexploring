@@ -3,3 +3,19 @@ layout: default
 title: Home
 ---
 
+<h2>Categories</h2>
+<ul>
+    <li><a href="{{ site.baseurl }}/categories/databases/">Databases</a></li>
+    <li><a href="{{ site.baseurl }}/categories/os/">OS</a></li>
+    <li><a href="{{ site.baseurl }}/categories/cloud/">Cloud</a></li>
+</ul>
+
+<h2>Recent Posts</h2>
+<ul class="post-list">
+    {% for post in site.posts limit: 5 %}
+    <li>
+        <h2><a href="{{ site.baseurl }}{{ post.url }}">{{ post.title }}</a></h2>
+        <p>{{ post.excerpt | strip_html | truncatewords: 30 }}</p>
+    </li>
+    {% endfor %}
+</ul>

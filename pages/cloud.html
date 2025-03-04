@@ -1,0 +1,20 @@
+---
+layout: page
+title: "Cloud"
+permalink: /categories/cloud/
+---
+
+<h1>Cloud</h1>
+
+<ul>
+    <li><a href="{{ site.baseurl }}/categories/cloud/aws/">AWS</a></li>
+    <li><a href="{{ site.baseurl }}/categories/cloud/azure/">Azure</a></li>
+</ul>
+
+<h2>All Posts</h2>
+{% for post in site.posts %}
+{% if post.categories contains "Cloud" %}
+<h3><a href="{{ post.url }}">{{ post.title }}</a></h3>
+<p>{{ post.excerpt }}</p>
+{% endif %}
+{% endfor %}

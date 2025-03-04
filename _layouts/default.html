@@ -9,17 +9,32 @@
   <p>{{ site.description }}</p>
 </header>
 
-<section>
-  <h2>Recent Posts</h2>
-  <ul class="post-list">
-    {% for post in site.posts limit: 5 %}
+<nav>
+  <ul>
     <li>
-      <h2><a href="{{ site.baseurl }}{{ post.url }}">{{ post.title }}</a></h2>
-      <p>{{ post.excerpt | strip_html | truncatewords: 30 }}</p>
+      <a href="{{ site.baseurl }}/categories/databases/">Databases</a>
+      <ul>
+        <li><a href="{{ site.baseurl }}/categories/databases/mongo/">Mongo</a></li>
+        <li><a href="{{ site.baseurl }}/categories/databases/mysql/">MySQL</a></li>
+        <li><a href="{{ site.baseurl }}/categories/databases/progress/">Progress</a></li>
+      </ul>
     </li>
-    {% endfor %}
+    <li>
+      <a href="{{ site.baseurl }}/categories/os/">OS</a>
+      <ul>
+        <li><a href="{{ site.baseurl }}/categories/os/linux/">Linux</a></li>
+      </ul>
+    </li>
+    <li>
+      <a href="{{ site.baseurl }}/categories/cloud/">Cloud</a>
+      <ul>
+        <li><a href="{{ site.baseurl }}/categories/cloud/aws/">AWS</a></li>
+        <li><a href="{{ site.baseurl }}/categories/cloud/azure/">Azure</a></li>
+      </ul>
+    </li>
   </ul>
-</section>
+</nav>
+
 
 <footer class="site-footer">
   <p>&copy; {{ site.time | date: '%Y' }} {{ site.title }}</p>
